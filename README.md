@@ -1,0 +1,2 @@
+# G54-Shes-Sustainable
+She’s Sustainable is an eco-friendly e-commerce platform for reselling maternity wear. It offers affordable options for expecting mothers while reducing textile waste. Our system manages users, products, transactions, and reviews for a seamless buying and selling experience.
