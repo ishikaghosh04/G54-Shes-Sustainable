@@ -1,7 +1,9 @@
 CREATE DATABASE IF NOT EXISTS ShesSustainable;
 USE ShesSustainable;
-
+SET FOREIGN_KEY_CHECKS = 0;
 -- 1. Buyer
+DROP TABLE IF EXISTS Review;
+DROP TABLE IF EXISTS Buyer;
 CREATE TABLE Buyer (
   userID        INT NOT NULL,
   email         VARCHAR(100) NOT NULL,
@@ -15,6 +17,7 @@ CREATE TABLE Buyer (
 );
 
 -- 2. Seller
+DROP TABLE IF EXISTS Seller;
 CREATE TABLE Seller (
   userID        INT NOT NULL,
   email         VARCHAR(100) NOT NULL,
@@ -29,6 +32,7 @@ CREATE TABLE Seller (
 );
 
 -- 3. Product table
+DROP TABLE IF EXISTS Product;
 CREATE TABLE Product (
   productID         INT AUTO_INCREMENT,
   userID            INT NOT NULL,
@@ -39,7 +43,7 @@ CREATE TABLE Product (
   description       TEXT,
   quantity          INT,
   category          VARCHAR(50),
-  condition         VARCHAR(50),
+  productCondition  VARCHAR(50),
   PRIMARY KEY (productID),
   CONSTRAINT fk_product_seller
     FOREIGN KEY (userID) REFERENCES Seller(userID)
@@ -66,6 +70,7 @@ CREATE TABLE Review (
 );
 
 -- 5. Cart table
+DROP TABLE IF EXISTS Cart;
 CREATE TABLE Cart (
   cartID  INT,
   userID  INT,
@@ -77,6 +82,7 @@ CREATE TABLE Cart (
 );
 
 -- 6. Stores
+DROP TABLE IF EXISTS Stores;
 CREATE TABLE Stores (
   cartID   INT,
   userID   INT,
@@ -97,6 +103,7 @@ CREATE TABLE Stores (
 );
 
 -- 7. Buys
+DROP TABLE IF EXISTS Buys;
 CREATE TABLE Buys (
   userID   INT,
   productID INT,
@@ -112,6 +119,7 @@ CREATE TABLE Buys (
 );
 
 -- 9. Order
+DROP TABLE IF EXISTS `Order`;
 CREATE TABLE `Order` (
   orderID     INT,
   userID      INT,
@@ -131,6 +139,7 @@ CREATE TABLE `Order` (
 );
 
 -- 10. Contains
+DROP TABLE IF EXISTS Contains;
 CREATE TABLE Contains (
   productID INT,
   orderID   INT,
@@ -148,6 +157,7 @@ CREATE TABLE Contains (
 );
 
 -- 11. Shipping Details
+DROP TABLE IF EXISTS ShippingDetails;
 CREATE TABLE ShippingDetails (
   shippingID       INT,
   userID           INT,
@@ -170,6 +180,7 @@ CREATE TABLE ShippingDetails (
 );
 
 -- 12. Receives
+DROP TABLE IF EXISTS Receives;
 CREATE TABLE Receives (
   userID      INT,
   shippingID  INT,
@@ -189,7 +200,8 @@ CREATE TABLE Receives (
     ON DELETE CASCADE
 );
 
---13. Payment Details
+-- 13. Payment Details
+DROP TABLE IF EXISTS PaymentDetails;
 CREATE TABLE PaymentDetails (
   transactionID  INT,
   buyerID        INT,
@@ -214,7 +226,8 @@ CREATE TABLE PaymentDetails (
     ON DELETE CASCADE
 );
 
---14. Ships
+-- 14. Ships
+DROP TABLE IF EXISTS Ships;
 CREATE TABLE Ships (
   sellerID   INT,
   orderID    INT,
