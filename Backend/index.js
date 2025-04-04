@@ -1,9 +1,9 @@
 import express from "express";
 import cors from "cors";
-import mysql from "mysql";     // 1) Import mysql
-import dotenv from "dotenv";   // 2) Import dotenv to load .env
+import mysql from "mysql";     // Import mysql
+import dotenv from "dotenv";   // Import dotenv to load .env
 
-dotenv.config(); // 3) Load variables from .env
+dotenv.config(); // Load variables from .env
 
 const app = express();
 app.use(express.json());
@@ -17,7 +17,7 @@ const db = mysql.createConnection({
   database: process.env.DB_NAME    // "ShesSustainable"
 });
 
-// 5) Connect and log success/error
+// Connect and log success/error
 db.connect((err) => {
   if (err) {
     console.error("Error connecting to MySQL:", err);
@@ -42,7 +42,7 @@ app.get("/api/items", (req, res) => {
   });
 });
 
-// 8) Listen on port 8800
+// Listen on port 8800
 const PORT = process.env.PORT || 8800;
 app.listen(8800, () => {
   console.log("Connected to backend on port 8800!");
