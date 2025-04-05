@@ -1,6 +1,6 @@
 import express from "express";
 import cors from "cors";
-import mysql from "mysql";     // Import mysql
+import mysql from "mysql2";     // Import mysql
 import dotenv from "dotenv";   // Import dotenv to load .env
 
 dotenv.config(); // Load variables from .env
@@ -31,7 +31,7 @@ app.get("/", (req, res) => {
   res.json("Hello! This is the backend for She's Sustainable");
 });
 
-app.get("/api/items", (req, res) => {
+app.get("/api/products", (req, res) => {
   const q = "SELECT * FROM Product";
   db.query(q, (err, results) => {
     if (err){

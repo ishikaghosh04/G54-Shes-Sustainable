@@ -1,26 +1,13 @@
+-- new SQL script
 CREATE DATABASE IF NOT EXISTS ShesSustainable;
 USE ShesSustainable;
 SET FOREIGN_KEY_CHECKS = 0;
--- 1. Buyer
-DROP TABLE IF EXISTS Review;
-DROP TABLE IF EXISTS Buyer;
-CREATE TABLE Buyer (
-  userID        INT NOT NULL,
-  email         VARCHAR(100) NOT NULL,
-  phoneNumber   VARCHAR(20),
-  city          VARCHAR(50),
-  province      VARCHAR(50),
-  street        VARCHAR(100),
-  postalCode    VARCHAR(10),
-  firstName     VARCHAR(50),
-  lastName      VARCHAR(50),  PRIMARY KEY (userID)
-);
 
--- 2. Seller
-DROP TABLE IF EXISTS Seller;
-CREATE TABLE Seller (
-  userID        INT NOT NULL,
-  email         VARCHAR(100) NOT NULL,
+-- 1. User table (combined buyer/seller)
+DROP TABLE IF EXISTS User;
+CREATE TABLE User (
+  userID        INT AUTO_INCREMENT,
+  email         VARCHAR(100) NOT NULL UNIQUE,
   phoneNumber   VARCHAR(20),
   city          VARCHAR(50),
   province      VARCHAR(50),
@@ -28,226 +15,162 @@ CREATE TABLE Seller (
   postalCode    VARCHAR(10),
   firstName     VARCHAR(50),
   lastName      VARCHAR(50),
+  isBuyer       BOOLEAN DEFAULT TRUE,
+  isSeller      BOOLEAN DEFAULT FALSE,
   PRIMARY KEY (userID)
 );
 
--- 3. Product table
+-- 2. Product table
 DROP TABLE IF EXISTS Product;
 CREATE TABLE Product (
   productID         INT AUTO_INCREMENT,
-  userID            INT NOT NULL,
-  price             DECIMAL(10,2),
-  name              VARCHAR(100),
+  sellerID          INT NOT NULL,
+  price             DECIMAL(10,2) NOT NULL,
+  name              VARCHAR(100) NOT NULL,
   size              VARCHAR(50),
   picture           VARCHAR(255),
   description       TEXT,
-  quantity          INT,
+  quantity          INT NOT NULL DEFAULT 0,
   category          VARCHAR(50),
   productCondition  VARCHAR(50),
+  dateCreated       DATETIME DEFAULT CURRENT_TIMESTAMP,
+  isActive          BOOLEAN DEFAULT TRUE,
   PRIMARY KEY (productID),
   CONSTRAINT fk_product_seller
-    FOREIGN KEY (userID) REFERENCES Seller(userID)
+    FOREIGN KEY (sellerID) REFERENCES User(userID)
     ON UPDATE CASCADE
     ON DELETE CASCADE
 );
 
--- 4. Review table
-CREATE TABLE Review (
-  reviewID   INT,
-  userID     INT,
-  productID  INT,
-  rating     INT,
-  comment    TEXT,
-  PRIMARY KEY (reviewID, userID, productID),
-  CONSTRAINT fk_review_buyer
-    FOREIGN KEY (userID) REFERENCES Buyer(userID)
-    ON UPDATE CASCADE
-    ON DELETE CASCADE,
-  CONSTRAINT fk_review_product
-    FOREIGN KEY (productID) REFERENCES Product(productID)
-    ON UPDATE CASCADE
-    ON DELETE CASCADE
-);
-
--- 5. Cart table
+-- 3. Cart table
+DROP TABLE IF EXISTS CartStores;
 DROP TABLE IF EXISTS Cart;
 CREATE TABLE Cart (
-  cartID  INT,
-  userID  INT,
-  PRIMARY KEY (cartID, userID),
-  CONSTRAINT fk_cart_buyer
-    FOREIGN KEY (userID) REFERENCES Buyer(userID)
+  cartID        INT AUTO_INCREMENT,
+  userID        INT NOT NULL,
+  dateCreated   DATETIME DEFAULT CURRENT_TIMESTAMP,
+  isActive      BOOLEAN DEFAULT TRUE,
+  PRIMARY KEY (cartID),
+  CONSTRAINT fk_cart_user
+    FOREIGN KEY (userID) REFERENCES User(userID)
     ON UPDATE CASCADE
     ON DELETE CASCADE
 );
 
--- 6. Stores
-DROP TABLE IF EXISTS Stores;
-CREATE TABLE Stores (
-  cartID   INT,
-  userID   INT,
-  productID INT,
-  PRIMARY KEY (cartID, userID, productID),
-  CONSTRAINT fk_stores_cart
+-- 4. CartStores table
+CREATE TABLE CartStores (
+  cartID      INT NOT NULL,
+  productID   INT NOT NULL,
+  quantity    INT NOT NULL DEFAULT 1,
+  dateAdded   DATETIME DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (cartID, productID),
+  CONSTRAINT fk_cartitem_cart
     FOREIGN KEY (cartID) REFERENCES Cart(cartID)
     ON UPDATE CASCADE
     ON DELETE CASCADE,
-  CONSTRAINT fk_stores_buyer
-    FOREIGN KEY (userID) REFERENCES Buyer(userID)
-    ON UPDATE CASCADE
-    ON DELETE CASCADE,
-  CONSTRAINT fk_stores_product
+  CONSTRAINT fk_cartitem_product
     FOREIGN KEY (productID) REFERENCES Product(productID)
     ON UPDATE CASCADE
     ON DELETE CASCADE
 );
 
--- 7. Buys
-DROP TABLE IF EXISTS Buys;
-CREATE TABLE Buys (
-  userID   INT,
-  productID INT,
-  PRIMARY KEY (userID, productID),
-  CONSTRAINT fk_buys_buyer
-    FOREIGN KEY (userID) REFERENCES Buyer(userID)
-    ON UPDATE CASCADE
-    ON DELETE CASCADE,
-  CONSTRAINT fk_buys_product
-    FOREIGN KEY (productID) REFERENCES Product(productID)
-    ON UPDATE CASCADE
-    ON DELETE CASCADE
-);
-
--- 9. Order
+-- 5. Order table
+DROP TABLE IF EXISTS OrderContains;
 DROP TABLE IF EXISTS `Order`;
 CREATE TABLE `Order` (
-  orderID     INT,
-  userID      INT,
-  productID   INT,
-  orderDate   DATE,
-  totalAmount DECIMAL(10,2),
-  status      VARCHAR(50),
-  PRIMARY KEY (orderID, userID, productID),
+  orderID         INT AUTO_INCREMENT,
+  buyerID         INT NOT NULL,
+  orderDate       DATETIME DEFAULT CURRENT_TIMESTAMP,
+  totalAmount     DECIMAL(10,2) NOT NULL,
+  status          VARCHAR(50) DEFAULT 'Pending',
+  shippingAddress TEXT,
+  billingAddress  TEXT,
+  PRIMARY KEY (orderID),
   CONSTRAINT fk_order_buyer
-    FOREIGN KEY (userID) REFERENCES Buyer(userID)
+    FOREIGN KEY (buyerID) REFERENCES User(userID)
+    ON UPDATE CASCADE
+    ON DELETE CASCADE
+);
+
+-- 6. OrderContains table
+CREATE TABLE OrderContains (
+  orderID     INT NOT NULL,
+  productID   INT NOT NULL,
+  quantity    INT NOT NULL DEFAULT 1,
+  unitPrice   DECIMAL(10,2) NOT NULL,
+  subtotal    DECIMAL(10,2) NOT NULL,
+  status      VARCHAR(50) DEFAULT 'Processing',
+  PRIMARY KEY (orderID, productID),
+  CONSTRAINT fk_orderitem_order
+    FOREIGN KEY (orderID) REFERENCES `Order`(orderID)
     ON UPDATE CASCADE
     ON DELETE CASCADE,
-  CONSTRAINT fk_order_product
+  CONSTRAINT fk_orderitem_product
     FOREIGN KEY (productID) REFERENCES Product(productID)
     ON UPDATE CASCADE
     ON DELETE CASCADE
 );
 
--- 10. Contains
-DROP TABLE IF EXISTS Contains;
-CREATE TABLE Contains (
-  productID INT,
-  orderID   INT,
-  userID    INT,
-  PRIMARY KEY (productID, orderID, userID),
-  CONSTRAINT fk_contains_product
-    FOREIGN KEY (productID) REFERENCES Product(productID)
-    ON UPDATE CASCADE
-    ON DELETE CASCADE,
-
-  CONSTRAINT fk_contains_order
-    FOREIGN KEY (orderID, userID, productID) REFERENCES `Order`(orderID, userID, productID)
-    ON UPDATE CASCADE
-    ON DELETE CASCADE
-);
-
--- 11. Shipping Details
-DROP TABLE IF EXISTS ShippingDetails;
-CREATE TABLE ShippingDetails (
-  shippingID       INT,
-  userID           INT,
-  orderID          INT,
-  shippingCost     DECIMAL(10,2),
+-- 7. Shipping table
+DROP TABLE IF EXISTS Shipping;
+CREATE TABLE Shipping (
+  shippingID       INT AUTO_INCREMENT,
+  orderID          INT NOT NULL,
+  trackingNumber   VARCHAR(100),
+  shippingCost     DECIMAL(10,2) NOT NULL DEFAULT 0,
+  shippedDate      DATETIME,
   estDeliveryDate  DATE,
-  street           VARCHAR(100),
-  postalCode       VARCHAR(10),
-  city             VARCHAR(50),
-  province         VARCHAR(50),
+  actualDeliveryDate DATE,
+  status           VARCHAR(50) DEFAULT 'Pending',
   PRIMARY KEY (shippingID),
-  CONSTRAINT fk_shipping_buyer
-    FOREIGN KEY (userID) REFERENCES Buyer(userID)
-    ON UPDATE CASCADE
-    ON DELETE CASCADE,
   CONSTRAINT fk_shipping_order
     FOREIGN KEY (orderID) REFERENCES `Order`(orderID)
     ON UPDATE CASCADE
     ON DELETE CASCADE
 );
 
--- 12. Receives
-DROP TABLE IF EXISTS Receives;
-CREATE TABLE Receives (
-  userID      INT,
-  shippingID  INT,
-  orderID     INT,
-  PRIMARY KEY (userID, shippingID, orderID),
-  CONSTRAINT fk_receives_buyer
-    FOREIGN KEY (userID) REFERENCES Buyer(userID)
-    ON UPDATE CASCADE
-    ON DELETE CASCADE,
-  CONSTRAINT fk_receives_shipping
-    FOREIGN KEY (shippingID) REFERENCES ShippingDetails(shippingID)
-    ON UPDATE CASCADE
-    ON DELETE CASCADE,
-  CONSTRAINT fk_receives_order
-    FOREIGN KEY (orderID) REFERENCES `Order`(orderID)
-    ON UPDATE CASCADE
-    ON DELETE CASCADE
-);
-
--- 13. Payment Details
-DROP TABLE IF EXISTS PaymentDetails;
-CREATE TABLE PaymentDetails (
-  transactionID  INT,
-  buyerID        INT,
-  orderID        INT,
-  sellerID       INT,
-  totalAmount    DECIMAL(10,2),
-  billingAddress VARCHAR(100),
-  paymentDate    DATE,
-  paymentMethod  VARCHAR(50),
-  PRIMARY KEY (transactionID, buyerID),
-  CONSTRAINT fk_payment_buyer
-    FOREIGN KEY (buyerID) REFERENCES Buyer(userID)
-    ON UPDATE CASCADE
-    ON DELETE CASCADE,
+-- 8. Payment table
+DROP TABLE IF EXISTS Payment;
+CREATE TABLE Payment (
+  paymentID      INT AUTO_INCREMENT,
+  orderID        INT NOT NULL,
+  amount         DECIMAL(10,2) NOT NULL,
+  paymentDate    DATETIME DEFAULT CURRENT_TIMESTAMP,
+  paymentMethod  VARCHAR(50) NOT NULL,
+  status         VARCHAR(50) DEFAULT 'Pending',
+  transactionRef VARCHAR(100),
+  PRIMARY KEY (paymentID),
   CONSTRAINT fk_payment_order
     FOREIGN KEY (orderID) REFERENCES `Order`(orderID)
     ON UPDATE CASCADE
+    ON DELETE CASCADE
+);
+
+-- 9. Review table
+DROP TABLE IF EXISTS Review;
+CREATE TABLE Review (
+  reviewID    INT AUTO_INCREMENT,
+  buyerID     INT NOT NULL,
+  productID   INT NOT NULL,
+  orderID     INT NOT NULL,
+  rating      INT NOT NULL CHECK (rating BETWEEN 1 AND 5),
+  comment     TEXT,
+  reviewDate  DATETIME DEFAULT CURRENT_TIMESTAMP,
+  isVerified  BOOLEAN DEFAULT TRUE,
+  PRIMARY KEY (reviewID),
+  UNIQUE KEY unique_review (buyerID, productID, orderID),
+  CONSTRAINT fk_review_buyer
+    FOREIGN KEY (buyerID) REFERENCES User(userID)
+    ON UPDATE CASCADE
     ON DELETE CASCADE,
-  CONSTRAINT fk_payment_seller
-    FOREIGN KEY (sellerID) REFERENCES Seller(userID)
+  CONSTRAINT fk_review_product
+    FOREIGN KEY (productID) REFERENCES Product(productID)
+    ON UPDATE CASCADE
+    ON DELETE CASCADE,
+  CONSTRAINT fk_review_order
+    FOREIGN KEY (orderID) REFERENCES `Order`(orderID)
     ON UPDATE CASCADE
     ON DELETE CASCADE
 );
 
--- 14. Ships
-DROP TABLE IF EXISTS Ships;
-CREATE TABLE Ships (
-  sellerID   INT,
-  orderID    INT,
-  buyerID    INT,
-  productID  INT,
-  PRIMARY KEY (sellerID, orderID, buyerID, productID),
-  CONSTRAINT fk_ships_seller
-    FOREIGN KEY (sellerID) REFERENCES Seller(userID)
-    ON UPDATE CASCADE
-    ON DELETE CASCADE,
-  CONSTRAINT fk_ships_order
-    FOREIGN KEY (orderID) REFERENCES `Order`(orderID)
-    ON UPDATE CASCADE
-    ON DELETE CASCADE,
-  CONSTRAINT fk_ships_buyer
-    FOREIGN KEY (buyerID) REFERENCES Buyer(userID)
-    ON UPDATE CASCADE
-    ON DELETE CASCADE,
-  CONSTRAINT fk_ships_product
-    FOREIGN KEY (productID) REFERENCES Product(productID)
-    ON UPDATE CASCADE
-    ON DELETE CASCADE
-);
+SET FOREIGN_KEY_CHECKS = 1;
