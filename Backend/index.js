@@ -1,5 +1,5 @@
-import express from "express";
-import cors from "cors";
+import express from "express";  // Delete ?
+import cors from "cors";  // Frontend
 import mysql from "mysql2";     // Import mysql
 import dotenv from "dotenv";   // Import dotenv to load .env
 import productRoutes from "./routes/products.js";
@@ -10,7 +10,7 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-// 4) Create connection using .env variables
+// Create connection using .env variables
 const db = mysql.createConnection({
   host: process.env.DB_HOST,       // "localhost"
   user: process.env.DB_USER,       // "myapp_user" or "root"
@@ -27,7 +27,7 @@ db.connect((err) => {
   console.log("Connected to MySQL database!");
 });
 
-// Root route
+// Root route (check if it's connected)
 app.get("/", (req, res) => {
   res.json("Hello! This is the backend for She's Sustainable");
 });
