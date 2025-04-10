@@ -15,6 +15,7 @@ CREATE TABLE User (
   postalCode    VARCHAR(10),
   firstName     VARCHAR(50),
   lastName      VARCHAR(50),
+  password      VARCHAR(255) NOT NULL,  -- Added password column for authentication
   isBuyer       BOOLEAN DEFAULT TRUE,
   isSeller      BOOLEAN DEFAULT FALSE,
   PRIMARY KEY (userID)

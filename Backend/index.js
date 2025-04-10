@@ -3,6 +3,8 @@ import cors from "cors";  // Frontend
 import mysql from "mysql2";     // Import mysql
 import dotenv from "dotenv";   // Import dotenv to load .env
 import productRoutes from "./routes/products.js";
+import signupRoutes from "./routes/signup.js";
+import loginRoutes from "./routes/login.js";
 
 dotenv.config(); // Load variables from .env
 
@@ -40,3 +42,9 @@ app.listen(8800, () => {
 
 // Use product routes
 app.use("/products", productRoutes(db));
+
+// Use sign up routes
+app.use("/signup", signupRoutes(db));
+
+// Use login routes
+app.use("/login", loginRoutes(db));
