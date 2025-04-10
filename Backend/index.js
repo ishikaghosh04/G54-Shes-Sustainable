@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import mysql from "mysql2";     // Import mysql
 import dotenv from "dotenv";   // Import dotenv to load .env
+import productRoutes from "./routes/products.js";
 
 dotenv.config(); // Load variables from .env
 
@@ -30,46 +31,12 @@ db.connect((err) => {
 app.get("/", (req, res) => {
   res.json("Hello! This is the backend for She's Sustainable");
 });
-// Display the records from Product
-app.get("/products", (req, res) => {
-  const q = "SELECT * FROM Product";
-  db.query(q, (err, results) => {
-    if (err){
-      console.error("Query error:", err);
-      return res.status(500).json(err);
-    }
-    return res.status(200).json(results);
-  });
-});
-
-// Inserts data into the Product table from user input
-app.post("/products", (req, res) => {
-  const q = "INSERT INTO Product (`sellerID`, `price`, `name`, `size`, `picture`, `description`, `quantity`, `category`, `productCondition`) VALUES (?)";
-  const values = [
-    req.body.sellerId,
-    req.body.price,
-    req.body.name,
-    req.body.size,
-    req.body.picture,
-    req.body.description,
-    req.body.quantity,
-    req.body.category,
-    req.body.productCondition
-  ]
-
-  db.query(q, [values], (err, data) => {
-    if (err) {
-      console.log("Query error:", err); // Log the error
-      return res.status(500).json(err); // Send error response
-    }
-
-    console.log("Query results:", data); // Log the results
-    return res.status(200).json(data); // Send success response
-  });
-});
 
 // Listen on port 8800
 const PORT = process.env.PORT || 8800;
 app.listen(8800, () => {
   console.log("Connected to backend on port 8800!");
 });
+
+// Use product routes
+app.use("/products", productRoutes(db));
