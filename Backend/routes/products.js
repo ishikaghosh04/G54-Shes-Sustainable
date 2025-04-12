@@ -37,9 +37,14 @@ export default (db) => {
     });
   });
 
-  // Insert product into the table
+// Insert product into the table and update isSeller in User
   router.post("/", (req, res) => {
-    const q = "INSERT INTO Product (`sellerID`, `price`, `name`, `size`, `picture`, `description`, `quantity`, `category`, `productCondition`) VALUES (?)";
+    const q = `
+      INSERT INTO Product 
+      (sellerID, price, name, size, picture, description, quantity, category, productCondition)
+      VALUES (?)
+    `;
+  
     const values = [
       req.body.sellerId,
       req.body.price,
@@ -49,18 +54,33 @@ export default (db) => {
       req.body.description,
       req.body.quantity,
       req.body.category,
-      req.body.productCondition,
+      req.body.productCondition
     ];
-
+  
     db.query(q, [values], (err, data) => {
       if (err) {
-        console.log("Query error:", err);
+        console.error("Insert product error:", err);
         return res.status(500).json(err);
       }
-      console.log("Query results:", data);
-      return res.status(200).json(data);
+  
+      // Update the user's isSeller status
+      const updateSeller = "UPDATE User SET isSeller = TRUE WHERE userID = ?";
+      db.query(updateSeller, [req.body.sellerId], (err2) => {
+        if (err2) {
+          console.error("Failed to update isSeller status:", err2);
+          // Note: You may still want to return success for the product insert
+          return res.status(500).json({
+            message: "Product created, but failed to update seller status.",
+          });
+        }
+  
+        return res.status(201).json({
+          message: "Product created and seller status updated successfully.",
+          productData: data,
+        });
+      });
     });
-  });
+  });  
 
   // Delete product from table
   router.delete("/:id", (req, res) => {
@@ -98,6 +118,17 @@ export default (db) => {
     });
   });
 
+  // Display all products listed by a specific seller
+  router.get("/seller/:id", (req, res) => {
+    const sellerID = req.params.id;
+    const q = "SELECT * FROM Product WHERE sellerID = ?";
+    db.query(q, [sellerID], (err, results) => {
+      if (err) return res.status(500).json(err);
+      return res.status(200).json(results);
+    });
+  });
+  
+
   // Get products by category
   router.get("/category/:category", (req, res) => {
     const category = req.params.category;
@@ -109,8 +140,6 @@ export default (db) => {
       return res.status(200).json(results);
     });
   });
-
-  // ADD A FEW MORE ROUTES RELATED TO PRODUCT
 
   // Returns routes to index.js
   return router;
