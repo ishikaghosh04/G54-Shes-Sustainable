@@ -1,13 +1,12 @@
+-- PASSWORDS MUST BE HASHED WHEN STORING (SECURITY)!
 USE ShesSustainable;
 
--- DO NOT USE THIS. SOME OF THE TABLE FORMATS HAVE CHANGED!
-
 -- Insert Users (some are buyers, some are sellers, one is both)
-INSERT INTO User (email, phoneNumber, city, province, street, postalCode, firstName, lastName, isBuyer, isSeller)
+INSERT INTO User (email, phoneNumber, city, province, street, postalCode, firstName, lastName, password, isBuyer, isSeller)
 VALUES 
-('sarah.jones@email.com', '416-555-1234', 'Toronto', 'Ontario', '123 Maple Ave', 'M5V 2T6', 'Sarah', 'Jones', TRUE, FALSE),
-('michael.chen@email.com', '647-555-6789', 'Vancouver', 'British Columbia', '456 Pine St', 'V5K 0A1', 'Michael', 'Chen', TRUE, TRUE),
-('emma.patel@email.com', '905-555-4321', 'Montreal', 'Quebec', '789 Oak Blvd', 'H2Y 1Z1', 'Emma', 'Patel', FALSE, TRUE);
+('sarah.jones@email.com', '416-555-1234', 'Toronto', 'Ontario', '123 Maple Ave', 'M5V 2T6', 'Sarah', 'Jones', '$2y$10$xyz123hashedpassword1', TRUE, FALSE),
+('michael.chen@email.com', '647-555-6789', 'Vancouver', 'British Columbia', '456 Pine St', 'V5K 0A1', 'Michael', 'Chen', '$2y$10$xyz123hashedpassword2', TRUE, TRUE),
+('emma.patel@email.com', '905-555-4321', 'Montreal', 'Quebec', '789 Oak Blvd', 'H2Y 1Z1', 'Emma', 'Patel', '$2y$10$xyz123hashedpassword3', FALSE, TRUE);
 
 -- Insert Products
 INSERT INTO Product (sellerID, price, name, size, picture, description, quantity, category, productCondition)
@@ -22,7 +21,7 @@ VALUES
 (1, '2025-03-30 14:22:15', TRUE),
 (2, '2025-03-31 09:45:30', TRUE);
 
--- Insert Cart Items
+-- Insert Cart Items (CartStores)
 INSERT INTO CartStores (cartID, productID, quantity, dateAdded)
 VALUES 
 (1, 3, 1, '2025-03-30 14:25:10'),
@@ -36,7 +35,7 @@ VALUES
 (1, '2025-03-28 11:32:40', 25.50, 'Shipped', '123 Maple Ave, Toronto, Ontario, M5V 2T6', '123 Maple Ave, Toronto, Ontario, M5V 2T6'),
 (2, '2025-03-29 15:05:10', 60.00, 'Processing', '456 Pine St, Vancouver, British Columbia, V5K 0A1', '456 Pine St, Vancouver, British Columbia, V5K 0A1');
 
--- Insert Order Items
+-- Insert Order Items (OrderContains)
 INSERT INTO OrderContains (orderID, productID, quantity, unitPrice, subtotal, status)
 VALUES 
 (1, 3, 1, 60.00, 60.00, 'Delivered'),
