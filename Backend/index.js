@@ -47,4 +47,4 @@ app.use("/products", productRoutes(db));
 app.use("/signup", signupRoutes(db));
 
 // Use login routes
-app.use("/login", loginRoutes(db));
+// app.use("/login", loginRoutes(db));

@@ -30,6 +30,17 @@ export default (db) => {
             return res.status(400).json({ message: "All fields are required" });
         }
 
+        // LATER: DOES THIS ASK FOR ANOTHER ATTEMPT?
+        // Verify that the email is valid
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            return res.status(400).json({ message: "Invalid email format" });
+        }
+        // Verify that the password meets the length requirement
+        if (password.length < 6) {
+            return res.status(400).json({ message: "Password must be at least 6 characters long" });
+        }
+
         // Check if the user already exists
         db.query("SELECT * FROM User WHERE email = ?", [email], (err, result) => {
             if (err) {
