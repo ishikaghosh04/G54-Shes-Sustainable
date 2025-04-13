@@ -1,10 +1,11 @@
+import jwt from "jsonwebtoken";
 import express from "express";
 import bcrypt from "bcryptjs";  // Hashing passwords
 const router = express.Router();
 
 export default (db) => {
 
-    router.post("/login", (req, res) => {
+    router.post("/", (req, res) => {
         const { email, password } = req.body;
     
         // Find user by email
@@ -32,8 +33,8 @@ export default (db) => {
     
         return res.status(200).json({ message: "Login successful", token });
         });
-
+    });
+    
     // Return the routes to index.js
     return router;
-    });
 }

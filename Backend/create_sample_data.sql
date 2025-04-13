@@ -1,5 +1,7 @@
 USE ShesSustainable;
 
+-- DO NOT USE THIS. SOME OF THE TABLE FORMATS HAVE CHANGED!
+
 -- Insert Users (some are buyers, some are sellers, one is both)
 INSERT INTO User (email, phoneNumber, city, province, street, postalCode, firstName, lastName, isBuyer, isSeller)
 VALUES 
