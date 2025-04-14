@@ -37,7 +37,7 @@ export default (db) => {
         }
 
         // Check password length
-        if (password.length < 6) {
+        if (password.length < 8) {
             return res.status(400).json({ message: "Password must be at least 6 characters long" });
         }
 
