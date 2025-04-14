@@ -5,7 +5,7 @@ import verifyToken from "./middlewares/verifyToken.js";
 const router = express.Router();
 
 export default (db) => {
-    // get profile information (testing purposes)
+    // Get profile information (testing purposes)
     router.get("/", verifyToken, (req, res) => {
         const userID = req.user.userID;
         db.query("SELECT * FROM User WHERE userID = ?", [userID], (err, results) => {
@@ -32,7 +32,7 @@ export default (db) => {
   
       const fields = req.body;
   
-      // Prevent updates to required fields (isSeller, isBuyer)?
+      // Prevent updates to required fields
       const blockedFields = ["firstName", "lastName", "email", "password", "userID", "isSeller", "isBuyer"];
       for (let key of Object.keys(fields)) {
           if (blockedFields.includes(key)) {
