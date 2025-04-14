@@ -1,6 +1,6 @@
 // ADD PROFILE INFO TO USER TABLE (NULL)
 import express from "express";
-import verifyToken from "G54-Shes-Sustainable/Backend/routes/middlewares/verifyToken.js"; // adjust path as needed
+import verifyToken from "./middlewares/verifyToken.js";
 
 const router = express.Router();
 
@@ -33,7 +33,7 @@ export default (db) => {
       const fields = req.body;
   
       // Prevent updates to required fields (isSeller, isBuyer)?
-      const blockedFields = ["firstName", "lastName", "email", "password"];
+      const blockedFields = ["firstName", "lastName", "email", "password", "userID", "isSeller", "isBuyer"];
       for (let key of Object.keys(fields)) {
           if (blockedFields.includes(key)) {
               return res.status(400).json({ message: `Field '${key}' cannot be updated via this route.` });

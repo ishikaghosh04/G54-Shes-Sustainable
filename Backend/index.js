@@ -5,6 +5,7 @@ import dotenv from "dotenv";   // Import dotenv to load .env
 import productRoutes from "./routes/products.js";
 import signupRoutes from "./routes/signup.js";
 import loginRoutes from "./routes/login.js";
+import profileRoutes from "./routes/profile.js"
 
 dotenv.config(); // Load variables from .env
 
@@ -48,3 +49,6 @@ app.use("/signup", signupRoutes(db));
 
 // Use login routes
 app.use("/login", loginRoutes(db));
+
+// Use profile routes
+app.use("/profile", profileRoutes(db));
