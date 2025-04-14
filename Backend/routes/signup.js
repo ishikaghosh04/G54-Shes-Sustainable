@@ -22,44 +22,40 @@ export default (db) => {
 
     // Sign up a user
     router.post("/", (req, res) => {
-        // Change db later for firstName, lastName (not null)
         const { firstName, lastName, email, password } = req.body;
 
-        // Validate input
+        // Validate required fields
         if (!email || !password || !firstName || !lastName) {
             return res.status(400).json({ message: "All fields are required" });
         }
 
-        // LATER: DOES THIS ASK FOR ANOTHER ATTEMPT?
-        // Verify that the email is valid
+        // Normalize and validate email
+        const emailLower = email.toLowerCase();
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(email)) {
+        if (!emailRegex.test(emailLower)) {
             return res.status(400).json({ message: "Invalid email format" });
         }
-        // Verify that the password meets the length requirement
+
+        // Check password length
         if (password.length < 6) {
             return res.status(400).json({ message: "Password must be at least 6 characters long" });
         }
 
-        // Check if the user already exists
-        db.query("SELECT * FROM User WHERE email = ?", [email], (err, result) => {
-            if (err) {
-                return res.status(500).json({ error: err.message });
-            }
+        // Check for existing user
+        db.query("SELECT * FROM User WHERE email = ?", [emailLower], (err, result) => {
+            if (err) return res.status(500).json({ error: err.message });
 
             if (result.length > 0) {
                 return res.status(400).json({ message: "User already exists" });
             }
 
-            // Hash the password
-            const hashedPassword = bcrypt.hashSync(password, 10); // 10 is the salt rounds
+            // Hash password
+            const hashedPassword = bcrypt.hashSync(password, 10);
 
-            // Insert new user into the database
+            // Insert user
             const query = "INSERT INTO User (firstName, lastName, email, password) VALUES (?, ?, ?, ?)";
-            db.query(query, [firstName, lastName, email, hashedPassword], (err, result) => {
-                if (err) {
-                    return res.status(500).json({ error: err.message });
-                }
+            db.query(query, [firstName, lastName, emailLower, hashedPassword], (err, result) => {
+                if (err) return res.status(500).json({ error: err.message });
 
                 return res.status(201).json({ message: "User created successfully" });
             });

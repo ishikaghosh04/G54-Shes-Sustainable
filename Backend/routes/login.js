@@ -8,8 +8,9 @@ export default (db) => {
     router.post("/", (req, res) => {
         const { email, password } = req.body;
     
+        const emailLower = email.toLowerCase();
         // Find user by email
-        db.query("SELECT * FROM User WHERE email = ?", [email], (err, result) => {
+        db.query("SELECT * FROM User WHERE email = ?", [emailLower], (err, result) => {
         if (err) return res.status(500).json({ error: err.message });
     
         if (result.length === 0) {
@@ -24,9 +25,10 @@ export default (db) => {
             return res.status(400).json({ message: "Invalid password" });
         }
     
-        // Generate JWT token
+        // Generate JWT token (check)
         const token = jwt.sign(
-            { userID: user.userID, username: user.username }, // Payload
+            // VERIFY IF EMAIL OR EMAILLOWER?
+            { userID: user.userID, email: user.emailLower }, // Payload
             process.env.JWT_SECRET, // Secret key
             { expiresIn: "1h" } // Token expiration time
         );
