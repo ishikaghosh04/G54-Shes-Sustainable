@@ -1,12 +1,9 @@
 import express from "express";
-import { data } from "react-router-dom";
-const router = express.Router();
-// Must include verify token to modify data
 import verifyToken from "./middlewares/verifyToken.js";
+const router = express.Router();
 
 export default (db) => {
-
-    // Display all products (testing purposes)
+    // Display all products from table (testing purposes)
     router.get("/", (req, res) => {
         const q = "SELECT * FROM Product";
         db.query(q, (err, results) => {
@@ -42,7 +39,7 @@ export default (db) => {
         const sellerID = req.user.userID;
         const q = `
             INSERT INTO Product 
-            (sellerID, price, name, size, picture, description, quantity, category, productCondition)
+            (sellerID, price, name, size, picture, description, category, productCondition)
             VALUES (?)
         `;
         const values = [
@@ -52,33 +49,31 @@ export default (db) => {
           req.body.size,
           req.body.picture,
           req.body.description,
-          req.body.quantity,
           req.body.category,
           req.body.productCondition
         ];
   
         db.query(q, [values], (err, data) => {
-          if (err) {
-            console.error("Insert product error:", err);
-            return res.status(500).json(err);
-          }
-      
-          // Update the user's isSeller status
-          const updateSeller = "UPDATE User SET isSeller = TRUE WHERE userID = ?";
-          db.query(updateSeller, [sellerID], (err2) => {
-            if (err2) {
-              console.error("Failed to update isSeller status:", err2);
-              // Note: You may still want to return success for the product insert
-              return res.status(500).json({
-                message: "Product created, but failed to update seller status.",
-              });
+            if (err) {
+                console.error("Insert product error:", err);
+                return res.status(500).json(err);
             }
-      
-            return res.status(201).json({
-              message: "Product created and seller status updated successfully.",
-              productData: data,
+        
+            // Update the user's isSeller status
+            const updateSeller = "UPDATE User SET isSeller = TRUE WHERE userID = ?";
+            db.query(updateSeller, [sellerID], (err2) => {
+                if (err2) {
+                    console.error("Failed to update isSeller status:", err2);
+                    // Note: You may still want to return success for the product insert
+                    return res.status(500).json({
+                        message: "Product created, but failed to update seller status.",
+                    });
+                }
+                return res.status(201).json({
+                    message: "Product created and seller status updated successfully.",
+                    productData: data,
+                });
             });
-          });
         }); 
     });  
 
@@ -129,11 +124,11 @@ export default (db) => {
             const q = `UPDATE Product SET ${setClause} WHERE productID = ?`;
 
             db.query(q, [...values, productID], (err2) => {
-              if (err2) {
-                console.error("Update error:", err2);
-                return res.status(500).json(err2);
-              }
-              return res.status(200).json("Product updated successfully.");
+                if (err2) {
+                    console.error("Update error:", err2);
+                    return res.status(500).json(err2);
+                }
+                return res.status(200).json("Product updated successfully.");
             });
         });
     });

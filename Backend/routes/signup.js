@@ -5,19 +5,17 @@ const router = express.Router();
 export default (db) => {
     // Display all users (testing purposes)
     router.get("/", (req, res) => {
-    const q = "SELECT * FROM User";
-    db.query(q, (err, results) => {
-        if (err) {
-        console.error("Query error:", err);
-        return res.status(500).json({ error: "An error occurred while retrieving users." });
-        }
-
-        if (results.length === 0) {
-        return res.status(404).json({ message: "No users found." });  // In case no products are found
-        }
-
-        return res.status(200).json(results);  // Success response with the products data
-    });
+        const q = "SELECT * FROM User";
+        db.query(q, (err, results) => {
+            if (err) {
+                console.error("Query error:", err);
+                return res.status(500).json({ error: "An error occurred while retrieving users." });
+            }
+            if (results.length === 0) {
+                return res.status(404).json({ message: "No users found." });  // In case no products are found
+            }
+            return res.status(200).json(results);  // Success response with the products data
+        });
     });
 
     // Sign up a user

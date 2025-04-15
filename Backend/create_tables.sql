@@ -21,7 +21,7 @@ CREATE TABLE User (
   PRIMARY KEY (userID)
 );
 
--- 2. Product table
+-- 2. Product table (removed quantity)
 DROP TABLE IF EXISTS Product;
 CREATE TABLE Product (
   productID         INT AUTO_INCREMENT,
@@ -31,7 +31,6 @@ CREATE TABLE Product (
   size              VARCHAR(50),
   picture           VARCHAR(255),
   description       TEXT,
-  quantity          INT NOT NULL DEFAULT 0,
   category          VARCHAR(50),
   productCondition  VARCHAR(50),
   dateCreated       DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -58,11 +57,10 @@ CREATE TABLE Cart (
     ON DELETE CASCADE
 );
 
--- 4. CartStores table
+-- 4. CartStores table (removed quantity)
 CREATE TABLE CartStores (
   cartID      INT NOT NULL,
   productID   INT NOT NULL,
-  quantity    INT NOT NULL DEFAULT 1,
   dateAdded   DATETIME DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (cartID, productID),
   CONSTRAINT fk_cartitem_cart

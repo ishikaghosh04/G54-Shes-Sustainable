@@ -6,6 +6,7 @@ import productRoutes from "./routes/products.js";
 import signupRoutes from "./routes/signup.js";
 import loginRoutes from "./routes/login.js";
 import profileRoutes from "./routes/profile.js"
+import cartRoutes from "./routes/cart.js"
 
 dotenv.config(); // Load variables from .env
 
@@ -52,3 +53,6 @@ app.use("/login", loginRoutes(db));
 
 // Use profile routes
 app.use("/profile", profileRoutes(db));
+
+// Use cart routes
+app.use("/cart" ,cartRoutes(db))
