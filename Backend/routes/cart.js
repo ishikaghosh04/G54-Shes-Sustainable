@@ -3,12 +3,11 @@ import verifyToken from "./middlewares/verifyToken.js";
 const router = express.Router();
 
 export default (db) => {
-
     // User can add an item to their cart
     router.post("/add", verifyToken, (req, res) => {
         const userID = req.user.userID;
         const { productID } = req.body;
-
+        // A user should never have more than one cart, but just in case, we limit to 1
         const getCartQuery = `SELECT cartID FROM Cart WHERE userID = ? AND isActive = TRUE LIMIT 1`;
         db.query(getCartQuery, [userID], (err, cartResults) => {
             if (err) return res.status(500).json(err);
@@ -33,10 +32,10 @@ export default (db) => {
                 `;
                 db.query(insertQuery, [cartID, productID], (err2) => {
                     if (err2) {
-                    if (err2.code === "ER_DUP_ENTRY") {
-                        return res.status(400).json("Product is already in the cart.");
-                    }
-                    return res.status(500).json(err2);
+                        if (err2.code === "ER_DUP_ENTRY") {
+                            return res.status(400).json("Product is already in the cart.");
+                        }
+                        return res.status(500).json(err2);
                     }
                     return res.status(200).json("Item added to cart.");
                 });

@@ -54,7 +54,6 @@ export default (db) => {
             const query = "INSERT INTO User (firstName, lastName, email, password) VALUES (?, ?, ?, ?)";
             db.query(query, [firstName, lastName, emailLower, hashedPassword], (err, result) => {
                 if (err) return res.status(500).json({ error: err.message });
-
                 return res.status(201).json({ message: "User created successfully" });
             });
         });
