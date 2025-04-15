@@ -18,7 +18,7 @@ export default (db) => {
         });
     });
 
-    // Sign up a user
+    // New user can signup
     router.post("/", (req, res) => {
         const { firstName, lastName, email, password } = req.body;
 
@@ -34,7 +34,7 @@ export default (db) => {
             return res.status(400).json({ message: "Invalid email format" });
         }
 
-        // Check password length
+        // Check password length (must be at least 8 characters long)
         if (password.length < 8) {
             return res.status(400).json({ message: "Password must be at least 6 characters long" });
         }

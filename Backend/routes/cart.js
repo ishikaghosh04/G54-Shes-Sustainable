@@ -2,6 +2,10 @@ import express from "express";
 import verifyToken from "./middlewares/verifyToken.js";
 const router = express.Router();
 
+// NOTE (things to keep in mind)
+// A SELLER SHOULD NOT BE ABLE TO BUY THEIR OWN PRODUCT
+// ONCE A USER HAS THE PRODUCT IN THEIR CART, NO OTHER USER SHOULD BE ABLE TO ADD IT TO THEIR CART
+
 export default (db) => {
     // User can add an item to their cart
     router.post("/add", verifyToken, (req, res) => {
@@ -13,7 +17,6 @@ export default (db) => {
             if (err) return res.status(500).json(err);
 
             const cartID = cartResults.length > 0 ? cartResults[0].cartID : null;
-
             const createCartIfNeeded = cartID
                 ? Promise.resolve(cartID)
                 : new Promise((resolve, reject) => {
@@ -81,5 +84,6 @@ export default (db) => {
         });
     });
 
+    // return route to index.js
     return router;
 };

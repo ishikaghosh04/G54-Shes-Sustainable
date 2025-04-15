@@ -3,6 +3,8 @@ import express from "express";
 import bcrypt from "bcryptjs";  // Hashing passwords
 const router = express.Router();
 
+// NOTE: THERE SHOULD BE A DELETE ACCOUNT FUNCTION
+
 export default (db) => {
     // User can login to their account
     router.post("/", (req, res) => {

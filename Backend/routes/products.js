@@ -77,6 +77,7 @@ export default (db) => {
         }); 
     });  
 
+    // NOTE: IF USER HAS NO OTHER PRODUCTS, isSeller SHOULD BE SET TO 0
     // Delete product from table (only if owner)
     router.delete("/:id", verifyToken, (req, res) => {
         const productID = req.params.id;
@@ -94,7 +95,7 @@ export default (db) => {
             const q = "DELETE FROM Product WHERE productID = ?";
             db.query(q, [productID], (err2) => {
                 if (err2) return res.status(500).json(err2);
-            return res.status(200).json("Product has been deleted successfully.");
+                return res.status(200).json("Product has been deleted successfully.");
             });
         });
     });
@@ -115,7 +116,7 @@ export default (db) => {
             if (result.length === 0) return res.status(404).json("Product not found");
 
             if (result[0].sellerID !== userID) {
-              return res.status(403).json("Not authorized to update this product");
+                return res.status(403).json("Not authorized to update this product");
             }
 
             const keys = Object.keys(fields);
