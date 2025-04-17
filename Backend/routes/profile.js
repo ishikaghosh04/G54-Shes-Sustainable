@@ -56,6 +56,27 @@ export default (db) => {
             return res.status(200).json({ message: "Profile updated successfully" });
         });
     });
+
+    // Delete user profile (will delete rows in tables that reference it)
+    router.delete("/:id", verifyToken, (req, res) => {
+        const userId = parseInt(req.params.id);
+
+        // Only allow deletion of your own profile
+        if (userId !== req.user.userID) {
+            return res.status(403).json({ message: "You can only delete your own profile." });
+        }
+
+        const query = `DELETE FROM User WHERE userID = ?`;
+
+        db.query(query, [userId], (err, result) => {
+            if (err) {
+                console.error("Delete error:", err);
+                return res.status(500).json({ message: "Failed to delete user", error: err });
+            }
+
+            return res.status(200).json({ message: "User deleted successfully" });
+        });
+    });
   
     // Return routes to index.js
     return router;

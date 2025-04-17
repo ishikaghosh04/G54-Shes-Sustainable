@@ -77,7 +77,6 @@ export default (db) => {
         }); 
     });  
 
-    // NOTE: IF USER HAS NO OTHER PRODUCTS, isSeller SHOULD BE SET TO 0
     // Delete product from table (only if owner)
     router.delete("/:id", verifyToken, (req, res) => {
         const productID = req.params.id;
@@ -92,10 +91,28 @@ export default (db) => {
                 return res.status(403).json("Not authorized to delete this product");
             }
 
-            const q = "DELETE FROM Product WHERE productID = ?";
-            db.query(q, [productID], (err2) => {
+            // Delete the product
+            const deleteQuery = "DELETE FROM Product WHERE productID = ?";
+            db.query(deleteQuery, [productID], (err2) => {
                 if (err2) return res.status(500).json(err2);
-                return res.status(200).json("Product has been deleted successfully.");
+
+                // Check if the seller has any other products left
+                const checkProductsQuery = "SELECT COUNT(*) AS count FROM Product WHERE sellerID = ?";
+                db.query(checkProductsQuery, [userID], (err3, countResult) => {
+                    if (err3) return res.status(500).json(err3);
+
+                    const productCount = countResult[0].count;
+                    if (productCount === 0) {
+                        // Update isSeller to false
+                        const updateSellerFlag = "UPDATE User SET isSeller = 0 WHERE userID = ?";
+                        db.query(updateSellerFlag, [userID], (err4) => {
+                            if (err4) return res.status(500).json(err4);
+                            return res.status(200).json("Product deleted. You have no other products listed, so your seller status was removed.");
+                        });
+                    } else {
+                        return res.status(200).json("Product has been deleted successfully.");
+                    }
+                });
             });
         });
     });
