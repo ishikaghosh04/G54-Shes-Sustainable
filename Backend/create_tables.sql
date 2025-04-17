@@ -57,7 +57,7 @@ CREATE TABLE Cart (
     ON DELETE CASCADE
 );
 
--- 4. CartStores table (removed quantity)
+-- 4. CartStores table
 CREATE TABLE CartStores (
   cartID      INT NOT NULL,
   productID   INT NOT NULL,
@@ -71,6 +71,8 @@ CREATE TABLE CartStores (
     FOREIGN KEY (productID) REFERENCES Product(productID)
     ON UPDATE CASCADE
     ON DELETE CASCADE
+  -- Enforce that each product can only exist in ONE cart at a time
+  CONSTRAINT unique_product_per_cart UNIQUE (productID)
 );
 
 -- 5. Order table
