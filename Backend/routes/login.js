@@ -3,7 +3,7 @@ import express from "express";
 import bcrypt from "bcryptjs";  // Hashing passwords
 const router = express.Router();
 
-// NOTE: THERE SHOULD BE A DELETE ACCOUNT FUNCTION
+// NOTE: verify that emailLower works
 
 export default (db) => {
     // User can login to their account
@@ -28,8 +28,7 @@ export default (db) => {
         
             // Generate JWT token (check)
             const token = jwt.sign(
-                // VERIFY IF EMAIL OR EMAILLOWER?
-                { userID: user.userID, email: user.emailLower }, // Payload
+                { userID: user.userID, email: user.email }, // Payload
                 process.env.JWT_SECRET, // Secret key
                 { expiresIn: "1h" } // Token expiration time
             );

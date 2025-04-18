@@ -4,7 +4,6 @@ const router = express.Router();
 
 // NOTE (things to keep in mind)
 // A SELLER SHOULD NOT BE ABLE TO BUY THEIR OWN PRODUCT
-// ONCE A USER HAS THE PRODUCT IN THEIR CART, NO OTHER USER SHOULD BE ABLE TO ADD IT TO THEIR CART
 
 export default (db) => {
     // User can add an item to their cart
