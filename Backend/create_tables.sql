@@ -70,7 +70,7 @@ CREATE TABLE CartStores (
   CONSTRAINT fk_cartitem_product
     FOREIGN KEY (productID) REFERENCES Product(productID)
     ON UPDATE CASCADE
-    ON DELETE CASCADE
+    ON DELETE CASCADE,
   -- Enforce that each product can only exist in ONE cart at a time
   CONSTRAINT unique_product_per_cart UNIQUE (productID)
 );

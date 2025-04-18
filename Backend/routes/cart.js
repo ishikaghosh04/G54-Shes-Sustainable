@@ -36,7 +36,7 @@ export default (db) => {
                 db.query(insertQuery, [cartID, productID], (err2) => {
                     if (err2) {
                         if (err2.code === "ER_DUP_ENTRY") {
-                            return res.status(400).json("Product is already in the cart.");
+                            return res.status(400).json("Product is already in another user's cart.");
                         }
                         return res.status(500).json(err2);
                     }
