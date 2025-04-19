@@ -3,7 +3,10 @@ import verifyToken from "./middlewares/verifyToken.js";
 const router = express.Router();
 
 export default (db) => {
-    // User can add an item to their cart
+    /*
+    Note to frontend: a user can add an item to their cart (assuming it is not in
+    another user's cart already)
+    */
     router.post("/add", verifyToken, (req, res) => {
         const userID = req.user.userID;
         const { productID } = req.body;
@@ -43,7 +46,9 @@ export default (db) => {
         });
     });
 
-    // Get all the items in the user's cart
+    /*
+    Note to frontend: the user can view all the items in their cart
+    */
     router.get("/", verifyToken, (req, res) => {
         const userID = req.user.userID;
         const query = `
@@ -60,7 +65,13 @@ export default (db) => {
         });
     });
 
-    // User can remove a product from the cart
+    /*
+    Note to frontend: a user can remove an item from their cart
+    Note to backend: the cart will continue to exist even if the buyer
+    removes all items (once they return to the site, they will use the same
+    cartID)
+    -- create remove button for each item in cart--
+    */
     router.delete("/:productID", verifyToken, (req, res) => {
         const userID = req.user.userID;
         const productID = req.params.productID;

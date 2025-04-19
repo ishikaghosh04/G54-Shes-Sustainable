@@ -15,7 +15,7 @@ CREATE TABLE User (
   postalCode    VARCHAR(10),
   firstName     VARCHAR(50) NOT NULL,
   lastName      VARCHAR(50) NOT NULL,
-  password      VARCHAR(255) NOT NULL,  -- Added password column for authentication
+  password      VARCHAR(255) NOT NULL, 
   isBuyer       BOOLEAN DEFAULT TRUE,
   isSeller      BOOLEAN DEFAULT FALSE,
   PRIMARY KEY (userID)
@@ -28,12 +28,13 @@ CREATE TABLE Product (
   sellerID          INT NOT NULL,
   price             DECIMAL(10,2) NOT NULL,
   name              VARCHAR(100) NOT NULL,
-  size              VARCHAR(50),
-  picture           VARCHAR(255),
-  description       TEXT,
-  category          VARCHAR(50),
-  productCondition  VARCHAR(50),
+  size              VARCHAR(50) NOT NULL,
+  picture           VARCHAR(255) NOT NULL,
+  description       TEXT NOT NULL,
+  category          VARCHAR(50) NOT NULL,
+  productCondition  VARCHAR(50) NOT NULL,
   dateCreated       DATETIME DEFAULT CURRENT_TIMESTAMP,
+  -- 0 when sold, 1 when listed
   isActive          BOOLEAN DEFAULT TRUE,
   PRIMARY KEY (productID),
   CONSTRAINT fk_product_seller
@@ -49,6 +50,7 @@ CREATE TABLE Cart (
   cartID        INT AUTO_INCREMENT,
   userID        INT NOT NULL,
   dateCreated   DATETIME DEFAULT CURRENT_TIMESTAMP,
+  -- 0 if no longer in use, 1 if in use:
   isActive      BOOLEAN DEFAULT TRUE,
   PRIMARY KEY (cartID),
   CONSTRAINT fk_cart_user
@@ -75,7 +77,7 @@ CREATE TABLE CartStores (
   CONSTRAINT unique_product_per_cart UNIQUE (productID)
 );
 
--- 5. Order table
+-- 5. Order table (got rid of shipping and billing address)
 DROP TABLE IF EXISTS OrderContains;
 DROP TABLE IF EXISTS `Order`;
 CREATE TABLE `Order` (
@@ -84,8 +86,6 @@ CREATE TABLE `Order` (
   orderDate       DATETIME DEFAULT CURRENT_TIMESTAMP,
   totalAmount     DECIMAL(10,2) NOT NULL,
   status          VARCHAR(50) DEFAULT 'Pending',
-  shippingAddress TEXT,
-  billingAddress  TEXT,
   PRIMARY KEY (orderID),
   CONSTRAINT fk_order_buyer
     FOREIGN KEY (buyerID) REFERENCES User(userID)
@@ -98,7 +98,6 @@ CREATE TABLE OrderContains (
   orderID     INT NOT NULL,
   productID   INT NOT NULL,
   price       DECIMAL(10,2) NOT NULL,
-  -- subtotal    DECIMAL(10,2) NOT NULL,
   status      VARCHAR(50) DEFAULT 'Processing',
   PRIMARY KEY (orderID, productID),
   CONSTRAINT fk_orderitem_order
@@ -116,11 +115,15 @@ DROP TABLE IF EXISTS Shipping;
 CREATE TABLE Shipping (
   shippingID       INT AUTO_INCREMENT,
   orderID          INT NOT NULL,
-  trackingNumber   VARCHAR(100),
+  trackingNumber   VARCHAR(100), -- randomly generated
   shippingCost     DECIMAL(10,2) NOT NULL DEFAULT 0,
   shippedDate      DATETIME,
+  -- Shipping details
+  shippingAddress VARCHAR(255), -- added
+  shippingCity VARCHAR(100), -- added
+  shippingProvince VARCHAR(100), -- added
+  shippingPostalCode VARCHAR(20), -- added
   estDeliveryDate  DATE,
-  actualDeliveryDate DATE,
   status           VARCHAR(50) DEFAULT 'Pending',
   PRIMARY KEY (shippingID),
   CONSTRAINT fk_shipping_order
@@ -134,11 +137,20 @@ DROP TABLE IF EXISTS Payment;
 CREATE TABLE Payment (
   paymentID      INT AUTO_INCREMENT,
   orderID        INT NOT NULL,
-  amount         DECIMAL(10,2) NOT NULL,
+  amount         DECIMAL(10,2) NOT NULL, -- taken from Order
+  paymentMethod  VARCHAR(50) NOT NULL, -- specify somewhere (else remove)
+  -- MOCK card info (for demo/testing only)
+  cardNumber       VARCHAR(20),
+  expirationDate   VARCHAR(5), -- format: MM/YY
+  cvv              VARCHAR(4),
+  -- Billing address
+  billingAddress   VARCHAR(255),
+  billingCity      VARCHAR(100),
+  billingProvince  VARCHAR(100),
+  billingPostalCode VARCHAR(20),
   paymentDate    DATETIME DEFAULT CURRENT_TIMESTAMP,
-  paymentMethod  VARCHAR(50) NOT NULL,
   status         VARCHAR(50) DEFAULT 'Pending',
-  transactionRef VARCHAR(100),
+  transactionRef VARCHAR(100), -- specify in backend
   PRIMARY KEY (paymentID),
   CONSTRAINT fk_payment_order
     FOREIGN KEY (orderID) REFERENCES `Order`(orderID)

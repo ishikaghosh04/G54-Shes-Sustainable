@@ -1,5 +1,7 @@
 import express from "express";
+// simulate payment
 import { processPayment } from "./mock/mockPayment.js";
+// simulate shipment
 import { createShipment } from "./mock/mockShipment.js";
 import verifyToken from "./middlewares/verifyToken.js";
 import { promisify } from "util";
@@ -9,13 +11,12 @@ const router = express.Router();
 export default (db) => {
   const query = promisify(db.query).bind(db);
 
-  router.post("/", verifyToken, async (req, res) => {
+  /*
+  Note to front end: PENDING CHANGES (Jane's code will be integrated)
+  As of now, the following occurs when the buyer clicks Order Now.
+  */
+  router.post("/processOrder", verifyToken, async (req, res) => {
     const userID = req.user.userID;
-    const { shippingAddress, billingAddress, paymentMethod } = req.body;
-
-    if (!shippingAddress || !billingAddress || !paymentMethod) {
-      return res.status(400).json({ message: "Missing required fields." });
-    }
 
     try {
       // 1. Get active cart
@@ -35,62 +36,22 @@ export default (db) => {
 
       // 3. Insert order
       const orderResult = await query(
-        "INSERT INTO `Order` (buyerID, totalAmount, shippingAddress, billingAddress) VALUES (?, ?, ?, ?)",
-        [userID, totalAmount, shippingAddress, billingAddress]
+        "INSERT INTO `Order` (buyerID, totalAmount) VALUES (?, ?)",
+        [userID, totalAmount]
       );
       const orderID = orderResult.insertId;
 
       // 4. Insert OrderContains
-      const orderItems = items.map(item => [orderID, item.productID, item.price, item.price]);
+      const orderItems = items.map(item => [orderID, item.productID, item.price]);
       await query(
-        "INSERT INTO OrderContains (orderID, productID, price, subtotal) VALUES ?",
+        "INSERT INTO OrderContains (orderID, productID, price) VALUES ?",
         [orderItems]
       );
 
-      // 5. Mock services (testing -- Jane's code)
-      const payment = processPayment(userID, totalAmount);
-      const shipping = createShipment(userID, orderID);
-
-      // 6. Insert Payment
-      await query(
-        "INSERT INTO Payment (orderID, amount, paymentMethod, status, transactionRef) VALUES (?, ?, ?, ?, ?)",
-        [
-          orderID,
-          totalAmount,
-          paymentMethod,
-          payment.success ? "Completed" : "Failed",
-          payment.transactionID
-        ]
-      );
-
-      // 7. Insert Shipping
-      await query(
-        "INSERT INTO Shipping (orderID, trackingNumber, estDeliveryDate, status) VALUES (?, ?, ?, ?)",
-        [
-          orderID,
-          shipping.trackingNumber,
-          shipping.estimatedDelivery,
-          shipping.success ? "Shipped" : "Pending"
-        ]
-      );
-
-      // 8. Deactivate cart (maintains history)
-      await query("UPDATE Cart SET isActive = FALSE WHERE cartID = ?", [cart.cartID]);
-
-      res.status(200).json({
-        message: "Checkout complete.",
-        orderID,
-        payment,
-        shipping
-      });
     } catch (err) {
       console.error(err);
       res.status(500).json({ error: "Something went wrong.", details: err.message });
     }
-
-    // 9. Deactivate product (maintains history)
-    await query("UPDATE Product SET isActive = FALSE WHERE productID IN (?)", [items.map(item => item.productID)]);
   });
-
   return router;
 };

@@ -8,6 +8,7 @@ import loginRoutes from "./routes/login.js";
 import profileRoutes from "./routes/profile.js"
 import cartRoutes from "./routes/cart.js"
 import checkoutRoutes from "./routes/checkout.js"
+import listingRoutes from "./routes/listings.js"
 
 dotenv.config(); // Load variables from .env
 
@@ -55,8 +56,11 @@ app.use("/login", loginRoutes(db));
 // Use profile routes
 app.use("/profile", profileRoutes(db));
 
+// Use listing routes
+app.use("/listings", listingRoutes(db));
+
 // Use cart routes
 app.use("/cart", cartRoutes(db))
 
 // Use checkout routes
-app.use("/checkout", checkoutRoutes(db))
+app.use("/checkout", checkoutRoutes())
