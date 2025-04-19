@@ -98,6 +98,60 @@ export default (db) => {
         });
     });
 
+    /*
+    Note to front end: this allows the user to view their order history
+    */
+    router.get("/orders/history", verifyToken, (req, res) => {
+        const buyerID = req.user.userID;
+    
+        const query = `
+            SELECT 
+                o.orderID,
+                o.orderDate,
+                o.totalAmount,
+                o.status AS orderStatus,
+                p.productID,
+                p.name AS productName,
+                p.price AS productPrice
+            FROM \`Order\` o
+            JOIN OrderContains oc ON o.orderID = oc.orderID
+            JOIN Product p ON oc.productID = p.productID
+            WHERE o.buyerID = ? AND o.status = 'complete'
+            ORDER BY o.orderDate DESC;
+        `;
+    
+        db.query(query, [buyerID], (err, results) => {
+            if (err) {
+                console.error("Error fetching completed orders:", err);
+                return res.status(500).json({ message: "Failed to fetch completed orders", error: err });
+            }
+    
+            // Group results by orderID
+            const ordersMap = {};
+            for (const row of results) {
+                const { orderID, orderDate, totalAmount, orderStatus, productID, productName, productPrice } = row;
+    
+                if (!ordersMap[orderID]) {
+                    ordersMap[orderID] = {
+                        orderID,
+                        orderDate,
+                        totalAmount,
+                        orderStatus,
+                        items: []
+                    };
+                }
+    
+                ordersMap[orderID].items.push({
+                    productID,
+                    productName,
+                    productPrice
+                });
+            }
+    
+            const orders = Object.values(ordersMap);
+            return res.status(200).json(orders);
+        });
+    });    
   
     // Return routes to index.js
     return router;
