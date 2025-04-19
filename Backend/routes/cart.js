@@ -2,8 +2,6 @@ import express from "express";
 import verifyToken from "./middlewares/verifyToken.js";
 const router = express.Router();
 
-// Note: remove item from cart
-
 export default (db) => {
     // User can add an item to their cart
     router.post("/add", verifyToken, (req, res) => {

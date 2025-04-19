@@ -57,7 +57,7 @@ export default (db) => {
         });
     });
 
-    // Delete user profile (will delete rows in tables that reference it)
+    // Delete user profile (hard delete - no history)
     router.delete("/:id", verifyToken, (req, res) => {
         const userId = parseInt(req.params.id);
 

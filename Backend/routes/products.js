@@ -5,7 +5,7 @@ const router = express.Router();
 export default (db) => {
     // Display all products from table (testing purposes)
     router.get("/", (req, res) => {
-        const q = "SELECT * FROM Product";
+        const q = "SELECT * FROM Product WHERE isActive = TRUE";
         db.query(q, (err, results) => {
             if (err) {
                 console.error("Query error:", err);
@@ -21,7 +21,7 @@ export default (db) => {
     // Display a specific product
     router.get("/:id", (req, res) => {
         const productID = req.params.id;
-        const q = "SELECT * FROM Product WHERE productID = ?";
+        const q = "SELECT * FROM Product WHERE productID = ? AND isActive = TRUE";
         db.query(q, [productID], (err, result) => {
             if (err) {
                 console.error("Query error:", err);
@@ -77,7 +77,7 @@ export default (db) => {
         }); 
     });  
 
-    // Delete product from table (only if owner)
+    // Delete product from table (only by owner)
     router.delete("/:id", verifyToken, (req, res) => {
         const productID = req.params.id;
         const userID = req.user.userID;
@@ -127,7 +127,7 @@ export default (db) => {
             return res.status(400).json("No fields provided for update.");
         }
 
-        const checkOwner = "SELECT sellerID FROM Product WHERE productID = ?";
+        const checkOwner = "SELECT sellerID FROM Product WHERE productID = ? AND isActive = TRUE";
         db.query(checkOwner, [productID], (err, result) => {
             if (err) return res.status(500).json(err);
             if (result.length === 0) return res.status(404).json("Product not found");
@@ -154,17 +154,17 @@ export default (db) => {
     // Display all products listed by a specific seller
     router.get("/seller/:id", (req, res) => {
         const sellerID = req.params.id;
-        const q = "SELECT * FROM Product WHERE sellerID = ?";
+        const q = "SELECT * FROM Product WHERE sellerID = ? AND isActive = TRUE";
         db.query(q, [sellerID], (err, results) => {
             if (err) return res.status(500).json(err);
             return res.status(200).json(results);
         });
     });
   
-    // Get products by category
+    // Get products by category (one)
     router.get("/category/:category", (req, res) => {
         const category = req.params.category;
-        const q = "SELECT * FROM Product WHERE category = ?";
+        const q = "SELECT * FROM Product WHERE category = ? AND isActive = TRUE";
         db.query(q, [category], (err, results) => {
             if (err) {
                 return res.status(500).json(err);

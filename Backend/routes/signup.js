@@ -2,6 +2,8 @@ import express from "express";
 import bcrypt from "bcryptjs";  // Hashing passwords
 const router = express.Router();
 
+// Note: Verify that SQL Injection does not alter this
+
 export default (db) => {
     // Display all users (testing purposes)
     router.get("/", (req, res) => {

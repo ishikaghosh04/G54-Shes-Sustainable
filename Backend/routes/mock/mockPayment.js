@@ -14,5 +14,4 @@ export function processPayment(userID, amount) {
       amount: amount.toFixed(2),
       message: `Payment of $${amount.toFixed(2)} for user ${userID} processed successfully.`
     };
-}
-  
+} 
