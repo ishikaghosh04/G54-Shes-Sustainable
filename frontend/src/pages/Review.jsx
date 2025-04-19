@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import './Review.css';
 
 const Review = () => {
   const [rating, setRating] = useState(0);
@@ -29,13 +30,13 @@ const Review = () => {
   };
 
   return (
-    <div style={{ padding: '2rem' }}>
+    <div className="review-page">
       <h2>Leave a Review</h2>
 
-      <form onSubmit={handleSubmit} style={{ maxWidth: '500px', margin: 'auto' }}>
+      <form onSubmit={handleSubmit} className="review-form">
         {/* ⭐ Star Rating */}
-        <label style={{ display: 'block', marginBottom: '0.5rem' }}>Overall Rating:</label>
-        <div style={{ display: 'flex', marginBottom: '1rem' }}>
+        <label>Overall Rating:</label>
+        <div className="star-rating">
           {[1, 2, 3, 4, 5].map((star) => (
             <span
               key={star}
@@ -48,12 +49,7 @@ const Review = () => {
               }}
               onMouseEnter={() => setHover(star)}
               onMouseLeave={() => setHover(null)}
-              style={{
-                fontSize: '2rem',
-                color: (hover || rating) >= star ? '#ffc107' : '#ccc',
-                cursor: 'pointer',
-                marginRight: '0.3rem'
-              }}
+              className={`star ${((hover || rating) >= star) ? 'active' : ''}`}
             >
               ★
             </span>
@@ -68,83 +64,35 @@ const Review = () => {
           value={review}
           onChange={(e) => setReview(e.target.value)}
           required
-          style={{ width: '100%', marginBottom: '1rem' }}
         />
 
         {/* Questions */}
-        <div style={{ marginBottom: '1rem' }}>
-          <label>Was the item as described?</label><br />
-          <label>
-            <input
-              type="radio"
-              name="descriptionMatch"
-              value="Yes"
-              onChange={handleQuestionChange}
-              required
-            /> Yes
-          </label>
-          <label style={{ marginLeft: '1rem' }}>
-            <input
-              type="radio"
-              name="descriptionMatch"
-              value="No"
-              onChange={handleQuestionChange}
-            /> No
-          </label>
+        <div className="review-question">
+          <label>Was the item as described?</label>
+          <div className="radio-group">
+            <label><input type="radio" name="descriptionMatch" value="Yes" onChange={handleQuestionChange} required /> Yes</label>
+            <label><input type="radio" name="descriptionMatch" value="No" onChange={handleQuestionChange} /> No</label>
+          </div>
         </div>
 
-        <div style={{ marginBottom: '1rem' }}>
-          <label>How was the shipping experience?</label><br />
-          <label>
-            <input
-              type="radio"
-              name="shippingExperience"
-              value="Excellent"
-              onChange={handleQuestionChange}
-              required
-            /> Excellent
-          </label>
-          <label style={{ marginLeft: '1rem' }}>
-            <input
-              type="radio"
-              name="shippingExperience"
-              value="Okay"
-              onChange={handleQuestionChange}
-            /> Okay
-          </label>
-          <label style={{ marginLeft: '1rem' }}>
-            <input
-              type="radio"
-              name="shippingExperience"
-              value="Poor"
-              onChange={handleQuestionChange}
-            /> Poor
-          </label>
+        <div className="review-question">
+          <label>How was the shipping experience?</label>
+          <div className="radio-group">
+            <label><input type="radio" name="shippingExperience" value="Excellent" onChange={handleQuestionChange} required /> Excellent</label>
+            <label><input type="radio" name="shippingExperience" value="Okay" onChange={handleQuestionChange} /> Okay</label>
+            <label><input type="radio" name="shippingExperience" value="Poor" onChange={handleQuestionChange} /> Poor</label>
+          </div>
         </div>
 
-        <div style={{ marginBottom: '1rem' }}>
-          <label>Would you buy from this seller again?</label><br />
-          <label>
-            <input
-              type="radio"
-              name="buyAgain"
-              value="Yes"
-              onChange={handleQuestionChange}
-              required
-            /> Yes
-          </label>
-          <label style={{ marginLeft: '1rem' }}>
-            <input
-              type="radio"
-              name="buyAgain"
-              value="No"
-              onChange={handleQuestionChange}
-            /> No
-          </label>
+        <div className="review-question">
+          <label>Would you buy from this seller again?</label>
+          <div className="radio-group">
+            <label><input type="radio" name="buyAgain" value="Yes" onChange={handleQuestionChange} required /> Yes</label>
+            <label><input type="radio" name="buyAgain" value="No" onChange={handleQuestionChange} /> No</label>
+          </div>
         </div>
 
-        {/* Submit */}
-        <button type="submit" style={{ marginTop: '1rem' }}>Submit Review</button>
+        <button type="submit" className="btn btn-primary">Submit Review</button>
       </form>
     </div>
   );

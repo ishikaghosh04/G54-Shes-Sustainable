@@ -1,0 +1,28 @@
+.cart-page {
+    padding: 3rem 2rem;
+    background-color: var(--color-bg); /* Ivory */
+    font-family: 'Poppins', sans-serif;
+    color: var(--color-brand); /* Muted Teal */
+  }
+  
+  .cart-page h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.8rem;
+    margin-bottom: 1rem;
+  }
+  
+  .cart-list {
+    list-style: none;
+    padding: 0;
+  }
+  
+  .cart-item {
+    border-bottom: 1px solid var(--color-text);
+    padding: 1rem 0;
+  }
+  
+  .empty-message {
+    font-style: italic;
+    color: var(--color-text);
+  }
+  

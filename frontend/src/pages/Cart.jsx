@@ -1,12 +1,24 @@
-import React from 'react';
+import React, { useContext } from 'react';
+import { CartContext } from '../context/CartContext';
+import './Cart.css';
 
 const Cart = () => {
+  const { cartItems } = useContext(CartContext);
+
   return (
-    <div style={{ padding: '2rem' }}>
-      <h2>🛒 Your Cart</h2>
-      <p>[Cart Items Placeholder]</p>
-      <p>Total: $0.00</p>
-      <button>Proceed to Checkout</button>
+    <div className="cart-page">
+      <h2>Your Cart</h2>
+      {cartItems.length === 0 ? (
+        <p className="empty-message">Your cart is empty.</p>
+      ) : (
+        <ul className="cart-list">
+          {cartItems.map((item, index) => (
+            <li key={index} className="cart-item">
+              {item.name} — ${item.price}
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 };

@@ -1,0 +1,104 @@
+.home-page {
+    font-family: 'Poppins', sans-serif;
+    background-color: var(--color-bg);
+    background-color: #DFDBE5;
+    background-color: #d8a7b1; /* Dusty rose */
+    background-repeat: repeat;
+    background-size: auto;
+    color: var(--color-brand);
+  }
+  
+  /* Hero section */
+  .home-hero {
+    padding: 3rem 2rem;
+    text-align: center;
+    background-color: var(--color-accent); /* Dusty rose */
+    color: white;
+  }
+  
+  .home-hero h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem;
+    margin-bottom: 1rem;
+  }
+  
+  .home-hero__buttons {
+    margin-top: 1.5rem;
+  }
+  
+  .home-about-toggle {
+    text-align: center;
+    padding: 2rem 1rem;
+  }
+  
+  .home-about-toggle h2 {
+    cursor: pointer;
+    display: inline-block;
+    font-family: 'Playfair Display', serif;
+    color: var(--color-brand);
+    background: white;
+    padding: 0.6rem 1.5rem;
+    border-radius: 999px;
+    font-size: 1.4rem;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    transition: color 0.3s ease;
+  }
+  
+  .home-about-toggle h2:hover {
+    color: var(--color-hover);
+  }
+  
+  /* About Us section */
+  .home-about-section {
+    padding: 3rem 2rem;
+    background: linear-gradient(to bottom, #d8a7b1, #8a9a5b); /* dusty pink to sage green */
+    background-repeat: no-repeat;
+    color: white;
+    border-radius: 0 0 40px 40px;
+    position: relative;
+    z-index: 1;
+  }
+  
+  .home-about-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+  }
+  
+  .home-about-card {
+    width: 300px;
+    text-align: center;
+    margin-bottom: 2rem;
+    color: white;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 1.5rem;
+    border-radius: 12px;
+    backdrop-filter: blur(2px);
+  }
+  
+  .home-about-card h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.2rem;
+    margin-top: 1rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .about-us-heading {
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem;
+    text-align: center;
+    color: white;
+    margin-top: 0.01rem;      /* spacing from top */
+    margin-bottom: 1rem;   /* spacing above the line */
+  }
+  
+  .about-us-line {
+    width: 60px;
+    height: 3px;
+    background-color: var(--color-hover); /* olive green */
+    border: none;
+    border-radius: 2px;
+    margin: 0 auto 2.5rem auto; /* centers it + space below */
+  }
+  
+  

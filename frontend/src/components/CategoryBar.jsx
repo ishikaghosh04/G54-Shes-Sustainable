@@ -13,35 +13,47 @@ const CategoryBar = () => {
     <div className="category-bar">
       <div className="category-options">
         {categories.map((cat, index) => (
-          <button key={index} className="category-button">{cat}</button>
+          <button key={index} className="category-button">
+            {cat}
+          </button>
         ))}
       </div>
 
       <div className="filter-container">
-        <button className="filter-icon" onClick={() => setShowFilters(!showFilters)}>
+        <button
+          className="filter-icon"
+          onClick={() => setShowFilters(!showFilters)}
+          aria-label="Toggle filters"
+        >
           <FaFilter /> Filters
         </button>
 
         {showFilters && (
           <div className="filter-dropdown">
             <label>
-              Price Range: ${price}
+              <span style={{ fontWeight: '600', color: 'var(--color-text)' }}>
+                Price Range: ${price}
+              </span>
               <input
                 type="range"
                 min="0"
                 max="100"
                 value={price}
                 onChange={(e) => setPrice(e.target.value)}
+                style={{ width: '100%' }}
               />
             </label>
             <label>
-              Newness: {newness}%
+              <span style={{ fontWeight: '600', color: 'var(--color-text)' }}>
+                Newness: {newness}%
+              </span>
               <input
                 type="range"
                 min="0"
                 max="100"
                 value={newness}
                 onChange={(e) => setNewness(e.target.value)}
+                style={{ width: '100%' }}
               />
             </label>
           </div>

@@ -1,5 +1,7 @@
 import React from 'react';
+import { FiArrowLeft } from 'react-icons/fi';
 import { useNavigate } from 'react-router-dom';
+import './Profile.css';
 
 const Profile = () => {
   const navigate = useNavigate();
@@ -12,51 +14,43 @@ const Profile = () => {
   };
 
   return (
-    <div style={{ padding: '2rem' }}>
+    <div className="profile-page">
+      {/* Back Arrow */}
+      <div className="profile-back" onClick={() => navigate('/product')}>
+        <FiArrowLeft size={20} />
+        <span>Back to Products</span>
+      </div>
+
       <h2>Your Profile</h2>
 
       {/* Basic Info */}
-      <div style={{
-        border: '1px solid #ccc',
-        padding: '1rem',
-        borderRadius: '8px',
-        marginBottom: '1.5rem'
-      }}>
+      <div className="profile-card">
         <h3>Personal Information</h3>
         <p><strong>Name:</strong> {mockUser.name}</p>
         <p><strong>Email:</strong> {mockUser.email}</p>
         <p><strong>Phone:</strong> {mockUser.phone}</p>
-        <button>Edit Profile</button>
+        <button className="btn btn-primary">Edit Profile</button>
       </div>
 
       {/* Shipping Info */}
-      <div style={{
-        border: '1px solid #ccc',
-        padding: '1rem',
-        borderRadius: '8px',
-        marginBottom: '1.5rem'
-      }}>
+      <div className="profile-card">
         <h3>Shipping Address</h3>
         <p>{mockUser.address}</p>
-        <button>Update Address</button>
+        <button className="btn btn-primary">Update Address</button>
       </div>
 
       {/* Order History */}
-      <div style={{
-        border: '1px solid #ccc',
-        padding: '1rem',
-        borderRadius: '8px'
-      }}>
+      <div className="profile-card">
         <h3>Order History</h3>
 
-        <div style={{ marginBottom: '1rem' }}>
+        <div className="order-history-item">
           <p>[Order 1 Placeholder]</p>
-          <button onClick={() => navigate('/review')}>Leave a Review</button>
+          <button className="btn btn-primary" onClick={() => navigate('/review')}>Leave a Review</button>
         </div>
 
-        <div style={{ marginBottom: '1rem' }}>
+        <div className="order-history-item">
           <p>[Order 2 Placeholder]</p>
-          <button onClick={() => navigate('/review')}>Leave a Review</button>
+          <button className="btn btn-primary" onClick={() => navigate('/review')}>Leave a Review</button>
         </div>
       </div>
     </div>

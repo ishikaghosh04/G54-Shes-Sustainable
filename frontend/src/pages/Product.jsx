@@ -1,6 +1,7 @@
 import React, { useContext } from 'react';
 import { CartContext } from '../context/CartContext';
 import CategoryBar from '../components/CategoryBar';
+import './Product.css';
 
 const Product = () => {
   const { addToCart } = useContext(CartContext);
@@ -13,15 +14,20 @@ const Product = () => {
 
   return (
     <>
-      <CategoryBar /> {/* <- Should be right at the top, after the global Navbar */}
-      <div style={{ padding: '2rem' }}>
+      <CategoryBar />
+      <div className="product-page">
         <h2>Our Products</h2>
-        <div style={{ display: 'flex', gap: '1rem' }}>
+        <div className="product-grid">
           {sampleProducts.map((product, index) => (
-            <div key={index} style={{ border: '1px solid gray', padding: '1rem' }}>
+            <div key={index} className="product-card">
               <h4>{product.name}</h4>
               <p>${product.price}</p>
-              <button onClick={() => addToCart(product)}>Add to Cart</button>
+              <button
+                className="btn btn-primary"
+                onClick={() => addToCart(product)}
+              >
+                Add to Cart
+              </button>
             </div>
           ))}
         </div>

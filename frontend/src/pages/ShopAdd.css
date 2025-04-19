@@ -1,0 +1,67 @@
+.shop-add-page {
+    padding: 3rem 2rem;
+    background-color: var(--color-bg);
+    font-family: 'Poppins', sans-serif;
+    color: var(--color-brand);
+    max-width: 700px;
+    margin: auto;
+  }
+  
+  .shop-add-page h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem;
+    margin-bottom: 2rem;
+    text-align: center;
+  }
+  
+  .shop-add-back {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    color: var(--color-text);
+    margin-bottom: 2rem;
+    font-weight: 500;
+    transition: color 0.3s ease;
+  }
+  
+  .shop-add-back span {
+    margin-left: 0.5rem;
+  }
+  
+  .shop-add-back:hover {
+    color: var(--color-hover);
+  }
+  
+  .shop-add-form {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  }
+  
+  .shop-add-form label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+  }
+  
+  .shop-add-form input,
+  .shop-add-form textarea,
+  .shop-add-form select {
+    width: 100%;
+    margin-bottom: 1.25rem;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--color-text);
+    border-radius: 6px;
+    font-family: 'Poppins', sans-serif;
+    font-size: 1rem;
+  }
+  
+  .shop-add-form input:focus,
+  .shop-add-form textarea:focus,
+  .shop-add-form select:focus {
+    border-color: var(--color-accent);
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(216, 167, 177, 0.3);
+  }
+  

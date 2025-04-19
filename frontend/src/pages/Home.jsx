@@ -3,10 +3,10 @@ import { Link } from 'react-router-dom';
 import axios from 'axios';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
+import './Home.css';
 
 const Home = () => {
   const [users, setUsers] = useState([]);
-  const [showAbout, setShowAbout] = useState(false);
 
   useEffect(() => {
     const fetchAllUsers = async () => {
@@ -23,80 +23,53 @@ const Home = () => {
     AOS.init({ duration: 1000 });
   }, []);
 
-  const toggleAbout = () => {
-    setShowAbout((prev) => !prev);
-  };
-
   return (
-    <div>
+    <div className="home-page">
       {/* Hero Banner */}
-      <section style={{ padding: '3rem', textAlign: 'center', backgroundColor: '#e4e4e4' }}>
+      <section className="home-hero">
         <h1>Welcome to She’s Sustainable 👗</h1>
         <p>Your go-to platform for sustainable maternity fashion.</p>
 
-        <Link to="/product">
-          <button style={{ margin: '0.5rem' }}>Browse Products</button>
-        </Link>
-        <Link to="/login">
-          <button style={{ margin: '0.5rem' }}>Login</button>
-        </Link>
-        <Link to="/signup">
-          <button style={{ margin: '0.5rem' }}>Sign Up</button>
-        </Link>
+        <div className="home-hero__buttons">
+          <Link to="/product">
+            <button className="btn btn-primary">Browse Products</button>
+          </Link>
+          <Link to="/login">
+            <button className="btn btn-primary">Login</button>
+          </Link>
+          <Link to="/signup">
+            <button className="btn btn-primary">Sign Up</button>
+          </Link>
+        </div>
       </section>
 
-      {/* About Us Toggle */}
-      <div style={{ textAlign: 'center', padding: '2rem 1rem' }}>
-        <h2
-          style={{ cursor: 'pointer', display: 'inline-block' }}
-          onClick={toggleAbout}
-        >
-          About Us {showAbout ? '▲' : '▼'}
-        </h2>
-      </div>
-
-      {/* Show this only when dropdown is open */}
-      {showAbout && (
-        <section style={{ padding: '3rem 2rem', backgroundColor: '#fff' }}>
-          <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-around' }}>
+      {/* About Us Section */}
+        <section className="home-about-section">
+          <h2 className="about-us-heading">About Us</h2>
+          <hr className="about-us-line" />
+          <div className="home-about-grid">
             {/* Mission */}
-            <div
-              style={{ width: '300px', textAlign: 'center', marginBottom: '2rem' }}
-              data-aos="fade-up"
-              data-aos-delay="0"
-              data-aos-anchor-placement="top-bottom"
-            >
+            <div className="home-about-card" data-aos="fade-up">
               <img src="https://via.placeholder.com/150" alt="Mission" />
               <h3>Our Mission</h3>
               <p>To redefine maternity fashion by making it sustainable, stylish, and accessible.</p>
             </div>
 
             {/* Vision */}
-            <div
-              style={{ width: '300px', textAlign: 'center', marginBottom: '2rem' }}
-              data-aos="fade-up"
-              data-aos-delay="0"
-              data-aos-anchor-placement="top-bottom"
-            >
+            <div className="home-about-card" data-aos="fade-up">
               <img src="https://via.placeholder.com/150" alt="Vision" />
               <h3>Our Vision</h3>
               <p>To become the leading platform where motherhood meets mindful living.</p>
             </div>
 
             {/* Values */}
-            <div
-              style={{ width: '300px', textAlign: 'center', marginBottom: '2rem' }}
-              data-aos="fade-up"
-              data-aos-delay="0"
-              data-aos-anchor-placement="top-bottom"
-            >
+            <div className="home-about-card" data-aos="fade-up">
               <img src="https://via.placeholder.com/150" alt="Values" />
               <h3>Our Values</h3>
               <p>Inclusivity, sustainability, comfort, and community.</p>
             </div>
           </div>
         </section>
-      )}
     </div>
   );
 };

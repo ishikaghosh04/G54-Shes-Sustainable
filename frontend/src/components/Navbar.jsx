@@ -10,11 +10,45 @@ const Navbar = () => {
   const dropdownRef = useRef(null);
   const navigate = useNavigate();
 
+  const [searchTerm, setSearchTerm] = useState('');
+  const [suggestions, setSuggestions] = useState([]);
+
+  const allProducts = [
+    "Soft Maternity Dress",
+    "Eco Nursing Shirt",
+    "Organic Belly Band",
+    "Daily Maternity Pants",
+    "Comfort Socks",
+    "Dress Delight",
+    "Maternity Toy Set"
+  ];
+
   const toggleDropdown = () => {
     setShowDropdown((prev) => !prev);
   };
 
-  // Close dropdown when clicking outside
+  const handleSearchChange = (e) => {
+    const input = e.target.value.toLowerCase();
+    setSearchTerm(input);
+
+    if (input.length === 0) {
+      setSuggestions([]);
+      return;
+    }
+
+    const startsWith = allProducts.filter(item =>
+      item.toLowerCase().startsWith(input)
+    );
+
+    const contains = allProducts.filter(item =>
+      item.toLowerCase().includes(input) && !item.toLowerCase().startsWith(input)
+    );
+
+    const combined = [...startsWith, ...contains];
+
+    setSuggestions(combined.length > 0 ? combined : ['__no_results__']);
+  };
+
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
@@ -31,26 +65,38 @@ const Navbar = () => {
         <Link to="/">She’s Sustainable</Link>
       </div>
 
-      <form className="navbar__search">
-        <FiSearch />
-        <input type="text" placeholder="Search products..." />
+      <form className="navbar__search" onSubmit={(e) => e.preventDefault()}>
+        <FiSearch color="var(--color-brand)" />
+        <input
+          type="text"
+          placeholder="Search products..."
+          value={searchTerm}
+          onChange={handleSearchChange}
+        />
+        {searchTerm && (
+          <ul className="search-suggestions">
+            {suggestions[0] === '__no_results__' ? (
+              <li style={{ color: 'var(--color-text)', fontStyle: 'italic' }}>No results found</li>
+            ) : (
+              suggestions.map((item, index) => (
+                <li key={index}>{item}</li>
+              ))
+            )}
+          </ul>
+        )}
       </form>
 
       <div className="navbar__links">
-
-        {/*  Sell New Button */}
         <button className="sell-new-button" onClick={() => navigate('/shop')}>
-            Sell New
+          Sell New
         </button>
 
-        <button onClick={() => setIsCartOpen(true)} className="icon-button">
+        <button onClick={() => setIsCartOpen(true)} className="icon-button" aria-label="Open cart">
           <FiShoppingBag />
         </button>
 
-
-        {/* Profile dropdown */}
         <div className="profile-dropdown-container" ref={dropdownRef}>
-          <button className="icon-button" onClick={toggleDropdown}>
+          <button className="icon-button" onClick={toggleDropdown} aria-label="User options">
             <FiUser />
           </button>
 

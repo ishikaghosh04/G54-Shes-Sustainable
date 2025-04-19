@@ -1,20 +1,23 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import './Order.css';
 
 const Order = () => {
   const navigate = useNavigate();
 
   const handleShipping = () => {
-    navigate('/shipping'); // ✅ redirect to shipping now
+    navigate('/shipping');
   };
 
   return (
-    <div style={{ padding: '2rem' }}>
+    <div className="order-page">
       <h2>📦 Order Summary</h2>
-      <p>[Order Details Placeholder]</p>
-      <p>Estimated Delivery: [Date Placeholder]</p>
+      <p className="order-detail">[Order Details Placeholder]</p>
+      <p className="order-detail">Estimated Delivery: [Date Placeholder]</p>
 
-      <button onClick={handleShipping}>Proceed to Shipping</button> {/* changed label */}
+      <button onClick={handleShipping} className="btn btn-primary">
+        Proceed to Shipping
+      </button>
     </div>
   );
 };

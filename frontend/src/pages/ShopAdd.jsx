@@ -1,6 +1,11 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { FiArrowLeft } from 'react-icons/fi';
+import './ShopAdd.css';
 
 const ShopAdd = () => {
+  const navigate = useNavigate();
+
   const [itemData, setItemData] = useState({
     name: '',
     description: '',
@@ -29,34 +34,24 @@ const ShopAdd = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log("Submitted item:", itemData);
-    // TODO: Send to backend or update product list
+    // TODO: Send to backend
   };
 
   return (
-    <div style={{ padding: '2rem', maxWidth: '600px', margin: 'auto' }}>
+    <div className="shop-add-page">
+      <div className="shop-add-back" onClick={() => navigate('/shop')}>
+        <FiArrowLeft size={20} />
+        <span>Back to Shop</span>
+      </div>
+
       <h2>Add New Item</h2>
-      <form onSubmit={handleSubmit}>
-        {/* Name */}
+      <form className="shop-add-form" onSubmit={handleSubmit}>
         <label>Item Name</label>
-        <input
-          type="text"
-          name="name"
-          value={itemData.name}
-          onChange={handleChange}
-          required
-        /><br /><br />
+        <input type="text" name="name" value={itemData.name} onChange={handleChange} required />
 
-        {/* Description */}
         <label>Description</label>
-        <textarea
-          name="description"
-          rows="4"
-          value={itemData.description}
-          onChange={handleChange}
-          required
-        /><br /><br />
+        <textarea name="description" rows="4" value={itemData.description} onChange={handleChange} required />
 
-        {/* Size */}
         <label>Size</label>
         <select name="size" value={itemData.size} onChange={handleChange} required>
           <option value="">Select</option>
@@ -64,9 +59,8 @@ const ShopAdd = () => {
           <option value="M">M</option>
           <option value="L">L</option>
           <option value="XL">XL</option>
-        </select><br /><br />
+        </select>
 
-        {/* Category */}
         <label>Category</label>
         <select name="category" value={itemData.category} onChange={handleChange} required>
           <option value="">Select</option>
@@ -75,32 +69,23 @@ const ShopAdd = () => {
           <option value="Socks">Socks</option>
           <option value="Dress">Dress</option>
           <option value="Other">Other</option>
-        </select><br /><br />
+        </select>
 
-        {/* Color */}
         <label>Color</label>
-        <input
-          type="text"
-          name="color"
-          value={itemData.color}
-          onChange={handleChange}
-          required
-        /><br /><br />
+        <input type="text" name="color" value={itemData.color} onChange={handleChange} required />
 
-        {/* Condition */}
         <label>Condition</label>
         <select name="condition" value={itemData.condition} onChange={handleChange} required>
           <option value="">Select</option>
           <option value="New">New</option>
           <option value="Gently Used">Gently Used</option>
           <option value="Well Loved">Well Loved</option>
-        </select><br /><br />
+        </select>
 
-        {/* Image Upload */}
         <label>Upload Image</label>
-        <input type="file" accept="image/*" onChange={handleFileChange} /><br /><br />
+        <input type="file" accept="image/*" onChange={handleFileChange} />
 
-        <button type="submit">Post Item</button>
+        <button type="submit" className="btn btn-primary">Post Item</button>
       </form>
     </div>
   );

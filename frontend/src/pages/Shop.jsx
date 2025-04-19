@@ -1,5 +1,7 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { FiArrowLeft } from 'react-icons/fi';
+import './Shop.css';
 
 const soldItems = [
   { name: 'Organic Nursing Shirt', date: 'March 14, 2025' },
@@ -7,12 +9,19 @@ const soldItems = [
 ];
 
 const Shop = () => {
-  return (
-    <div style={{ padding: '2rem' }}>
-      <h2>Your Shop 🛍️</h2>
-      <p>Items you’ve sold so far:</p>
+  const navigate = useNavigate();
 
-      <ul>
+  return (
+    <div className="shop-page">
+      <div className="shop-back" onClick={() => navigate('/product')}>
+        <FiArrowLeft size={20} />
+        <span>Back to Products</span>
+      </div>
+
+      <h2>Your Shop 🛍️</h2>
+      <p className="shop-subtitle">Items you’ve sold so far:</p>
+
+      <ul className="sold-items-list">
         {soldItems.map((item, index) => (
           <li key={index}>
             <strong>{item.name}</strong> – Sold on {item.date}
@@ -21,16 +30,7 @@ const Shop = () => {
       </ul>
 
       <Link to="/shop/add">
-        <button style={{
-          marginTop: '2rem',
-          padding: '0.5rem 1rem',
-          fontSize: '1rem',
-          backgroundColor: '#333',
-          color: '#fff',
-          border: 'none',
-          borderRadius: '4px',
-          cursor: 'pointer'
-        }}>
+        <button className="btn btn-primary shop-add-button">
           ➕ Add New Item
         </button>
       </Link>
