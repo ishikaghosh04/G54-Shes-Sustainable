@@ -63,4 +63,4 @@ app.use("/listings", listingRoutes(db));
 app.use("/cart", cartRoutes(db))
 
 // Use checkout routes
-app.use("/checkout", checkoutRoutes())
+app.use("/checkout", checkoutRoutes(db))
