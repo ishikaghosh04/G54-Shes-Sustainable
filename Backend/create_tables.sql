@@ -115,11 +115,12 @@ DROP TABLE IF EXISTS Shipping;
 CREATE TABLE Shipping (
   shippingID       INT AUTO_INCREMENT,
   orderID          INT NOT NULL,
+  productID        INT NOT NULL,
   trackingNumber   VARCHAR(100), -- randomly generated
   shippingCost     DECIMAL(10,2) NOT NULL DEFAULT 0,
   shippedDate      DATETIME,
   -- Shipping details
-  shippingAddress VARCHAR(255), -- added
+  shippingAddress VARCHAR(255), -- added[']
   shippingCity VARCHAR(100), -- added
   shippingProvince VARCHAR(100), -- added
   shippingPostalCode VARCHAR(20), -- added
@@ -127,9 +128,9 @@ CREATE TABLE Shipping (
   status           VARCHAR(50) DEFAULT 'Pending',
   PRIMARY KEY (shippingID),
   CONSTRAINT fk_shipping_order
-    FOREIGN KEY (orderID) REFERENCES `Order`(orderID)
+    FOREIGN KEY (orderID, productID) REFERENCES `OrderContains`(orderID,productID)
     ON UPDATE CASCADE
-    ON DELETE CASCADE
+    ON DELETE CASCADE7
 );
 
 -- 8. Payment table
