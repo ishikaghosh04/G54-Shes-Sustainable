@@ -1,4 +1,4 @@
--- PASSWORDS MUST BE HASHED WHEN STORING (SECURITY)!
+-- Changes have been made to the tables. These INSERT statements are invalid.
 USE ShesSustainable;
 
 -- Insert Users (some are buyers, some are sellers, one is both)

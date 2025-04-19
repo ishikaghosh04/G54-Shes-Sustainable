@@ -21,7 +21,7 @@ CREATE TABLE User (
   PRIMARY KEY (userID)
 );
 
--- 2. Product table (removed quantity)
+-- 2. Product table
 DROP TABLE IF EXISTS Product;
 CREATE TABLE Product (
   productID         INT AUTO_INCREMENT,
@@ -97,9 +97,8 @@ CREATE TABLE `Order` (
 CREATE TABLE OrderContains (
   orderID     INT NOT NULL,
   productID   INT NOT NULL,
-  quantity    INT NOT NULL DEFAULT 1,
-  unitPrice   DECIMAL(10,2) NOT NULL,
-  subtotal    DECIMAL(10,2) NOT NULL,
+  price       DECIMAL(10,2) NOT NULL,
+  -- subtotal    DECIMAL(10,2) NOT NULL,
   status      VARCHAR(50) DEFAULT 'Processing',
   PRIMARY KEY (orderID, productID),
   CONSTRAINT fk_orderitem_order

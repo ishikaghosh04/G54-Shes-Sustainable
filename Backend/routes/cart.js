@@ -2,8 +2,7 @@ import express from "express";
 import verifyToken from "./middlewares/verifyToken.js";
 const router = express.Router();
 
-// NOTE (things to keep in mind)
-// A SELLER SHOULD NOT BE ABLE TO BUY THEIR OWN PRODUCT
+// Note: remove item from cart
 
 export default (db) => {
     // User can add an item to their cart

@@ -3,8 +3,6 @@ import express from "express";
 import bcrypt from "bcryptjs";  // Hashing passwords
 const router = express.Router();
 
-// NOTE: verify that emailLower works
-
 export default (db) => {
     // User can login to their account
     router.post("/", (req, res) => {
@@ -26,7 +24,7 @@ export default (db) => {
                 return res.status(400).json({ message: "Invalid password" });
             }
         
-            // Generate JWT token (check)
+            // Generate JWT token
             const token = jwt.sign(
                 { userID: user.userID, email: user.email }, // Payload
                 process.env.JWT_SECRET, // Secret key
