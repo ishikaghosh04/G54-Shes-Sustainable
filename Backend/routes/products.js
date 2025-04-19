@@ -4,7 +4,7 @@ const router = express.Router();
 // Note: slide bar optimization from front end (once determined, incorporate in backend)
 
 export default (db) => {
-    // Display all products from table (testing purposes)
+    // Display all products from table (main page catalog)
     router.get("/", (req, res) => {
         const q = "SELECT * FROM Product WHERE isActive = TRUE";
         db.query(q, (err, results) => {
