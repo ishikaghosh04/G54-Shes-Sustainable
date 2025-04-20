@@ -4,9 +4,6 @@ import { promisify } from "util";
 
 const router = express.Router();
 
-// Note: consider changing this so that if the user decides to return to the browsing 
-// page before paying (completing order), they can continue adding items to their existing cart
-
 export default (db) => {
     const query = promisify(db.query).bind(db);
     /*
@@ -102,8 +99,7 @@ export default (db) => {
         }
 
         const { cartID, orderID } = rows[0];
-        
-        // NOTE: may cause issues since two queries in one!
+      
         const reactivateSql = `
           UPDATE Cart SET isActive = TRUE WHERE cartID = ?;
         `;

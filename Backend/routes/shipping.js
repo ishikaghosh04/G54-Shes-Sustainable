@@ -10,7 +10,7 @@ export default (db) => {
   const FLAT_RATE = 2.99; // constant shipping fee per seller
 
   // Estimate shipping cost & ETA grouped by seller
-  router.get("/orders/:orderID/shipping/estimate", verifyToken, async (req, res) => {
+  router.get("/order/:orderID/estimate", verifyToken, async (req, res) => {
     const buyerID = req.user.userID;
     const orderID = Number(req.params.orderID);
 
@@ -146,7 +146,7 @@ export default (db) => {
   });
 
   // Get all shipping records for an order
-  router.get("/orders/:orderID/shipping", verifyToken, async (req, res) => {
+  router.get("/order/:orderID", verifyToken, async (req, res) => {
     const buyerID = req.user.userID;
     const orderID = Number(req.params.orderID);
 

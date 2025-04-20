@@ -4,6 +4,7 @@ import bcrypt from "bcryptjs";
 const router = express.Router();
 
 // To consider: improve UX - refresh will reload the token
+// after 3h logged out, loses access to everything
 
 export default (db) => {
     /*
