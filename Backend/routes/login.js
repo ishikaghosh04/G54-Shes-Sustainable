@@ -42,7 +42,7 @@ export default (db) => {
             const token = jwt.sign(
             { userID: user.userID, email: user.email },
             process.env.JWT_SECRET,
-            { expiresIn: "1h" }
+            { expiresIn: "3h" }
             );
 
             return res.status(200).json({ message: "Login successful", token });

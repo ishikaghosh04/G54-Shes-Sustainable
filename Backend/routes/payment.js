@@ -31,14 +31,14 @@ export default (db) => {
   }
 
   // POST: Process Payment
-  router.post("/orders/:orderID/payments", verifyToken, async (req, res) => {
+  router.post("/order/:orderID", verifyToken, async (req, res) => {
     const buyerID = req.user.userID;
     const orderID = parseInt(req.params.orderID, 10);
     const {
-      amount,
+      amount, // amount should be calculated using order table, not as input (can be corrupted)
       paymentMethod,
       cardNumber,
-      expirationDate,
+      expirationDate, // MM/YY
       cvv,
       billingAddress,
       useProfileAddress

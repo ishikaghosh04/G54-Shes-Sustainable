@@ -17,56 +17,68 @@ export default (db) => {
     */
     router.post("/process-order", verifyToken, async (req, res) => {
       const userID = req.user.userID;
-
+    
       try {
         // 1. Get active cart
         const cartResult = await query("SELECT * FROM Cart WHERE userID = ? AND isActive = TRUE", [userID]);
-
         if (cartResult.length === 0) return res.status(400).json({ message: "No active cart found." });
-
-        
         const cart = cartResult[0];
-      
-
+    
         // 2. Get cart items
         const items = await query(
           "SELECT * FROM CartStores INNER JOIN Product ON CartStores.productID = Product.productID WHERE CartStores.cartID = ?",
           [cart.cartID]
         );
         if (items.length === 0) return res.status(400).json({ message: "Cart is empty." });
-
-        // Compute Total
-        const totalAmount = items.reduce((sum, item) => sum + parseFloat(item.price), 0);
-
-        // 3. Insert order
-        const orderResult = await query(
-          "INSERT INTO `Order` (buyerID, totalAmount, cartID) VALUES (?, ?)",
-          [userID, totalAmount, cart.cartID]
+    
+        const totalAmount = parseFloat(items.reduce((sum, item) => sum + parseFloat(item.price), 0).toFixed(2));
+    
+        // 3. Check if a pending order already exists for this cart
+        const existingOrder = await query(
+          "SELECT orderID FROM `Order` WHERE cartID = ? AND status = 'Pending'",
+          [cart.cartID]
         );
-        const orderID = orderResult.insertId;
-
-        // 4. Insert OrderContains
+    
+        let orderID;
+    
+        if (existingOrder.length > 0) {
+          // Reuse the existing order
+          orderID = existingOrder[0].orderID;
+    
+          // Clear old order items before re-adding
+          await query("DELETE FROM OrderContains WHERE orderID = ?", [orderID]);
+    
+          // Optional: update totalAmount in case it's changed
+          await query("UPDATE `Order` SET totalAmount = ? WHERE orderID = ?", [totalAmount, orderID]);
+        } else {
+          // No existing order → create new one
+          const orderResult = await query(
+            "INSERT INTO `Order` (buyerID, totalAmount, cartID) VALUES (?, ?, ?)",
+            [userID, totalAmount, cart.cartID]
+          );
+          orderID = orderResult.insertId;
+        }
+    
+        // 4. Insert updated cart items into OrderContains
         const orderItems = items.map(item => [orderID, item.productID, item.price]);
-        await query(
-          "INSERT INTO OrderContains (orderID, productID, price) VALUES ?",
-          [orderItems]
-        );
-
-        // Deactivate cart
-        await query(`UPDATE Cart SET isActive = 0 WHERE cartID = ?`, [cart.cartID]);
-
+        await query("INSERT INTO OrderContains (orderID, productID, price) VALUES ?", [orderItems]);
+    
+        // 5. Deactivate cart again
+        await query("UPDATE Cart SET isActive = 0 WHERE cartID = ?", [cart.cartID]);
+    
         res.status(201).json({ orderID, totalAmount, itemsCount: items.length });
-
+    
       } catch (err) {
         console.error(err);
         res.status(500).json({ error: "Something went wrong.", details: err.message });
       }
     });
+    
 
     /* Note to front end: have a button on the order summary page to return to 
     browsing page (prior to providing any payment or shipment details!)
     */
-    // Reactivate cart & mark order as pending again
+    // Reactivate cart (do not use as of now. logic needs to be revised)
     router.post("/return-to-browsing", verifyToken, (req, res) => {
       const userID = req.user.userID;
 
@@ -90,20 +102,17 @@ export default (db) => {
         }
 
         const { cartID, orderID } = rows[0];
-
-        // Step 2: Reactivate cart and set order status back to 'Pending'
         
         // NOTE: may cause issues since two queries in one!
         const reactivateSql = `
           UPDATE Cart SET isActive = TRUE WHERE cartID = ?;
-          UPDATE \`Order\` SET status = 'Pending' WHERE orderID = ?;
         `;
 
         db.query(reactivateSql, [cartID, orderID], (err) => {
           if (err) return res.status(500).json({ error: err.message });
 
           res.json({
-            message: "Cart reactivated and order marked as pending.",
+            message: "Cart reactivated.",
             cartID,
             orderID,
           });
