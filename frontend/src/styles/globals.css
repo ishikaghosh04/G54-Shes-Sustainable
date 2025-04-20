@@ -1,0 +1,21 @@
+.text-muted {
+    color: var(--color-text);
+  }
+  
+  .bg-ivory {
+    background-color: var(--color-bg);
+  }
+  
+  .card {
+    background: white;
+    border: 1px solid #e0e0e0;
+    border-radius: 1rem;
+    padding: 1.5rem;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  }
+  
+  .card:hover {
+    transform: translateY(-4px);
+    transition: transform 0.2s ease;
+  }
+  

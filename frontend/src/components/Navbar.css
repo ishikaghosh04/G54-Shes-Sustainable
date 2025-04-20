@@ -1,0 +1,135 @@
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 2rem;
+  background-color: var(--color-bg); /* Ivory */
+  border-bottom: 1px solid var(--color-text); /* Stone grey */
+  font-family: 'Poppins', sans-serif;
+}
+
+.navbar__logo a {
+  text-decoration: none;
+  font-weight: bold;
+  font-size: 1.5rem;
+  font-family: 'Playfair Display', serif;
+  color: var(--color-brand); /* Muted Teal */
+}
+
+.navbar__search {
+  display: flex;
+  align-items: center;
+  border: 1px solid var(--color-text);
+  border-radius: 2rem;
+  padding: 0.5rem 1rem;
+  background: white;
+  width: 40%;
+}
+
+.navbar__search input {
+  border: none;
+  outline: none;
+  margin-left: 0.5rem;
+  flex: 1;
+  font-family: 'Poppins', sans-serif;
+}
+
+/* Search suggestions dropdown */
+.search-suggestions {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  background: white;
+  border: 1px solid var(--color-text);
+  list-style: none;
+  padding: 0;
+  margin-top: 0.3rem;
+  z-index: 9999;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.search-suggestions li {
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  font-family: 'Poppins', sans-serif;
+}
+
+.search-suggestions li:hover {
+  background-color: #f0f0f0;
+}
+
+.navbar__links a {
+  margin-left: 1rem;
+  font-size: 1.2rem;
+  color: var(--color-brand); /* Muted Teal */
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.navbar__links a:hover {
+  color: var(--color-hover); /* Olive green */
+}
+
+.icon-button {
+  background: none;
+  border: none;
+  font-size: 1.3rem;
+  cursor: pointer;
+  margin-left: 1rem;
+  color: var(--color-brand);
+  padding: 0;
+  transition: color 0.3s ease;
+}
+
+.icon-button:hover {
+  color: var(--color-hover);
+}
+
+.profile-dropdown-container {
+  position: relative;
+  display: inline-block;
+}
+
+.dropdown-menu {
+  position: absolute;
+  right: 0;
+  top: 120%;
+  background: white;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border-radius: 6px;
+  padding: 0.5rem 0;
+  z-index: 999;
+  width: 180px;
+  font-family: 'Poppins', sans-serif;
+}
+
+.dropdown-menu div {
+  padding: 0.75rem 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  color: var(--color-brand);
+}
+
+.dropdown-menu div:hover {
+  background-color: #f5f5f5;
+}
+
+.sell-new-button {
+  background-color: var(--color-accent); /* Dusty Rose */
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  margin: 0 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 0.95rem;
+  transition: background-color 0.3s ease;
+}
+
+.sell-new-button:hover {
+  background-color: var(--color-hover); /* Olive green */
+}
