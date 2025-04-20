@@ -1,7 +1,10 @@
 export function createShipment(userID, orderID) {
     const trackingNumber = `TRACK-${Math.floor(100000 + Math.random() * 900000)}`;
-    const estimatedDelivery = new Date();
-    estimatedDelivery.setDate(estimatedDelivery.getDate() + 5);
+    const daysToDeliver = Math.floor(3 + Math.random() * 5); // 3–7 days
+    estimatedDelivery.setDate(estimatedDelivery.getDate() + daysToDeliver);    
+
+    // const estimatedDelivery = new Date();
+    // estimatedDelivery.setDate(estimatedDelivery.getDate() + 5);
   
     return {
       success: true,

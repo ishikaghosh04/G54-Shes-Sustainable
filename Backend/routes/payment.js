@@ -3,12 +3,25 @@ import verifyToken from "./middlewares/verifyToken.js";
 const { processPayment } = require("../mock/mockPayment"); 
 const router = express.Router();
 
+// Note: take card information as argument
+
 export default (db) => {
   // Create a payment and finalize order
   router.post("/orders/:orderID/payments", verifyToken, (req, res) => {
     const buyerID     = req.user.userID;
     const orderID     = parseInt(req.params.orderID, 10);
-    const { amount, paymentMethod } = req.body;
+    const {
+      amount,
+      paymentMethod,
+      cardNumber,
+      expirationDate,
+      cvv,
+      billingAddress, // this will be an object with address, city, province, postalCode
+    } = req.body;    
+
+    if (!cardNumber || !expirationDate || !cvv || !billingAddress) {
+      return res.status(400).json({ message: "Missing payment or billing information." });
+    }    
 
     // 1) Verify ownership & total
     db.query(
@@ -21,7 +34,10 @@ export default (db) => {
         }
 
          // 2.) Simulate the gateway
+         // verify
          const result = processPayment(buyerID, amount);
+         const transactionRef = result.transactionID;
+         
          if (!result.success) {
           // 402 Payment Required is often used for declines
            return res.status(402).json({ message: result.message });

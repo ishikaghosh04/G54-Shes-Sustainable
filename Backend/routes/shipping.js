@@ -83,18 +83,26 @@ export default (db) => {
   
         try {
           // 1) Verify payment done & ownership
-          const [orderRows] = await query(
-            `SELECT status 
-               FROM \`Order\` 
-              WHERE orderID = ? 
-                AND buyerID = ?`,
+          const orderRows = await query(
+            `SELECT status FROM \`Order\` WHERE orderID = ? AND buyerID = ?`,
             [orderID, buyerID]
           );
-          if (!orderRows || orderRows.status !== "Processed") {
-            return res
-              .status(403)
-              .json({ message: "Order not processed (payment missing) or forbidden." });
+          if (!orderRows.length || orderRows[0].status !== "Processed") {
+            return res.status(403).json({ message: "Order not processed (payment missing) or forbidden." });
           }
+          // Following had a bug:          
+          // const [orderRows] = await query(
+          //   `SELECT status 
+          //      FROM \`Order\` 
+          //     WHERE orderID = ? 
+          //       AND buyerID = ?`,
+          //   [orderID, buyerID]
+          // );
+          // if (!orderRows || orderRows.status !== "Processed") {
+          //   return res
+          //     .status(403)
+          //     .json({ message: "Order not processed (payment missing) or forbidden." });
+          // }
   
           // 2) Group items by seller
           const groups = await query(

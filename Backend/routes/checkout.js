@@ -1,8 +1,4 @@
 import express from "express";
-// simulate payment
-// import { processPayment } from "./mock/mockPayment.js";
-// simulate shipment
-// import { createShipment } from "./mock/mockShipment.js";
 import verifyToken from "./middlewares/verifyToken.js";
 import { promisify } from "util";
 
@@ -16,12 +12,12 @@ export default (db) => {
   (Made updates (Jane) This mainly handles Transferring items from Cart to Order
   Now we have the option of clearing or deactivating the cart we need to pick one )
   */
-  router.post("/processOrder", verifyToken, async (req, res) => {
+  router.post("/process/order", verifyToken, async (req, res) => {
     const userID = req.user.userID;
 
     try {
       // 1. Get active cart
-      const cartResult = await query("SELECT * FROM Cart WHERE userID = ? AND isActive = TRUE", [buyerID]);
+      const cartResult = await query("SELECT * FROM Cart WHERE userID = ? AND isActive = TRUE", [userID]);
 
       if (cartResult.length === 0) return res.status(400).json({ message: "No active cart found." });
 
@@ -53,13 +49,12 @@ export default (db) => {
         [orderItems]
       );
 
-      // Optional Deactivate Cart or Clear 
-      await query(`UPDATE Cart SET isActive = 0 WHERE cartID = ?`, [cartID]);
+      // Deactivate cart and remove cart items 
+      await query(`UPDATE Cart SET isActive = 0 WHERE cartID = ?`, [cart.cartID]);
       await query(
         `DELETE FROM CartStores WHERE cartID = ?`,
-        [cartID]
+        [cart.cartID]
       );
-
 
       res.status(201).json({ orderID, totalAmount, itemsCount: items.length });
 

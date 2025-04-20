@@ -130,7 +130,7 @@ CREATE TABLE Shipping (
   CONSTRAINT fk_shipping_order
     FOREIGN KEY (orderID, productID) REFERENCES `OrderContains`(orderID,productID)
     ON UPDATE CASCADE
-    ON DELETE CASCADE7
+    ON DELETE CASCADE
 );
 
 -- 8. Payment table
