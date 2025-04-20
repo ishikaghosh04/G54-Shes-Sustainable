@@ -1,32 +1,36 @@
 import express from "express";
 import verifyToken from "./middlewares/verifyToken.js";
-import { processPayment } from "./mock/mockPayment"; 
+import { processPayment } from "./mock/mockPayment.js"; 
+
 const router = express.Router();
 
 export default (db) => {
-  function getBillingAddressAsync(useProfileAddress, billingAddress, buyerID) {
+  const query = (sql, params) =>
+    new Promise((resolve, reject) => {
+      db.query(sql, params, (err, results) => {
+        if (err) return reject(err);
+        resolve(results);
+      });
+    });
+
+  async function getBillingAddress(useProfileAddress, billingAddress, buyerID) {
     if (useProfileAddress) {
-      return query(
+      const rows = await query(
         `SELECT street, city, province, postalCode FROM User WHERE userID = ?`,
         [buyerID]
-      ).then(rows => {
-        if (!rows.length) throw new Error("No profile address found.");
-        return {
-          street: rows[0].street,
-          city: rows[0].city,
-          province: rows[0].province,
-          postalCode: rows[0].postalCode,
-        };
-      });
+      );
+      if (!rows.length) throw new Error("No profile address found.");
+      return rows[0];
     } else {
-      if ( !billingAddress.street || !billingAddress.city || !billingAddress.province || !billingAddress.postalCode ) {
+      const { street, city, province, postalCode } = billingAddress || {};
+      if (!street || !city || !province || !postalCode) {
         throw new Error("Billing address info incomplete.");
       }
-      return Promise.resolve(billingAddress);
+      return { street, city, province, postalCode };
     }
-  }  
+  }
 
-  // Process payment
+  // POST: Process Payment
   router.post("/orders/:orderID/payments", verifyToken, async (req, res) => {
     const buyerID = req.user.userID;
     const orderID = parseInt(req.params.orderID, 10);
@@ -39,69 +43,72 @@ export default (db) => {
       billingAddress,
       useProfileAddress
     } = req.body;
-  
+
     if (!cardNumber || !expirationDate || !cvv) {
       return res.status(400).json({ message: "Missing payment method details." });
     }
-  
+
     try {
-      // 1. Get Order
-      const rows = await query(
+      // 1. Validate order
+      const orders = await query(
         `SELECT totalAmount, cartID FROM \`Order\` WHERE orderID = ? AND buyerID = ?`,
         [orderID, buyerID]
       );
-      if (!rows.length) {
+      if (!orders.length) {
         return res.status(403).json({ message: "Cannot pay for someone else’s order." });
       }
-  
-      const { cartID } = rows[0];
-  
+      const { cartID } = orders[0];
+
       // 2. Simulate payment
       const result = processPayment(buyerID, amount);
       if (!result.success) {
         return res.status(402).json({ message: result.message });
       }
-  
-      // 3. Get final billing address
-      const finalBillingAddress = await getBillingAddressAsync(useProfileAddress, billingAddress, buyerID);
-  
-      // 4. Insert into Payment
-      const paymentResult = await query(
+
+      // 3. Get billing address
+      const billing = await getBillingAddress(useProfileAddress, billingAddress, buyerID);
+
+      // 4. Insert Payment
+      const paymentRes = await query(
         `INSERT INTO Payment (
           orderID, amount, paymentMethod, transactionRef, status,
-          billingStreet, billingCity, billingProvince, billingPostalCode
-        ) VALUES (?, ?, ?, ?, 'Completed', ?, ?, ?, ?)`,
+          billingStreet, billingCity, billingProvince, billingPostalCode,
+          cardNumber, expirationDate, cvv
+        ) VALUES (?, ?, ?, ?, 'Completed', ?, ?, ?, ?, ?, ?, ?)`,
         [
           orderID,
           amount,
           paymentMethod,
           result.transactionID,
-          finalBillingAddress.street,
-          finalBillingAddress.city,
-          finalBillingAddress.province,
-          finalBillingAddress.postalCode,
+          billing.street,
+          billing.city,
+          billing.province,
+          billing.postalCode,
+          cardNumber,
+          expirationDate,
+          cvv,
         ]
       );
-  
-      const paymentID = paymentResult.insertId;
-  
-      // 5. Update Order
+
+      const paymentID = paymentRes.insertId;
+
+      // 5. Update Order status
       await query(`UPDATE \`Order\` SET status = 'Processed' WHERE orderID = ?`, [orderID]);
-  
-      // 6. Delete Cart & CartStores
+
+      // 6. Clear cart
       await query(`DELETE FROM CartStores WHERE cartID = ?`, [cartID]);
       await query(`DELETE FROM Cart WHERE cartID = ?`, [cartID]);
-  
+
       // 7. Deactivate purchased products
       await query(
         `UPDATE Product 
-           SET isActive = FALSE
+         SET isActive = FALSE
          WHERE productID IN (
            SELECT productID FROM OrderContains WHERE orderID = ?
          )`,
         [orderID]
       );
-  
+
       res.status(201).json({
         paymentID,
         orderID,
@@ -114,18 +121,21 @@ export default (db) => {
       console.error("Payment error:", err);
       res.status(500).json({ error: err.message });
     }
-  });  
+  });
 
-  // Get a single payment
-  router.get("/:paymentID", verifyToken, (req, res) => {
-    db.query(
-      `SELECT * FROM Payment WHERE paymentID = ?`,
-      [parseInt(req.params.paymentID, 10)],
-      (err, rows) => {
-        if (err) return res.status(500).json({ error: err.message });
-        res.json(rows[0] || null);
-      }
-    );
+  // GET: Fetch single payment
+  router.get("/:paymentID", verifyToken, async (req, res) => {
+    try {
+      const rows = await query(
+        `SELECT * FROM Payment WHERE paymentID = ?`,
+        [parseInt(req.params.paymentID, 10)]
+      );
+      if (!rows.length) return res.status(404).json({ message: "Payment not found." });
+      res.json(rows[0]);
+    } catch (err) {
+      console.error("Fetch payment error:", err);
+      res.status(500).json({ error: err.message });
+    }
   });
 
   return router;

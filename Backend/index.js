@@ -1,14 +1,19 @@
-import express from "express";  // Delete ?
+import express from "express"; 
 import cors from "cors";  // Frontend
 import mysql from "mysql2";     // Import mysql
 import dotenv from "dotenv";   // Import dotenv to load .env
-import productRoutes from "./routes/products.js";
+// Maria
 import signupRoutes from "./routes/signup.js";
 import loginRoutes from "./routes/login.js";
 import profileRoutes from "./routes/profile.js"
+import productRoutes from "./routes/products.js";
 import cartRoutes from "./routes/cart.js"
-import checkoutRoutes from "./routes/checkout.js"
 import listingRoutes from "./routes/listings.js"
+import checkoutRoutes from "./routes/checkout.js"
+// Jane
+import paymentRoutes from "./routes/payment.js"
+import shippingRoutes from "./routes/shipping.js"
+import reviewRoutes from "./routes/review.js"
 
 dotenv.config(); // Load variables from .env
 
@@ -44,9 +49,6 @@ app.listen(8800, () => {
   console.log("Connected to backend on port 8800!");
 });
 
-// Use product routes
-app.use("/products", productRoutes(db));
-
 // Use sign up routes
 app.use("/signup", signupRoutes(db));
 
@@ -56,6 +58,9 @@ app.use("/login", loginRoutes(db));
 // Use profile routes
 app.use("/profile", profileRoutes(db));
 
+// Use product routes
+app.use("/products", productRoutes(db));
+
 // Use listing routes
 app.use("/listings", listingRoutes(db));
 
@@ -64,3 +69,12 @@ app.use("/cart", cartRoutes(db))
 
 // Use checkout routes
 app.use("/checkout", checkoutRoutes(db))
+
+// Use payment routes
+app.use("/payment", paymentRoutes(db))
+
+// Use shipping routes
+app.use("/shipping", shippingRoutes(db))
+
+// Use review routes
+app.use("/review", reviewRoutes(db))

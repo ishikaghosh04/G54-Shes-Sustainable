@@ -167,5 +167,6 @@ export default (db) => {
     });
   });
 
+  // return routes to index.js
   return router;
 };

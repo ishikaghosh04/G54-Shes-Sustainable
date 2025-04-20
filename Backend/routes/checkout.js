@@ -40,8 +40,8 @@ export default (db) => {
 
         // 3. Insert order
         const orderResult = await query(
-          "INSERT INTO `Order` (buyerID, totalAmount) VALUES (?, ?)",
-          [userID, totalAmount]
+          "INSERT INTO `Order` (buyerID, totalAmount, cartID) VALUES (?, ?)",
+          [userID, totalAmount, cart.cartID]
         );
         const orderID = orderResult.insertId;
 
@@ -77,7 +77,7 @@ export default (db) => {
           JOIN \`Order\` o ON o.cartID = c.cartID
         WHERE c.userID = ?
           AND c.isActive = FALSE
-          AND o.status != 'Completed'
+          AND o.status != 'Processed'
         ORDER BY o.orderDate DESC
         LIMIT 1
       `;
@@ -92,6 +92,8 @@ export default (db) => {
         const { cartID, orderID } = rows[0];
 
         // Step 2: Reactivate cart and set order status back to 'Pending'
+        
+        // NOTE: may cause issues since two queries in one!
         const reactivateSql = `
           UPDATE Cart SET isActive = TRUE WHERE cartID = ?;
           UPDATE \`Order\` SET status = 'Pending' WHERE orderID = ?;

@@ -77,12 +77,13 @@ CREATE TABLE CartStores (
   CONSTRAINT unique_product_per_cart UNIQUE (productID)
 );
 
--- 5. Order table (got rid of shipping and billing address)
+-- 5. Order table (added cartID)
 DROP TABLE IF EXISTS OrderContains;
 DROP TABLE IF EXISTS `Order`;
 CREATE TABLE `Order` (
   orderID         INT AUTO_INCREMENT,
   buyerID         INT NOT NULL,
+  cartID          INT,
   orderDate       DATETIME DEFAULT CURRENT_TIMESTAMP,
   totalAmount     DECIMAL(10,2) NOT NULL,
   status          VARCHAR(50) DEFAULT 'Pending',
@@ -91,6 +92,10 @@ CREATE TABLE `Order` (
     FOREIGN KEY (buyerID) REFERENCES User(userID)
     ON UPDATE CASCADE
     ON DELETE CASCADE
+  CONSTRAINT fk_order_cart
+    FOREIGN KEY (cartID) REFERENCES Cart(cartID)
+    ON UPDATE CASCADE
+    ON DELETE SET NULL
 );
 
 -- 6. OrderContains table
