@@ -54,7 +54,7 @@ export default (db) => {
     Note to frontend: a seller can delete a listing (product)
     -- create a button --
     */
-    router.delete("/:id", verifyToken, (req, res) => {
+    router.delete("/delete/:id", verifyToken, (req, res) => {
         const productID = parseInt(req.params.id);
         if (isNaN(productID)) {
             return res.status(400).json({ message: "Invalid product ID." });
@@ -100,7 +100,7 @@ export default (db) => {
     Note to frontend: a user can update their listing (product)
     -- create new tab --
     */
-    router.patch("/:id", verifyToken, (req, res) => {
+    router.patch("/update/:id", verifyToken, (req, res) => {
         const productID = req.params.id;
         const userID = req.user.userID;
         const fields = req.body;

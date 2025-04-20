@@ -3,7 +3,7 @@ import bcrypt from "bcryptjs";  // Hashing passwords
 const router = express.Router();
 
 export default (db) => {
-    // Display all users (testing purposes - delete later)
+    // Display all users (testing purposes - delete later!)
     router.get("/", (req, res) => {
         const q = "SELECT * FROM User";
         db.query(q, (err, results) => {

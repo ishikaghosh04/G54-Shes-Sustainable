@@ -122,7 +122,7 @@ export default (db) => {
     
 
 
-  // Update your own review (put or patch?)
+  // Update your own review
   router.put("/:reviewID", verifyToken, (req, res) => {
     const buyerID  = req.user.userID;
     const reviewID = parseInt(req.params.reviewID, 10);

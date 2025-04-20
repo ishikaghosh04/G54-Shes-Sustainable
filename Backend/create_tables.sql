@@ -120,10 +120,10 @@ CREATE TABLE Shipping (
   shippingCost     DECIMAL(10,2) NOT NULL DEFAULT 0,
   shippedDate      DATETIME,
   -- Shipping details
-  shippingAddress VARCHAR(255), -- added[']
-  shippingCity VARCHAR(100), -- added
-  shippingProvince VARCHAR(100), -- added
-  shippingPostalCode VARCHAR(20), -- added
+  shippingStreet VARCHAR(100), -- added
+  shippingCity VARCHAR(50), -- added
+  shippingProvince VARCHAR(50), -- added
+  shippingPostalCode VARCHAR(10), -- added
   estDeliveryDate  DATE,
   status           VARCHAR(50) DEFAULT 'Pending',
   PRIMARY KEY (shippingID),
@@ -145,10 +145,10 @@ CREATE TABLE Payment (
   expirationDate   VARCHAR(5), -- format: MM/YY
   cvv              VARCHAR(4),
   -- Billing address
-  billingAddress   VARCHAR(255),
-  billingCity      VARCHAR(100),
-  billingProvince  VARCHAR(100),
-  billingPostalCode VARCHAR(20),
+  billingStreet   VARCHAR(100),
+  billingCity      VARCHAR(50),
+  billingProvince  VARCHAR(50),
+  billingPostalCode VARCHAR(10),
   paymentDate    DATETIME DEFAULT CURRENT_TIMESTAMP,
   status         VARCHAR(50) DEFAULT 'Pending',
   transactionRef VARCHAR(100), -- specify in backend
