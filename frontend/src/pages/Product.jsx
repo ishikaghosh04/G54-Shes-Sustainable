@@ -1,61 +1,47 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import React, { useContext, useState, useEffect } from 'react';
+import { CartContext } from '../context/CartContext';
+import CategoryBar from '../components/CategoryBar';
+import './Product.css';
+import API from '../api'; 
 
 const Product = () => {
-  const [price, setPrice] = useState(100);
-  const [productCondition, setProductCondition] = useState('new');
+  const { addToCart } = useContext(CartContext);
   const [products, setProducts] = useState([]);
 
-  const fetchFilteredProducts = async () => {
-    try {
-      const res = await axios.get(`http://localhost:8800/price-range-and-product-condition/${price}/${productCondition}`);
-      setProducts(res.data);
-    } catch (err) {
-      console.error("Error fetching filtered products:", err);
-    }
-  };
-
   useEffect(() => {
-    fetchFilteredProducts(); 
-  }, []);
+    API.get('/products')
+      .then(res => setProducts(res.data))
+      .catch(err => console.error('Failed to load products:', err));
+      }, []);
 
-  useEffect(() => {
-    fetchFilteredProducts(); 
-  }, [price, productCondition]);
+         // Handler when a category is selected
+  const handleSelectCategory = (category) => {
+    API.get(`/products/category/${category}`)
+      .then(res => setProducts(res.data))
+      .catch(err => console.error(`Failed to load ${category}:`, err));
+         };
 
   return (
-    <div style={{ padding: "2rem" }}>
-      <h2>Filter Products</h2>
-
-      {/* Price Slider */}
-      <label>Max Price: ${price}</label>
-      <input
-        type="range"
-        min="0"
-        max="200"
-        value={price}
-        onChange={(e) => setPrice(e.target.value)}
-      />
-
-      {/* Condition Dropdown */}
-      <label style={{ marginLeft: '1rem' }}>Condition:</label>
-      <select value={productCondition} onChange={(e) => setProductCondition(e.target.value)}>
-        <option value="new">New</option>
-        <option value="used">Used</option>
-      </select>
-
-      {/* Filtered Product Results */}
-      <div style={{ marginTop: "2rem", display: "flex", gap: "1rem" }}>
-        {products.map((p, idx) => (
-          <div key={idx} style={{ border: "1px solid #ccc", padding: "1rem" }}>
-            <h4>{p.name}</h4>
-            <p>${p.price}</p>
-            <p>Condition: {p.productCondition}</p>
-            <button>Add to Cart</button>
-          </div>
-        ))}
+    <>
+      <CategoryBar onSelectCategory={handleSelectCategory} />
+      <div className="product-page">
+        <h2>Our Products</h2>
+        <div className="product-grid">
+          {products.map((product) => (
+            <div key={product.productID} className="product-card">
+              <h4>{product.name}</h4>
+              <p>{product.price}</p>
+              <button
+                className="btn btn-primary"
+                onClick={() => addToCart(product)}
+              >
+                Add to Cart
+              </button>
+            </div>
+          ))}
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 
