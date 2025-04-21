@@ -21,4 +21,13 @@
     margin-bottom: 1rem;
     color: var(--color-text);
   }
+  .back-button {
+    display: flex;
+    align-items: center;
+    color: #7baaa5;
+    cursor: pointer;
+    font-weight: 500;
+    margin-bottom: 1rem;
+  }
+  
   

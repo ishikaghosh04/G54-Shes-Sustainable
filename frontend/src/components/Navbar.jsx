@@ -30,7 +30,6 @@ const Navbar = () => {
         <Link to="/">She’s Sustainable</Link>
       </div>
 
-      {/* 👇 Mission Replaces Search */}
       <div className="navbar__mission">
         <h4>Redefining maternity fashion.</h4>
         <p>

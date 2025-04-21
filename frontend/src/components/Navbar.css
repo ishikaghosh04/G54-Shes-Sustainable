@@ -6,6 +6,7 @@
   background-color: var(--color-bg); /* Ivory */
   border-bottom: 1px solid var(--color-text); /* Stone grey */
   font-family: 'Poppins', sans-serif;
+  flex-wrap: wrap;
 }
 
 .navbar__logo a {
