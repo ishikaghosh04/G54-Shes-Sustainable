@@ -12,6 +12,10 @@
     margin-bottom: 1.5rem;
   }
   
+  *, *::before, *::after {
+    box-sizing: border-box;
+  }
+
   .login-form {
     max-width: 400px;
     margin: 0 auto;
@@ -53,5 +57,10 @@
   .back-button:hover {
     color: var(--color-accent);
   }
-  
-  
+
+   .login-error {
+    color: red;
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+    text-align: center;
+  }

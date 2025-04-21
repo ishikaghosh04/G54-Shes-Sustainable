@@ -14,12 +14,13 @@ import checkoutRoutes from "./routes/checkout.js"
 import paymentRoutes from "./routes/payment.js"
 import shippingRoutes from "./routes/shipping.js"
 import reviewRoutes from "./routes/review.js"
+import verifyToken from "./routes/middlewares/verifyToken.js";
 
 dotenv.config(); // Load variables from .env
 
 const app = express();
 app.use(express.json());
-app.use(cors());
+app.use(cors({ origin: "http://localhost:3000", credentials: true }));
 
 // Create connection using .env variables
 const db = mysql.createConnection({
@@ -50,31 +51,31 @@ app.listen(8800, () => {
 });
 
 // Use sign up routes
-app.use("/signup", signupRoutes(db));
+app.use("/signup",signupRoutes(db));
 
 // Use login routes
 app.use("/login", loginRoutes(db));
 
 // Use profile routes
-app.use("/profile", profileRoutes(db));
+app.use("/profile",verifyToken, profileRoutes(db));
 
 // Use product routes
 app.use("/products", productRoutes(db));
 
 // Use listing routes
-app.use("/listings", listingRoutes(db));
+app.use("/listings",verifyToken, listingRoutes(db));
 
 // Use cart routes
-app.use("/cart", cartRoutes(db))
+app.use("/cart", verifyToken, cartRoutes(db))
 
 // Use checkout routes
-app.use("/checkout", checkoutRoutes(db))
+app.use("/checkout", verifyToken, checkoutRoutes(db))
 
 // Use payment routes
-app.use("/payment", paymentRoutes(db))
+app.use("/payment", verifyToken, paymentRoutes(db))
 
 // Use shipping routes
-app.use("/shipping", shippingRoutes(db))
+app.use("/shipping", verifyToken, shippingRoutes(db))
 
 // Use review routes
-app.use("/review", reviewRoutes(db))
+app.use("/review", verifyToken, reviewRoutes(db))

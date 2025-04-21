@@ -1,19 +1,27 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import './CategoryBar.css';
 import { FaFilter } from 'react-icons/fa';
+import API from '../api';
 
-const CategoryBar = () => {
+const CategoryBar = ({ onSelectCategory = () => {} }) => {
   const [showFilters, setShowFilters] = useState(false);
   const [price, setPrice] = useState(50);
   const [newness, setNewness] = useState(50);
 
-  const categories = ['Tops', 'Pants', 'Toys', 'Socks', 'Dress'];
+ // const categories = ['Tops', 'Pants', 'Toys', 'Socks', 'Dress'];
+    const [categories, setCategories]   = useState([]);
+
+    useEffect(() => {
+      API.get("/products/categories")
+         .then(res => setCategories(res.data))
+         .catch(err => console.error("Failed to load categories:", err));
+    }, []);
 
   return (
     <div className="category-bar">
       <div className="category-options">
-        {categories.map((cat, index) => (
-          <button key={index} className="category-button">
+        {categories.map((cat) => (
+          <button key={cat} className="category-button" onClick={() => onSelectCategory(cat)}>
             {cat}
           </button>
         ))}

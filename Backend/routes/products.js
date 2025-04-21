@@ -49,6 +49,18 @@ export default (db) => {
         });
     });
 
+    /**
+     * Returns distinct categories from the database
+     */
+        router.get("/categories", (req, res) => {
+            const q = "SELECT DISTINCT category FROM Product WHERE isActive = TRUE ORDER BY category;";
+            db.query(q, (err, results) => {
+              if (err) return res.status(500).json({ error: err.message });
+              const cats = results.map(row => row.category);
+              res.json(cats);
+            });
+        });
+
     /*
     Note to frontend: displays a specific product (by id)
     */
@@ -72,7 +84,6 @@ export default (db) => {
             return res.status(200).json(result[0]);
         });
     });
-
     // Returns routes to index.js
     return router;
 };
