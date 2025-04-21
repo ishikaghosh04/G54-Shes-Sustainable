@@ -18,6 +18,7 @@ CREATE TABLE User (
   password      VARCHAR(255) NOT NULL, 
   isBuyer       BOOLEAN DEFAULT TRUE,
   isSeller      BOOLEAN DEFAULT FALSE,
+  isAdmin       BOOLEAN DEFAULT FALSE,
   PRIMARY KEY (userID)
 );
 

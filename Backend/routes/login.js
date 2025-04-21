@@ -41,15 +41,19 @@ export default (db) => {
         // Generate JWT token
         try {
             const token = jwt.sign(
-            { userID: user.userID, email: user.email },
+            {
+                userID: user.userID,
+                email: user.email,
+                isAdmin: user.isAdmin, // include admin flag in token
+            },
             process.env.JWT_SECRET,
             { expiresIn: "3h" }
             );
-
+        
             return res.status(200).json({ message: "Login successful", token });
         } catch (tokenError) {
             return res.status(500).json({ message: "Token generation failed", error: tokenError.message });
-        }
+        }  
         });
     });
 
