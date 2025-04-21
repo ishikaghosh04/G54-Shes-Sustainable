@@ -1,6 +1,6 @@
 import React, { useState, useContext, useRef, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { FiShoppingBag, FiUser, FiSearch } from 'react-icons/fi';
+import { FiShoppingBag, FiUser } from 'react-icons/fi'; // removed FiSearch
 import { CartContext } from '../context/CartContext';
 import './Navbar.css';
 
@@ -10,43 +10,8 @@ const Navbar = () => {
   const dropdownRef = useRef(null);
   const navigate = useNavigate();
 
-  const [searchTerm, setSearchTerm] = useState('');
-  const [suggestions, setSuggestions] = useState([]);
-
-  const allProducts = [
-    "Soft Maternity Dress",
-    "Eco Nursing Shirt",
-    "Organic Belly Band",
-    "Daily Maternity Pants",
-    "Comfort Socks",
-    "Dress Delight",
-    "Maternity Toy Set"
-  ];
-
   const toggleDropdown = () => {
     setShowDropdown((prev) => !prev);
-  };
-
-  const handleSearchChange = (e) => {
-    const input = e.target.value.toLowerCase();
-    setSearchTerm(input);
-
-    if (input.length === 0) {
-      setSuggestions([]);
-      return;
-    }
-
-    const startsWith = allProducts.filter(item =>
-      item.toLowerCase().startsWith(input)
-    );
-
-    const contains = allProducts.filter(item =>
-      item.toLowerCase().includes(input) && !item.toLowerCase().startsWith(input)
-    );
-
-    const combined = [...startsWith, ...contains];
-
-    setSuggestions(combined.length > 0 ? combined : ['__no_results__']);
   };
 
   useEffect(() => {
@@ -65,26 +30,14 @@ const Navbar = () => {
         <Link to="/">She’s Sustainable</Link>
       </div>
 
-      <form className="navbar__search" onSubmit={(e) => e.preventDefault()}>
-        <FiSearch color="var(--color-brand)" />
-        <input
-          type="text"
-          placeholder="Search products..."
-          value={searchTerm}
-          onChange={handleSearchChange}
-        />
-        {searchTerm && (
-          <ul className="search-suggestions">
-            {suggestions[0] === '__no_results__' ? (
-              <li style={{ color: 'var(--color-text)', fontStyle: 'italic' }}>No results found</li>
-            ) : (
-              suggestions.map((item, index) => (
-                <li key={index}>{item}</li>
-              ))
-            )}
-          </ul>
-        )}
-      </form>
+      {/* 👇 Mission Replaces Search */}
+      <div className="navbar__mission">
+        <h4>Redefining maternity fashion.</h4>
+        <p>
+          Sustainable, stylish, and accessible — we connect mindful motherhood
+          with fashion that feels like home. Inclusivity, comfort, and community lead the way.
+        </p>
+      </div>
 
       <div className="navbar__links">
         <button className="sell-new-button" onClick={() => navigate('/shop')}>

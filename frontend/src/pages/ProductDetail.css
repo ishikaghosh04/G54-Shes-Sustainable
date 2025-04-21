@@ -1,0 +1,25 @@
+.product-detail-container {
+    max-width: 800px;
+    margin: 3rem auto;
+    background-color: white;
+    padding: 2.5rem;
+    border-radius: 16px;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1);
+    font-family: 'Poppins', sans-serif;
+    color: var(--color-text);
+    text-align: left;
+  }
+  
+  .product-detail-container h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem;
+    margin-bottom: 1.5rem;
+    color: var(--color-brand);
+  }
+  
+  .product-detail-container p {
+    font-size: 1rem;
+    line-height: 1.6;
+    margin-bottom: 0.75rem;
+  }
+  

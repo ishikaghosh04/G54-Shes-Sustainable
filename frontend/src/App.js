@@ -8,6 +8,7 @@ import Order from "./pages/Order";
 import Profile from "./pages/Profile";
 import Payment from "./pages/Payment";
 import Product from "./pages/Product"; 
+import ProductDetail from "./pages/ProductDetail";
 import Shipping from "./pages/Shipping";
 import Review from "./pages/Review";
 import { CartProvider } from './context/CartContext';
@@ -33,6 +34,7 @@ function App() {
             <Route path="/shipping" element={<Shipping />} />
             <Route path="/review" element={<Review />} />
             <Route path="/product" element={<Product />} />
+            <Route path="/product/:id" element={<ProductDetail />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/shop" element={<Shop />} />
             <Route path="/shop/add" element={<ShopAdd />} />

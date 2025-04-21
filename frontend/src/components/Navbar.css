@@ -16,49 +16,28 @@
   color: var(--color-brand); /* Muted Teal */
 }
 
-.navbar__search {
-  display: flex;
-  align-items: center;
-  border: 1px solid var(--color-text);
-  border-radius: 2rem;
-  padding: 0.5rem 1rem;
-  background: white;
-  width: 40%;
-}
-
-.navbar__search input {
-  border: none;
-  outline: none;
-  margin-left: 0.5rem;
-  flex: 1;
+/* ✨ NEW: Mission Statement Block */
+.navbar__mission {
+  max-width: 520px;
+  margin: 0 2rem;
+  text-align: center;
   font-family: 'Poppins', sans-serif;
+  color: var(--color-text);
+  padding: 0.25rem 1rem;
 }
 
-/* Search suggestions dropdown */
-.search-suggestions {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  width: 100%;
-  background: white;
-  border: 1px solid var(--color-text);
-  list-style: none;
-  padding: 0;
-  margin-top: 0.3rem;
-  z-index: 9999;
-  max-height: 200px;
-  overflow-y: auto;
+.navbar__mission h4 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.3rem;
+  margin-bottom: 0.4rem;
+  color: var(--color-brand); /* Muted Teal */
 }
 
-.search-suggestions li {
-  padding: 0.5rem 1rem;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-  font-family: 'Poppins', sans-serif;
-}
-
-.search-suggestions li:hover {
-  background-color: #f0f0f0;
+.navbar__mission p {
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: var(--color-text); /* Stone Grey */
+  margin: 0;
 }
 
 .navbar__links a {

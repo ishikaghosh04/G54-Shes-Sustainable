@@ -1,4 +1,4 @@
-import React, { useState,useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import './CategoryBar.css';
 import { FaFilter } from 'react-icons/fa';
 import API from '../api';
@@ -6,16 +6,25 @@ import API from '../api';
 const CategoryBar = ({ onSelectCategory = () => {} }) => {
   const [showFilters, setShowFilters] = useState(false);
   const [price, setPrice] = useState(50);
-  const [newness, setNewness] = useState(50);
+  const [newnessOptions, setNewnessOptions] = useState({
+    new: false,
+    gentlyUsed: false,
+  });
 
- // const categories = ['Tops', 'Pants', 'Toys', 'Socks', 'Dress'];
-    const [categories, setCategories]   = useState([]);
+  const [categories, setCategories] = useState([]);
 
-    useEffect(() => {
-      API.get("/products/categories")
-         .then(res => setCategories(res.data))
-         .catch(err => console.error("Failed to load categories:", err));
-    }, []);
+  useEffect(() => {
+    API.get("/products/categories")
+      .then(res => setCategories(res.data))
+      .catch(err => console.error("Failed to load categories:", err));
+  }, []);
+
+  const handleNewnessChange = (type) => {
+    setNewnessOptions((prev) => ({
+      ...prev,
+      [type]: !prev[type],
+    }));
+  };
 
   return (
     <div className="category-bar">
@@ -51,19 +60,26 @@ const CategoryBar = ({ onSelectCategory = () => {} }) => {
                 style={{ width: '100%' }}
               />
             </label>
-            <label>
-              <span style={{ fontWeight: '600', color: 'var(--color-text)' }}>
-                Newness: {newness}%
-              </span>
-              <input
-                type="range"
-                min="0"
-                max="100"
-                value={newness}
-                onChange={(e) => setNewness(e.target.value)}
-                style={{ width: '100%' }}
-              />
-            </label>
+
+            <div className="checkbox-group">
+              <span>Newness:</span>
+              <label>
+                <input
+                  type="checkbox"
+                  checked={newnessOptions.new}
+                  onChange={() => handleNewnessChange('new')}
+                />
+                New
+              </label>
+              <label>
+                <input
+                  type="checkbox"
+                  checked={newnessOptions.gentlyUsed}
+                  onChange={() => handleNewnessChange('gentlyUsed')}
+                />
+                Gently Used
+              </label>
+            </div>
           </div>
         )}
       </div>
