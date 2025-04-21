@@ -34,7 +34,7 @@ export default (db) => {
         const fields = req.body;
     
         // Prevent updates to required fields
-        const blockedFields = ["firstName", "lastName", "email", "password", "userID", "isSeller", "isBuyer"];
+        const blockedFields = ["firstName", "lastName", "email", "password", "userID", "isSeller", "isBuyer", "isAdmin"];
         for (let key of Object.keys(fields)) {
             if (blockedFields.includes(key)) {
                 return res.status(400).json({ message: `Field '${key}' cannot be updated via this route.` });
