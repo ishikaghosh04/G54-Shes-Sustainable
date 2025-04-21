@@ -99,7 +99,6 @@ CREATE TABLE OrderContains (
   orderID     INT NOT NULL,
   productID   INT NOT NULL,
   price       DECIMAL(10,2) NOT NULL,
-  status      VARCHAR(50) DEFAULT 'Processing',
   PRIMARY KEY (orderID, productID),
   CONSTRAINT fk_orderitem_order
     FOREIGN KEY (orderID) REFERENCES `Order`(orderID)
