@@ -13,8 +13,9 @@ CREATE TABLE User (
   province      VARCHAR(50),
   street        VARCHAR(100),
   postalCode    VARCHAR(10),
-  firstName     VARCHAR(50),
-  lastName      VARCHAR(50),
+  firstName     VARCHAR(50) NOT NULL,
+  lastName      VARCHAR(50) NOT NULL,
+  password      VARCHAR(255) NOT NULL, 
   isBuyer       BOOLEAN DEFAULT TRUE,
   isSeller      BOOLEAN DEFAULT FALSE,
   PRIMARY KEY (userID)
@@ -27,13 +28,13 @@ CREATE TABLE Product (
   sellerID          INT NOT NULL,
   price             DECIMAL(10,2) NOT NULL,
   name              VARCHAR(100) NOT NULL,
-  size              VARCHAR(50),
-  picture           VARCHAR(255),
-  description       TEXT,
-  quantity          INT NOT NULL DEFAULT 0,
-  category          VARCHAR(50),
-  productCondition  VARCHAR(50),
+  size              VARCHAR(50) NOT NULL,
+  picture           VARCHAR(255) NOT NULL,
+  description       TEXT NOT NULL,
+  category          VARCHAR(50) NOT NULL,
+  productCondition  VARCHAR(50) NOT NULL,
   dateCreated       DATETIME DEFAULT CURRENT_TIMESTAMP,
+  -- 0 when sold, 1 when listed
   isActive          BOOLEAN DEFAULT TRUE,
   PRIMARY KEY (productID),
   CONSTRAINT fk_product_seller
@@ -49,6 +50,7 @@ CREATE TABLE Cart (
   cartID        INT AUTO_INCREMENT,
   userID        INT NOT NULL,
   dateCreated   DATETIME DEFAULT CURRENT_TIMESTAMP,
+  -- 0 if no longer in use, 1 if in use:
   isActive      BOOLEAN DEFAULT TRUE,
   PRIMARY KEY (cartID),
   CONSTRAINT fk_cart_user
@@ -61,7 +63,6 @@ CREATE TABLE Cart (
 CREATE TABLE CartStores (
   cartID      INT NOT NULL,
   productID   INT NOT NULL,
-  quantity    INT NOT NULL DEFAULT 1,
   dateAdded   DATETIME DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (cartID, productID),
   CONSTRAINT fk_cartitem_cart
@@ -71,34 +72,37 @@ CREATE TABLE CartStores (
   CONSTRAINT fk_cartitem_product
     FOREIGN KEY (productID) REFERENCES Product(productID)
     ON UPDATE CASCADE
-    ON DELETE CASCADE
+    ON DELETE CASCADE,
+  -- Enforce that each product can only exist in ONE cart at a time
+  CONSTRAINT unique_product_per_cart UNIQUE (productID)
 );
 
--- 5. Order table
+-- 5. Order table (added cartID)
 DROP TABLE IF EXISTS OrderContains;
 DROP TABLE IF EXISTS `Order`;
 CREATE TABLE `Order` (
   orderID         INT AUTO_INCREMENT,
   buyerID         INT NOT NULL,
+  cartID          INT,
   orderDate       DATETIME DEFAULT CURRENT_TIMESTAMP,
   totalAmount     DECIMAL(10,2) NOT NULL,
   status          VARCHAR(50) DEFAULT 'Pending',
-  shippingAddress TEXT,
-  billingAddress  TEXT,
   PRIMARY KEY (orderID),
   CONSTRAINT fk_order_buyer
     FOREIGN KEY (buyerID) REFERENCES User(userID)
     ON UPDATE CASCADE
-    ON DELETE CASCADE
+    ON DELETE CASCADE,
+  CONSTRAINT fk_order_cart
+    FOREIGN KEY (cartID) REFERENCES Cart(cartID)
+    ON UPDATE CASCADE
+    ON DELETE SET NULL
 );
 
 -- 6. OrderContains table
 CREATE TABLE OrderContains (
   orderID     INT NOT NULL,
   productID   INT NOT NULL,
-  quantity    INT NOT NULL DEFAULT 1,
-  unitPrice   DECIMAL(10,2) NOT NULL,
-  subtotal    DECIMAL(10,2) NOT NULL,
+  price       DECIMAL(10,2) NOT NULL,
   status      VARCHAR(50) DEFAULT 'Processing',
   PRIMARY KEY (orderID, productID),
   CONSTRAINT fk_orderitem_order
@@ -116,15 +120,20 @@ DROP TABLE IF EXISTS Shipping;
 CREATE TABLE Shipping (
   shippingID       INT AUTO_INCREMENT,
   orderID          INT NOT NULL,
-  trackingNumber   VARCHAR(100),
+  productID        INT NOT NULL,
+  trackingNumber   VARCHAR(100), -- randomly generated
   shippingCost     DECIMAL(10,2) NOT NULL DEFAULT 0,
   shippedDate      DATETIME,
+  -- Shipping details
+  shippingStreet VARCHAR(100), -- added
+  shippingCity VARCHAR(50), -- added
+  shippingProvince VARCHAR(50), -- added
+  shippingPostalCode VARCHAR(10), -- added
   estDeliveryDate  DATE,
-  actualDeliveryDate DATE,
   status           VARCHAR(50) DEFAULT 'Pending',
   PRIMARY KEY (shippingID),
   CONSTRAINT fk_shipping_order
-    FOREIGN KEY (orderID) REFERENCES `Order`(orderID)
+    FOREIGN KEY (orderID, productID) REFERENCES `OrderContains`(orderID,productID)
     ON UPDATE CASCADE
     ON DELETE CASCADE
 );
@@ -134,11 +143,20 @@ DROP TABLE IF EXISTS Payment;
 CREATE TABLE Payment (
   paymentID      INT AUTO_INCREMENT,
   orderID        INT NOT NULL,
-  amount         DECIMAL(10,2) NOT NULL,
+  amount         DECIMAL(10,2) NOT NULL, -- taken from Order
+  paymentMethod  VARCHAR(50) NOT NULL, -- specify somewhere (else remove)
+  -- MOCK card info (for demo/testing only)
+  cardNumber       VARCHAR(20),
+  expirationDate   VARCHAR(5), -- format: MM/YY
+  cvv              VARCHAR(4),
+  -- Billing address
+  billingStreet   VARCHAR(100),
+  billingCity      VARCHAR(50),
+  billingProvince  VARCHAR(50),
+  billingPostalCode VARCHAR(10),
   paymentDate    DATETIME DEFAULT CURRENT_TIMESTAMP,
-  paymentMethod  VARCHAR(50) NOT NULL,
   status         VARCHAR(50) DEFAULT 'Pending',
-  transactionRef VARCHAR(100),
+  transactionRef VARCHAR(100), -- specify in backend
   PRIMARY KEY (paymentID),
   CONSTRAINT fk_payment_order
     FOREIGN KEY (orderID) REFERENCES `Order`(orderID)

@@ -3,6 +3,12 @@ import './SignUp.css';
 import { useNavigate } from 'react-router-dom';
 import { FiArrowLeft } from 'react-icons/fi';
 
+/**
+ *  Pending 
+ *  Does someone automatically login after signup
+ * If so notification of the succesful signup where?
+ * If not notification of succesful signup where?
+ */
 const SignUp = () => {
   const [formData, setFormData] = useState({
     firstName: '',
@@ -13,6 +19,7 @@ const SignUp = () => {
   });
 
   const [error, setError] = useState('');
+  const [successMessage, setSuccess]  = useState('');
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -22,7 +29,7 @@ const SignUp = () => {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (formData.password.length < 8) {
@@ -37,8 +44,38 @@ const SignUp = () => {
 
     setError('');
     console.log('Form submitted:', formData);
-    // TODO: Send to backend
+    
+     // Build payload for the API
+     const payload = {
+      firstName: formData.firstName,
+      lastName:  formData.lastName,
+      email:     formData.email,
+      password:  formData.password
+    };
+
+    try {
+      const res = await fetch('/signup', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify(payload)
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        // Server‑side validation error
+        throw new Error(data.message || 'Signup failed');
+      }
+
+      // Success!
+      setSuccess(data.message || 'Account created!');
+      // Redirect after a short pause
+      setTimeout(() => navigate('/login'), 500);
+
+    } catch (err) {
+      setError(err.message);
+    }
   };
+  
 
   return (
     <div className="signup-page">

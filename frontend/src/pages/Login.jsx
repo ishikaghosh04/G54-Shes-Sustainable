@@ -2,10 +2,13 @@ import React, { useState } from 'react';
 import './Login.css';
 import { useNavigate } from 'react-router-dom';
 import { FiArrowLeft } from 'react-icons/fi';
-
+import API from '../api';
+// Pending what is the landing page after signup
 const Login = () => {
   const [credentials, setCredentials] = useState({ email: '', password: '' });
   const navigate = useNavigate();
+  const [error, setError] = useState('');
+
   const handleChange = (e) => {
     setCredentials(prev => ({
       ...prev,
@@ -13,10 +16,29 @@ const Login = () => {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     console.log('Login attempt:', credentials);
-    // TODO: Add login API
+    setError("");
+
+    try {
+      const res = await API.post("/login", credentials);
+      const { token } = res.data;
+
+ 
+      localStorage.setItem("jwt", token);
+      API.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+
+
+      navigate("/product");
+    } catch (err) {
+      // Show server‑side message or fallback to JS error
+      const serverMsg = err.response?.data?.message
+                      || err.response?.data?.error;
+      setError(serverMsg || 'Login failed');
+    }
+
+    
   };
 
   return (
@@ -41,6 +63,7 @@ const Login = () => {
           onChange={handleChange}
           required
         />
+        {error && <p className="login-error">{error}</p>}
         <button type="submit" className="btn btn-primary">Login</button>
       </form>
     </div>

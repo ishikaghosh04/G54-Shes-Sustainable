@@ -1,27 +1,36 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { CartContext } from '../context/CartContext';
 import CategoryBar from '../components/CategoryBar';
 import './Product.css';
+import API from '../api'; 
 
 const Product = () => {
   const { addToCart } = useContext(CartContext);
+  const [products, setProducts] = useState([]);
 
-  const sampleProducts = [
-    { name: 'Soft Maternity Dress', price: 49.99 },
-    { name: 'Eco Nursing Shirt', price: 35.50 },
-    { name: 'Organic Belly Band', price: 19.95 }
-  ];
+  useEffect(() => {
+    API.get('/products')
+      .then(res => setProducts(res.data))
+      .catch(err => console.error('Failed to load products:', err));
+      }, []);
+
+         // Handler when a category is selected
+  const handleSelectCategory = (category) => {
+    API.get(`/products/category/${category}`)
+      .then(res => setProducts(res.data))
+      .catch(err => console.error(`Failed to load ${category}:`, err));
+         };
 
   return (
     <>
-      <CategoryBar />
+      <CategoryBar onSelectCategory={handleSelectCategory} />
       <div className="product-page">
         <h2>Our Products</h2>
         <div className="product-grid">
-          {sampleProducts.map((product, index) => (
-            <div key={index} className="product-card">
+          {products.map((product) => (
+            <div key={product.productID} className="product-card">
               <h4>{product.name}</h4>
-              <p>${product.price}</p>
+              <p>{product.price}</p>
               <button
                 className="btn btn-primary"
                 onClick={() => addToCart(product)}
