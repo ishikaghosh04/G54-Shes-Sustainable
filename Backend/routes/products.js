@@ -35,6 +35,22 @@ export default (db) => {
     });
 
     /*
+    Note to front end: this handles the product optimization with the slider
+    */
+    router.get("/price-range-and-product-condition/:price/:productCondition", (req, res) => {
+        const price = req.params.price;
+        const productCondition = req.params.productCondition;
+    
+        const q = "SELECT * FROM Product WHERE price <= ? AND productCondition = ?;";
+        db.query(q, [price, productCondition], (err, results) => {
+            if (err) {
+                return res.status(500).json(err);
+            }
+            return res.status(200).json(results);
+        });
+    });    
+
+    /*
     Note to frontend: this displays all the products that fall under a specific
     category
     */

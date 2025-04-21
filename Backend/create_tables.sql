@@ -8,7 +8,7 @@ DROP TABLE IF EXISTS User;
 CREATE TABLE User (
   userID        INT AUTO_INCREMENT,
   email         VARCHAR(100) NOT NULL UNIQUE,
-  phoneNumber   VARCHAR(20),
+  phoneNumber   VARCHAR(10),
   city          VARCHAR(50),
   province      VARCHAR(50),
   street        VARCHAR(100),
@@ -18,6 +18,7 @@ CREATE TABLE User (
   password      VARCHAR(255) NOT NULL, 
   isBuyer       BOOLEAN DEFAULT TRUE,
   isSeller      BOOLEAN DEFAULT FALSE,
+  isAdmin       BOOLEAN DEFAULT FALSE,
   PRIMARY KEY (userID)
 );
 
@@ -83,7 +84,6 @@ DROP TABLE IF EXISTS `Order`;
 CREATE TABLE `Order` (
   orderID         INT AUTO_INCREMENT,
   buyerID         INT NOT NULL,
-  cartID          INT,
   orderDate       DATETIME DEFAULT CURRENT_TIMESTAMP,
   totalAmount     DECIMAL(10,2) NOT NULL,
   status          VARCHAR(50) DEFAULT 'Pending',
@@ -91,11 +91,7 @@ CREATE TABLE `Order` (
   CONSTRAINT fk_order_buyer
     FOREIGN KEY (buyerID) REFERENCES User(userID)
     ON UPDATE CASCADE
-    ON DELETE CASCADE,
-  CONSTRAINT fk_order_cart
-    FOREIGN KEY (cartID) REFERENCES Cart(cartID)
-    ON UPDATE CASCADE
-    ON DELETE SET NULL
+    ON DELETE CASCADE
 );
 
 -- 6. OrderContains table
@@ -103,7 +99,6 @@ CREATE TABLE OrderContains (
   orderID     INT NOT NULL,
   productID   INT NOT NULL,
   price       DECIMAL(10,2) NOT NULL,
-  status      VARCHAR(50) DEFAULT 'Processing',
   PRIMARY KEY (orderID, productID),
   CONSTRAINT fk_orderitem_order
     FOREIGN KEY (orderID) REFERENCES `Order`(orderID)
