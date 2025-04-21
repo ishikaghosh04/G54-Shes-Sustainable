@@ -9,7 +9,7 @@ export default (db) => {
 
   const FLAT_RATE = 2.99; // constant shipping fee per seller
 
-  // Estimate shipping cost & ETA grouped by seller
+  // Estimate shipping cost & ETA grouped by seller (consider excluding orderID as arg)
   router.get("/order/:orderID/estimate", verifyToken, async (req, res) => {
     const buyerID = req.user.userID;
     const orderID = Number(req.params.orderID);
@@ -67,6 +67,8 @@ export default (db) => {
         "SELECT status FROM `Order` WHERE orderID = ? AND buyerID = ?",
         [orderID, buyerID]
       );
+
+      // this will cause issues in logic
       if (!orderRows.length || orderRows[0].status !== "Processed") {
         return res.status(403).json({ message: "Order not processed (payment missing) or forbidden." });
       }

@@ -14,6 +14,7 @@ import checkoutRoutes from "./routes/checkout.js"
 import paymentRoutes from "./routes/payment.js"
 import shippingRoutes from "./routes/shipping.js"
 import reviewRoutes from "./routes/review.js"
+import adminRoutes from "./routes/admin.js"
 
 dotenv.config(); // Load variables from .env
 
@@ -78,3 +79,6 @@ app.use("/shipping", shippingRoutes(db))
 
 // Use review routes
 app.use("/review", reviewRoutes(db))
+
+// Use admin routes
+app.use("/admin", adminRoutes(db))

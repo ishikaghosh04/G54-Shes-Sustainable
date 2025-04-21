@@ -9,7 +9,6 @@ const router = express.Router();
 export default (db) => {
     /*
     Note to frontend: user must provide their email and password to login
-    -- create tab --
     */
     router.post("/", (req, res) => {
         const { email, password } = req.body;

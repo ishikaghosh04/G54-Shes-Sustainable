@@ -1,6 +1,6 @@
 import express from "express";
-import verifyToken from "./middleware/verifyToken.js";
-import verifyAdmin from "./middleware/verifyAdmin.js";
+import verifyToken from "./middlewares/verifyToken.js";
+import verifyAdmin from "./middlewares/verifyAdmin.js";
 
 const router = express.Router();
 
