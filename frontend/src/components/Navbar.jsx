@@ -34,8 +34,8 @@ const Navbar = () => {
       <div className="navbar__mission">
         <h4>Redefining maternity fashion.</h4>
         <p>
-          Sustainable, stylish, and accessible — we connect mindful motherhood
-          with fashion that feels like home. Inclusivity, comfort, and community lead the way.
+          We connect mindful motherhood
+          with fashion that feels like home.
         </p>
       </div>
 
