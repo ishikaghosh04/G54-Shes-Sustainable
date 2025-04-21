@@ -41,8 +41,6 @@ export default (db) => {
                 return res.status(400).json({ message: `Field '${key}' cannot be updated via this route.` });
             }
         }
-
-
     
         if (Object.keys(fields).length === 0) {
             return res.status(400).json({ message: "No fields provided for update." });
