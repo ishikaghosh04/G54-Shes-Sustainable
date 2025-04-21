@@ -62,6 +62,11 @@ export default (db) => {
       useProfileAddress,
     } = req.body;
 
+    // Validate postal code (for Canada, e.g., A1A 1A1 or A1A1A1)
+    if (shippingPostalCode && !/^[A-Za-z]\d[A-Za-z][ -]?\d[A-Za-z]\d$/.test(shippingPostalCode)) {
+        return res.status(400).json({ message: "Invalid postal code format." });
+    }
+
     try {
       const orderRows = await query(
         "SELECT status FROM `Order` WHERE orderID = ? AND buyerID = ?",

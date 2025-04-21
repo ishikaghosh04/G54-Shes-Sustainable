@@ -41,6 +41,16 @@ export default (db) => {
                 return res.status(400).json({ message: `Field '${key}' cannot be updated via this route.` });
             }
         }
+
+        // Validate phone number (must be 10 digits)
+        if (fields.phoneNumber && !/^\d{10}$/.test(fields.phoneNumber)) {
+            return res.status(400).json({ message: "Phone number must be exactly 10 digits." });
+        }
+
+        // Validate postal code (for Canada, e.g., A1A 1A1 or A1A1A1)
+        if (fields.postalCode && !/^[A-Za-z]\d[A-Za-z][ -]?\d[A-Za-z]\d$/.test(fields.postalCode)) {
+            return res.status(400).json({ message: "Invalid postal code format." });
+        }
     
         if (Object.keys(fields).length === 0) {
             return res.status(400).json({ message: "No fields provided for update." });

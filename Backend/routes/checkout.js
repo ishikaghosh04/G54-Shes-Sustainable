@@ -30,10 +30,10 @@ export default (db) => {
     
         const totalAmount = parseFloat(items.reduce((sum, item) => sum + parseFloat(item.price), 0).toFixed(2));
     
-        // 3. Check if a pending order already exists for this cart
+        // 3. Check if a pending order already exists 
         const existingOrder = await query(
-          "SELECT orderID FROM `Order` WHERE cartID = ? AND status = 'Pending'",
-          [cart.cartID]
+          "SELECT orderID FROM `Order` WHERE buyerID = ? AND status = 'Pending'",
+          [userID]
         );
     
         let orderID;
@@ -50,8 +50,8 @@ export default (db) => {
         } else {
           // No existing order → create new one
           const orderResult = await query(
-            "INSERT INTO `Order` (buyerID, totalAmount, cartID) VALUES (?, ?, ?)",
-            [userID, totalAmount, cart.cartID]
+            "INSERT INTO `Order` (buyerID, totalAmount) VALUES (?, ?)",
+            [userID, totalAmount]
           );
           orderID = orderResult.insertId;
         }
@@ -61,7 +61,7 @@ export default (db) => {
         await query("INSERT INTO OrderContains (orderID, productID, price) VALUES ?", [orderItems]);
     
         // 5. Deactivate cart again
-        await query("UPDATE Cart SET isActive = 0 WHERE cartID = ?", [cart.cartID]);
+        await query("UPDATE Cart SET isActive = FALSE WHERE cartID = ?", [cart.cartID]);
     
         res.status(201).json({ orderID, totalAmount, itemsCount: items.length });
     
@@ -83,10 +83,10 @@ export default (db) => {
       const findSql = `
         SELECT c.cartID, o.orderID
           FROM Cart c
-          JOIN \`Order\` o ON o.cartID = c.cartID
+          JOIN \`Order\` o ON o.buyerID = c.userID
         WHERE c.userID = ?
           AND c.isActive = FALSE
-          AND o.status != 'Processed'
+          AND o.status = 'Pending'
         ORDER BY o.orderDate DESC
         LIMIT 1
       `;

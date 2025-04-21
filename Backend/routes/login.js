@@ -46,7 +46,7 @@ export default (db) => {
                 isAdmin: user.isAdmin, // include admin flag in token
             },
             process.env.JWT_SECRET,
-            { expiresIn: "3h" }
+            { expiresIn: "12h" }
             );
         
             return res.status(200).json({ message: "Login successful", token });

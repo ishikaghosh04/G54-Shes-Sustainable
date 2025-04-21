@@ -8,7 +8,7 @@ DROP TABLE IF EXISTS User;
 CREATE TABLE User (
   userID        INT AUTO_INCREMENT,
   email         VARCHAR(100) NOT NULL UNIQUE,
-  phoneNumber   VARCHAR(20),
+  phoneNumber   VARCHAR(10),
   city          VARCHAR(50),
   province      VARCHAR(50),
   street        VARCHAR(100),
@@ -84,7 +84,6 @@ DROP TABLE IF EXISTS `Order`;
 CREATE TABLE `Order` (
   orderID         INT AUTO_INCREMENT,
   buyerID         INT NOT NULL,
-  cartID          INT,
   orderDate       DATETIME DEFAULT CURRENT_TIMESTAMP,
   totalAmount     DECIMAL(10,2) NOT NULL,
   status          VARCHAR(50) DEFAULT 'Pending',
@@ -92,11 +91,7 @@ CREATE TABLE `Order` (
   CONSTRAINT fk_order_buyer
     FOREIGN KEY (buyerID) REFERENCES User(userID)
     ON UPDATE CASCADE
-    ON DELETE CASCADE,
-  CONSTRAINT fk_order_cart
-    FOREIGN KEY (cartID) REFERENCES Cart(cartID)
-    ON UPDATE CASCADE
-    ON DELETE SET NULL
+    ON DELETE CASCADE
 );
 
 -- 6. OrderContains table

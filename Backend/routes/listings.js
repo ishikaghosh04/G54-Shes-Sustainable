@@ -25,6 +25,8 @@ export default (db) => {
           req.body.category,
           req.body.productCondition
         ];
+
+        // verify that price is a number
   
         db.query(q, [values], (err, data) => {
             if (err) {

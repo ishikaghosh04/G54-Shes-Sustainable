@@ -26,6 +26,10 @@ export default (db) => {
       if (!street || !city || !province || !postalCode) {
         throw new Error("Billing address info incomplete.");
       }
+      // Validate postal code (for Canada, e.g., A1A 1A1 or A1A1A1)
+      if (!/^[A-Za-z]\d[A-Za-z][ -]?\d[A-Za-z]\d$/.test(postalCode)) {
+        throw new Error("Invalid postal code format.");
+      }
       return { street, city, province, postalCode };
     }
   }
@@ -51,13 +55,12 @@ export default (db) => {
     try {
       // 1. Validate order
       const orders = await query(
-        `SELECT totalAmount, cartID FROM \`Order\` WHERE orderID = ? AND buyerID = ?`,
+        `SELECT totalAmount FROM \`Order\` WHERE orderID = ? AND buyerID = ?`,
         [orderID, buyerID]
       );
       if (!orders.length) {
         return res.status(403).json({ message: "Cannot pay for someone else’s order." });
       }
-      const { cartID } = orders[0];
 
       // 2. Simulate payment
       const result = processPayment(buyerID, amount);
@@ -95,9 +98,11 @@ export default (db) => {
       // 5. Update Order status
       await query(`UPDATE \`Order\` SET status = 'Processed' WHERE orderID = ?`, [orderID]);
 
-      // 6. Clear cart
-      await query(`DELETE FROM CartStores WHERE cartID = ?`, [cartID]);
-      await query(`DELETE FROM Cart WHERE cartID = ?`, [cartID]);
+      // 6. Clear cart associated to the buyer
+      await query(`DELETE CS FROM CartStores CS
+        JOIN Cart C ON CS.cartID = C.cartID
+        WHERE C.userID = ?`,[buyerID]);
+      await query(`DELETE FROM Cart WHERE userID = ?`, [buyerID]);
 
       // 7. Deactivate purchased products
       await query(
