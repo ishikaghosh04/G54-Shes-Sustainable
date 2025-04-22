@@ -23,7 +23,7 @@ export default (db) => {
     
         // 2. Get cart items
         const items = await query(
-          "SELECT * FROM CartStores INNER JOIN Product ON CartStores.productID = Product.productID WHERE CartStores.cartID = ?",
+          "SELECT * FROM CartStores INNER JOIN Product ON CartStores.productID = Product.productID WHERE CartStores.cartNumber = ?",
           [cart.cartID]
         );
         if (items.length === 0) return res.status(400).json({ message: "Cart is empty." });
@@ -32,7 +32,7 @@ export default (db) => {
     
         // 3. Check if a pending order already exists 
         const existingOrder = await query(
-          "SELECT orderID FROM `Order` WHERE buyerID = ? AND status = 'Pending'",
+          "SELECT orderNumber FROM `Order` WHERE buyerID = ? AND status = 'Pending'",
           [userID]
         );
     
@@ -40,13 +40,13 @@ export default (db) => {
     
         if (existingOrder.length > 0) {
           // Reuse the existing order
-          orderID = existingOrder[0].orderID;
+          orderID = existingOrder[0].orderNumber;
     
           // Clear old order items before re-adding
-          await query("DELETE FROM OrderItem WHERE orderID = ?", [orderID]);
+          await query("DELETE FROM OrderItem WHERE orderNumber = ?", [orderID]);
     
           // Optional: update totalAmount in case it's changed
-          await query("UPDATE `Order` SET totalAmount = ? WHERE orderID = ?", [totalAmount, orderID]);
+          await query("UPDATE `Order` SET totalAmount = ? WHERE orderNumber = ?", [totalAmount, orderID]);
         } else {
           // No existing order → create new one
           const orderResult = await query(
