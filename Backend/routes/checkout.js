@@ -43,7 +43,7 @@ export default (db) => {
           orderID = existingOrder[0].orderID;
     
           // Clear old order items before re-adding
-          await query("DELETE FROM OrderContains WHERE orderID = ?", [orderID]);
+          await query("DELETE FROM OrderItem WHERE orderID = ?", [orderID]);
     
           // Optional: update totalAmount in case it's changed
           await query("UPDATE `Order` SET totalAmount = ? WHERE orderID = ?", [totalAmount, orderID]);
@@ -56,9 +56,9 @@ export default (db) => {
           orderID = orderResult.insertId;
         }
     
-        // 4. Insert updated cart items into OrderContains
+        // 4. Insert updated cart items into OrderItem
         const orderItems = items.map(item => [orderID, item.productID, item.price]);
-        await query("INSERT INTO OrderContains (orderID, productID, price) VALUES ?", [orderItems]);
+        await query("INSERT INTO OrderItem (orderID, productID, price) VALUES ?", [orderItems]);
     
         // 5. Deactivate cart again
         await query("UPDATE Cart SET isActive = FALSE WHERE cartID = ?", [cart.cartID]);
