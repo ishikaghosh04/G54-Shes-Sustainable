@@ -1,0 +1,40 @@
+ConfirmationOrder.css
+.confirmation-page {
+    padding: 3rem 2rem;
+    text-align: center;
+    font-family: 'Poppins', sans-serif;
+    background-color: var(--color-bg);
+    color: var(--color-brand);
+  }
+  
+  .confirmation-icon {
+    font-size: 3.5rem;
+    color: var(--color-success, #8A9A5B);
+    margin-bottom: 1rem;
+  }
+  
+  .confirmation-page h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem;
+    margin-bottom: 1rem;
+  }
+  
+  .order-summary {
+    background-color: white;
+    padding: 1.5rem;
+    margin: 1.5rem auto;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    max-width: 400px;
+    text-align: left;
+    border: 1px solid var(--color-text);
+  }
+  
+  .order-summary a {
+    color: var(--color-brand);
+    text-decoration: underline;
+  }
+  
+  .btn.btn-primary {
+    margin-top: 1.5rem;
+  }

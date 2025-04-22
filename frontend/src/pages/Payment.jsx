@@ -9,6 +9,25 @@ const Payment = () => {
   const navigate = useNavigate();
   const { orderSummary, paymentInfo, setPaymentInfo} = useContext(CheckoutContext);
 
+  const subtotal = orderSummary?.totalAmount || 0;
+  const [shippingTotal, setShippingTotal] = useState(0);
+  const [shipRecords,  setShipRecords ] = useState([]);
+
+  useEffect(() => {
+    if (!orderSummary?.orderID) {
+      navigate('/shipping');
+    }
+    API.get(`/shipping/order/${orderSummary.orderID}`)
+    .then(res => {
+      const rows = res.data; // array of { shippingID, orderItemID, shippingCost, … }
+      setShipRecords(rows);
+      const sum = rows.reduce((acc, r) => acc + parseFloat(r.shippingCost), 0);
+      setShippingTotal(sum);
+    })
+    .catch(() => {
+    });
+  }, [orderSummary, navigate]);
+
   const [formData, setFormData] = useState({
     paymentMethod: 'Credit Card', // a sensible default cardNumber:
     cardNumber:         paymentInfo.cardNumber || '',
@@ -21,12 +40,6 @@ const Payment = () => {
     useProfileAddress:  paymentInfo.useProfileAddress || false
   });
   const [error, setError] = useState('');
-
-  useEffect(() => {
-    if (!orderSummary?.orderID) {
-      navigate('/shipping');
-    }
-  }, [orderSummary, navigate]);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -45,12 +58,18 @@ const Payment = () => {
 
     setPaymentInfo(payload);
 
-    navigate('/confirmation', { state: { orderID: orderSummary.orderID } });
-  } catch (err) {
-    setError(err.response?.data?.message || 'Payment failed.');
-  }
+    navigate('/confirmation', {
+      state: {
+        orderID:        orderSummary.orderID,
+        subtotal,
+        shippingTotal,
+        grandTotal:    subtotal + shippingTotal,
+        shipRecords,   
+        transaction:   data.transactionRef,
+      }
+    });
+  } catch (err) {setError(err.response?.data?.message || 'Payment failed.');}
 };
-
 
   return (
     <div className="payment-page">
@@ -61,6 +80,16 @@ const Payment = () => {
       </div>
 
       <h2>💳 Payment</h2>
+      <p className="payment-subtitle">Review &amp; Pay</p>
+
+      {/* ➤ Totals breakdown */}
+      <div className="payment-totals">
+        <p>Items Total:    <strong>${subtotal.toFixed(2)}</strong></p>
+        <p>Shipping Total: <strong>${shippingTotal.toFixed(2)}</strong></p>
+        <hr/>
+        <p>Grand Total:    <strong>${(subtotal + shippingTotal).toFixed(2)}</strong></p>
+      </div>
+      
       <p className="payment-subtitle">Enter your payment details below:</p>
 
       {error && <p className="error">{error}</p>}
