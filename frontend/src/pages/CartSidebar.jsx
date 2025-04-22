@@ -4,7 +4,7 @@ import { CartContext } from '../context/CartContext';
 import './CartSidebar.css';
 
 const CartSidebar = () => {
-  const { cartItems, isCartOpen, setIsCartOpen,removeFromCart } = useContext(CartContext);
+  const { cartItems, isCartOpen, setIsCartOpen, removeFromCart, processOrder, } = useContext(CartContext);
   const navigate = useNavigate();
 
   if (!isCartOpen) return null;
@@ -45,10 +45,7 @@ const CartSidebar = () => {
            
       <button
         className="cart-sidebar__order"
-        onClick={() => {
-          setIsCartOpen(false);
-          navigate('/order');
-        }}
+        onClick={processOrder}
       >
         Order Now
       </button>

@@ -15,6 +15,8 @@ import CartSidebar from './pages/CartSidebar';
 import Navbar from './components/Navbar';
 import Shop from './pages/Shop';
 import ShopAdd from './pages/ShopAdd';
+import ConfirmationPage from './pages/Confirmation';
+
 
 
 import VintageDenimJacket from "./pages/products/VintageDenimJacket";
@@ -54,6 +56,7 @@ function App() {
             <Route path="/profile" element={<Profile />} />
             <Route path="/shop" element={<Shop />} />
             <Route path="/shop/add" element={<ShopAdd />} />
+            <Route path="/confirmation" element={<ConfirmationPage />} />
 
             <Route path="/product/vintage-denim-jacket" element={<VintageDenimJacket />} />
             <Route path="/product/floral-summer-dress" element={<FloralSummerDress />} />

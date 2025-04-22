@@ -94,12 +94,11 @@ CREATE TABLE `Order` (
     ON DELETE CASCADE
 );
 
--- 6. OrderItem table (changed)
+-- 6. OrderItem table (changed) -- previously was OrderItem for pk
 CREATE TABLE OrderItem (
-  OrderItemID INT AUTO_INCREMENT,
+  orderItemID INT AUTO_INCREMENT,
   orderID     INT NOT NULL,
   productID   INT NOT NULL,
-  shippingID  INT, 
   price       DECIMAL(10,2) NOT NULL,
   PRIMARY KEY (OrderItemID),
   CONSTRAINT fk_orderitem_order
@@ -108,10 +107,6 @@ CREATE TABLE OrderItem (
     ON DELETE CASCADE,
   CONSTRAINT fk_orderitem_product
     FOREIGN KEY (productID) REFERENCES Product(productID)
-    ON UPDATE CASCADE
-    ON DELETE CASCADE,
-  CONSTRAINT fk_orderitem_shipping
-    FOREIGN KEY (shippingID) REFERENCES Shipping(shippingID)
     ON UPDATE CASCADE
     ON DELETE CASCADE
 );
@@ -164,29 +159,23 @@ CREATE TABLE Payment (
     ON DELETE CASCADE
 );
 
--- 9. Review table (have not revised)
+-- 9. Review table (a buyer can only review a product once)
 DROP TABLE IF EXISTS Review;
 CREATE TABLE Review (
-  reviewID    INT AUTO_INCREMENT,
+  reviewID    INT AUTO_INCREMENT, 
   buyerID     INT NOT NULL,
   productID   INT NOT NULL,
-  orderID     INT NOT NULL,
   rating      INT NOT NULL CHECK (rating BETWEEN 1 AND 5),
   comment     TEXT,
   reviewDate  DATETIME DEFAULT CURRENT_TIMESTAMP,
-  isVerified  BOOLEAN DEFAULT TRUE,
   PRIMARY KEY (reviewID),
-  UNIQUE KEY unique_review (buyerID, productID, orderID),
+  UNIQUE KEY unique_review (buyerID, productID),
   CONSTRAINT fk_review_buyer
     FOREIGN KEY (buyerID) REFERENCES User(userID)
     ON UPDATE CASCADE
     ON DELETE CASCADE,
   CONSTRAINT fk_review_product
     FOREIGN KEY (productID) REFERENCES Product(productID)
-    ON UPDATE CASCADE
-    ON DELETE CASCADE,
-  CONSTRAINT fk_review_order
-    FOREIGN KEY (orderID) REFERENCES `Order`(orderID)
     ON UPDATE CASCADE
     ON DELETE CASCADE
 );

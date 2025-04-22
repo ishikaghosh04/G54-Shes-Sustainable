@@ -3,10 +3,10 @@ import verifyToken from "./middlewares/verifyToken.js";
 import { promisify } from "util";
 import { createShipment } from "./mock/mockShipment.js"; // Assuming you still use a mock service for creating shipment estimates
 
+const router = express.Router();
+
 export default (db) => {
   const query = promisify(db.query).bind(db);
-  const router = express.Router();
-
   const FLAT_RATE = 2.99; // constant shipping fee per seller
 
   // Estimate shipping cost & ETA grouped by seller (using orderID and checking items by seller)
@@ -54,6 +54,7 @@ export default (db) => {
     }
   });
 
+  // Input shipping details (occurs once button has been clicked after shipping address input)
   router.post("/order/:orderID", verifyToken, async (req, res) => {
     const buyerID = req.user.userID;
     const orderID = Number(req.params.orderID);
@@ -65,11 +66,6 @@ export default (db) => {
       useProfileAddress,
     } = req.body;
   
-    // Validate postal code format (e.g., for Canada)
-    if (shippingPostalCode && !/^[A-Za-z]\d[A-Za-z][ -]?\d[A-Za-z]\d$/.test(shippingPostalCode)) {
-      return res.status(400).json({ message: "Invalid postal code format." });
-    }
-  
     try {
       const orderCheck = await query(
         "SELECT status FROM `Order` WHERE orderID = ? AND buyerID = ?",
@@ -80,12 +76,18 @@ export default (db) => {
       if (!orderCheck.length || orderCheck[0].status !== "Pending") {
         return res.status(403).json({ message: "Order is already processed or invalid." });
       }
+
+      // Clean up previous shipping attempts (if user is restarting checkout flow)
+      await query(
+        `DELETE s
+          FROM Shipping s
+          JOIN OrderItem oi ON s.orderItemID = oi.orderItemID
+          WHERE oi.orderID = ?`,
+        [orderID]
+      );
   
       // If using profile address
-      let finalStreet = shippingStreet;
-      let finalCity = shippingCity;
-      let finalProvince = shippingProvince;
-      let finalPostalCode = shippingPostalCode;
+      let finalStreet, finalCity, finalProvince, finalPostalCode;
   
       if (useProfileAddress) {
         const profile = await query(
@@ -104,7 +106,19 @@ export default (db) => {
         finalCity = city;
         finalProvince = province;
         finalPostalCode = postalCode;
-      }
+      }else {
+        if (!shippingStreet || !shippingCity || !shippingProvince || !shippingPostalCode) {
+          return res.status(400).json({ message: "Please fill out all shipping address fields." });
+        }
+          // Validate postal code format (e.g., for Canada)
+        if (!/^[A-Za-z]\d[A-Za-z][ -]?\d[A-Za-z]\d$/.test(shippingPostalCode)) {
+          return res.status(400).json({ message: "Invalid postal code format." });
+        }
+        finalStreet = shippingStreet;
+        finalCity = shippingCity;
+        finalProvince = shippingProvince;
+        finalPostalCode = shippingPostalCode;
+      }      
   
       // Group items by seller
       const groups = await query(
@@ -175,7 +189,6 @@ export default (db) => {
     }
   });
   
-
   // Fetch shipping records for a specific order
   router.get("/order/:orderID", verifyToken, async (req, res) => {
     const buyerID = req.user.userID;
