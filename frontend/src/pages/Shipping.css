@@ -73,3 +73,15 @@
     color: var(--color-hover); /* e.g. dusty rose or teal hover color */
   }
   
+  .use-profile-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+  }
+  .error {
+    color: red;
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+    text-align: center;
+  }

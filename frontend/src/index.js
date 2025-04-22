@@ -6,6 +6,7 @@ import reportWebVitals from './reportWebVitals';
 import { AuthProvider } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
 import { BrowserRouter } from 'react-router-dom';
+import { CheckoutProvider } from './context/CheckoutContext';
 
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
@@ -13,9 +14,11 @@ root.render(
   <React.StrictMode>
     <BrowserRouter>
     <AuthProvider>
-     <CartProvider>
+    <CheckoutProvider>
+     <CartProvider>  
        <App />
      </CartProvider>
+     </CheckoutProvider>
     </AuthProvider>
     </BrowserRouter>
   </React.StrictMode>
