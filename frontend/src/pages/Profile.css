@@ -54,3 +54,40 @@
   .order-history-item {
     margin-bottom: 1.5rem;
   }  
+  .profile-page input {
+    border: 1px solid var(--color-text);
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-family: 'Poppins', sans-serif;
+    font-size: 1rem;
+    margin-bottom: 1rem;
+    width: 90%;
+    max-width: 300px;
+    outline: none;
+    transition: border-color 0.3s ease;
+  }
+  
+  .profile-page input:focus {
+    border-color: var(--color-brand);
+    box-shadow: 0 0 4px rgba(123, 170, 165, 0.4);
+  }
+  .profile-page textarea {
+    border: 1px solid var(--color-text);
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-family: 'Poppins', sans-serif;
+    font-size: 1rem;
+    width: 90%;
+    max-width: 300px;
+    height: 80px;
+    resize: vertical;
+    margin-bottom: 1rem;
+    outline: none;
+    transition: border-color 0.3s ease;
+  }
+  
+  .profile-page textarea:focus {
+    border-color: var(--color-brand);
+    box-shadow: 0 0 4px rgba(123, 170, 165, 0.4);
+  }
+  

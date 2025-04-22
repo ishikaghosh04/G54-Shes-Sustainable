@@ -16,7 +16,6 @@ const Product = () => {
       .catch(err => console.error('Failed to load products:', err));
   }, []);
 
-  // Converts "Floral Summer Dress" => "/product/floral-summer-dress"
   const getProductPath = (name) => {
     return `/product/${name
       .toLowerCase()
@@ -50,6 +49,11 @@ const Product = () => {
               onClick={() => navigate(getProductPath(product.name))}
               style={{ cursor: 'pointer' }}
             >
+              <img
+                src="https://via.placeholder.com/220x220.png?text=Product+Image"
+                alt={product.name}
+                className="product-thumbnail"
+              />
               <h4>{product.name}</h4>
               <p>${product.price}</p>
               <button
