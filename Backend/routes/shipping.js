@@ -207,13 +207,23 @@ export default (db) => {
 
         // Fetch shipping records for the order
         const rows = await query(
-            `SELECT s.shippingID, oi.productID, s.trackingNumber,
-                    s.shippingCost, s.shippingStreet, s.shippingCity,
-                    s.shippingProvince, s.shippingPostalCode,
-                    s.estDeliveryDate, s.status, s.shippedDate
+            `SELECT
+                s.shippingID,
+                oi.orderItemID,
+                p.productID,
+                p.name       AS productName,
+                u.userID     AS sellerID,
+                CONCAT(u.firstName,' ',u.lastName) AS sellerName,
+                u.email      AS sellerEmail,
+                s.trackingNumber,
+                s.shippingCost,
+                s.estDeliveryDate
               FROM Shipping s
-              JOIN OrderItem oi ON oi.OrderItemID = s.orderItemID
-              WHERE oi.orderID = ?`,
+              JOIN OrderItem oi  ON s.orderItemID = oi.orderItemID
+              JOIN Product   p   ON oi.productID   = p.productID
+              JOIN User      u   ON p.sellerID     = u.userID
+              WHERE oi.orderID = ?
+              `,
             [orderID]
         );
 

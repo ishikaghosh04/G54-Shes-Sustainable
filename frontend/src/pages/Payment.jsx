@@ -54,7 +54,7 @@ const Payment = () => {
     setError('');
   try {
     const payload = { ...formData };
-    await API.post(`/payment/order/${orderSummary.orderID}`, payload);
+    const { data } = await API.post(`/payment/order/${orderSummary.orderID}`, payload);
 
     setPaymentInfo(payload);
 
@@ -89,7 +89,7 @@ const Payment = () => {
         <hr/>
         <p>Grand Total:    <strong>${(subtotal + shippingTotal).toFixed(2)}</strong></p>
       </div>
-      
+
       <p className="payment-subtitle">Enter your payment details below:</p>
 
       {error && <p className="error">{error}</p>}
@@ -191,7 +191,7 @@ const Payment = () => {
         />
          </>
         )};       
-        <button type="submit" className="btn btn-primary">Pay Now
+        <button type="submit" className="btn btn-primary"> Pay ${ (subtotal + shippingTotal).toFixed(2) }
         </button>
       </form>
     </div>
