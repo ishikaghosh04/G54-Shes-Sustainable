@@ -3,15 +3,27 @@ import { Link, useNavigate } from 'react-router-dom';
 import { FiShoppingBag, FiUser } from 'react-icons/fi'; // removed FiSearch
 import { CartContext } from '../context/CartContext';
 import './Navbar.css';
+import { AuthContext } from '../context/AuthContext';
 
 const Navbar = () => {
   const { setIsCartOpen } = useContext(CartContext);
   const [showDropdown, setShowDropdown] = useState(false);
   const dropdownRef = useRef(null);
   const navigate = useNavigate();
+  const { user,logout } = useContext(AuthContext);
+
 
   const toggleDropdown = () => {
     setShowDropdown((prev) => !prev);
+  };
+  const handleSellNew = () => {
+    if (!user) {
+      // Not logged in
+      navigate('/login', { state: { message: 'Please log in to list an item.' }});
+    } else {
+      //  Note logic not added yet they’ll become a seller when they POST the new product
+      navigate('/shop/add');
+    }
   };
 
   useEffect(() => {
@@ -39,7 +51,7 @@ const Navbar = () => {
       </div>
 
       <div className="navbar__links">
-        <button className="sell-new-button" onClick={() => navigate('/shop')}>
+        <button className="sell-new-button" onClick={handleSellNew}>
           Sell New
         </button>
 
@@ -61,7 +73,8 @@ const Navbar = () => {
                 Your Shop
               </div>
               <div>Settings</div>
-              <div>Log out</div>
+              <div onClick={() => { logout(); setShowDropdown(false); navigate('/');  }}
+              >Log out</div>
             </div>
           )}
         </div>

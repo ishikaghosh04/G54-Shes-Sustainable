@@ -64,4 +64,10 @@
     outline: none;
     box-shadow: 0 0 0 2px rgba(216, 167, 177, 0.3);
   }
+  .add-error {
+    color: red;
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+    text-align: center;
+  }
   

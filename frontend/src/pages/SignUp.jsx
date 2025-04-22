@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import './SignUp.css';
+import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import { FiArrowLeft } from 'react-icons/fi';
 
@@ -130,6 +131,12 @@ const SignUp = () => {
         {error && <p className="signup-error">{error}</p>}
 
         <button type="submit" className="btn btn-primary">Sign Up</button>
+        <p className="signup-redirect">
+        Already have an account?{' '}
+        <Link to="/login" className="signup-redirect__link">
+        Login
+        </Link>  
+        </p>
       </form>
     </div>
   );

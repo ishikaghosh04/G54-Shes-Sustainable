@@ -21,6 +21,7 @@ export default (db) => {
             delete user.userID;
             delete user.isSeller;
             delete user.isBuyer;
+            delete user.isAdmin;
             return res.status(200).json(user);
         });
     });
@@ -33,12 +34,22 @@ export default (db) => {
         const userId = req.user.userID;
         const fields = req.body;
     
-        // Prevent updates to required fields
-        const blockedFields = ["firstName", "lastName", "email", "password", "userID", "isSeller", "isBuyer"];
+        // Prevent updates to required fields (front end wise isn't even an option but for security)
+        const blockedFields = ["firstName", "lastName", "email", "password", "userID", "isSeller", "isBuyer", "isAdmin"];
         for (let key of Object.keys(fields)) {
             if (blockedFields.includes(key)) {
                 return res.status(400).json({ message: `Field '${key}' cannot be updated via this route.` });
             }
+        }
+
+        // Validate phone number (must be 10 digits)
+        if (fields.phoneNumber && !/^\d{10}$/.test(fields.phoneNumber)) {
+            return res.status(400).json({ message: "Phone number must be exactly 10 digits." });
+        }
+
+        // Validate postal code (for Canada, e.g., A1A 1A1 or A1A1A1)
+        if (fields.postalCode && !/^[A-Za-z]\d[A-Za-z][ -]?\d[A-Za-z]\d$/.test(fields.postalCode)) {
+            return res.status(400).json({ message: "Invalid postal code format." });
         }
     
         if (Object.keys(fields).length === 0) {
@@ -80,7 +91,7 @@ export default (db) => {
     /*
     Note to frontend: displays the products that have been sold by the user
     */
-    router.get("/soldProducts", verifyToken, (req, res) => {
+    router.get("/sold-products", verifyToken, (req, res) => {
         const sellerID = req.user.userID;
 
         const q = `
@@ -116,7 +127,7 @@ export default (db) => {
             FROM \`Order\` o
             JOIN OrderContains oc ON o.orderID = oc.orderID
             JOIN Product p ON oc.productID = p.productID
-            WHERE o.buyerID = ? AND o.status = 'complete'
+            WHERE o.buyerID = ? AND o.status = 'Processed'
             ORDER BY o.orderDate DESC;
         `;
     

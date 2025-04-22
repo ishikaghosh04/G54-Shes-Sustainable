@@ -70,7 +70,6 @@ export default (db) => {
     Note to backend: the cart will continue to exist even if the buyer
     removes all items (once they return to the site, they will use the same
     cartID)
-    -- create remove button for each item in cart--
     */
     router.delete("/:productID", verifyToken, (req, res) => {
         const userID = req.user.userID;

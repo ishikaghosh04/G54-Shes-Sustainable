@@ -30,10 +30,10 @@ export default (db) => {
     
         const totalAmount = parseFloat(items.reduce((sum, item) => sum + parseFloat(item.price), 0).toFixed(2));
     
-        // 3. Check if a pending order already exists for this cart
+        // 3. Check if a pending order already exists 
         const existingOrder = await query(
-          "SELECT orderID FROM `Order` WHERE cartID = ? AND status = 'Pending'",
-          [cart.cartID]
+          "SELECT orderID FROM `Order` WHERE buyerID = ? AND status = 'Pending'",
+          [userID]
         );
     
         let orderID;
@@ -43,25 +43,25 @@ export default (db) => {
           orderID = existingOrder[0].orderID;
     
           // Clear old order items before re-adding
-          await query("DELETE FROM OrderContains WHERE orderID = ?", [orderID]);
+          await query("DELETE FROM OrderItem WHERE orderID = ?", [orderID]);
     
           // Optional: update totalAmount in case it's changed
           await query("UPDATE `Order` SET totalAmount = ? WHERE orderID = ?", [totalAmount, orderID]);
         } else {
           // No existing order → create new one
           const orderResult = await query(
-            "INSERT INTO `Order` (buyerID, totalAmount, cartID) VALUES (?, ?, ?)",
-            [userID, totalAmount, cart.cartID]
+            "INSERT INTO `Order` (buyerID, totalAmount) VALUES (?, ?)",
+            [userID, totalAmount]
           );
           orderID = orderResult.insertId;
         }
     
-        // 4. Insert updated cart items into OrderContains
+        // 4. Insert updated cart items into OrderItem
         const orderItems = items.map(item => [orderID, item.productID, item.price]);
-        await query("INSERT INTO OrderContains (orderID, productID, price) VALUES ?", [orderItems]);
+        await query("INSERT INTO OrderItem (orderID, productID, price) VALUES ?", [orderItems]);
     
         // 5. Deactivate cart again
-        await query("UPDATE Cart SET isActive = 0 WHERE cartID = ?", [cart.cartID]);
+        await query("UPDATE Cart SET isActive = FALSE WHERE cartID = ?", [cart.cartID]);
     
         res.status(201).json({ orderID, totalAmount, itemsCount: items.length });
     
@@ -83,10 +83,10 @@ export default (db) => {
       const findSql = `
         SELECT c.cartID, o.orderID
           FROM Cart c
-          JOIN \`Order\` o ON o.cartID = c.cartID
+          JOIN \`Order\` o ON o.buyerID = c.userID
         WHERE c.userID = ?
           AND c.isActive = FALSE
-          AND o.status != 'Processed'
+          AND o.status = 'Pending'
         ORDER BY o.orderDate DESC
         LIMIT 1
       `;

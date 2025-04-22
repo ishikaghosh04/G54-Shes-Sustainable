@@ -1,14 +1,14 @@
--- new SQL script
+-- UPDATED SQL SCRIPT (matches diagrams)
 CREATE DATABASE IF NOT EXISTS ShesSustainable;
 USE ShesSustainable;
 SET FOREIGN_KEY_CHECKS = 0;
 
--- 1. User table (combined buyer/seller)
+-- 1. User table (buyer/seller, or admin)
 DROP TABLE IF EXISTS User;
 CREATE TABLE User (
   userID        INT AUTO_INCREMENT,
   email         VARCHAR(100) NOT NULL UNIQUE,
-  phoneNumber   VARCHAR(20),
+  phoneNumber   VARCHAR(10),
   city          VARCHAR(50),
   province      VARCHAR(50),
   street        VARCHAR(100),
@@ -18,6 +18,7 @@ CREATE TABLE User (
   password      VARCHAR(255) NOT NULL, 
   isBuyer       BOOLEAN DEFAULT TRUE,
   isSeller      BOOLEAN DEFAULT FALSE,
+  isAdmin       BOOLEAN DEFAULT FALSE,
   PRIMARY KEY (userID)
 );
 
@@ -48,7 +49,7 @@ DROP TABLE IF EXISTS CartStores;
 DROP TABLE IF EXISTS Cart;
 CREATE TABLE Cart (
   cartID        INT AUTO_INCREMENT,
-  userID        INT NOT NULL,
+  userID        INT NOT NULL, -- buyer
   dateCreated   DATETIME DEFAULT CURRENT_TIMESTAMP,
   -- 0 if no longer in use, 1 if in use:
   isActive      BOOLEAN DEFAULT TRUE,
@@ -61,7 +62,7 @@ CREATE TABLE Cart (
 
 -- 4. CartStores table
 CREATE TABLE CartStores (
-  cartID      INT NOT NULL,
+  cartID      INT NOT NULL, 
   productID   INT NOT NULL,
   dateAdded   DATETIME DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (cartID, productID),
@@ -77,13 +78,12 @@ CREATE TABLE CartStores (
   CONSTRAINT unique_product_per_cart UNIQUE (productID)
 );
 
--- 5. Order table (added cartID)
-DROP TABLE IF EXISTS OrderContains;
+-- 5. Order table
+DROP TABLE IF EXISTS OrderItem;
 DROP TABLE IF EXISTS `Order`;
 CREATE TABLE `Order` (
   orderID         INT AUTO_INCREMENT,
   buyerID         INT NOT NULL,
-  cartID          INT,
   orderDate       DATETIME DEFAULT CURRENT_TIMESTAMP,
   totalAmount     DECIMAL(10,2) NOT NULL,
   status          VARCHAR(50) DEFAULT 'Pending',
@@ -91,26 +91,27 @@ CREATE TABLE `Order` (
   CONSTRAINT fk_order_buyer
     FOREIGN KEY (buyerID) REFERENCES User(userID)
     ON UPDATE CASCADE
-    ON DELETE CASCADE,
-  CONSTRAINT fk_order_cart
-    FOREIGN KEY (cartID) REFERENCES Cart(cartID)
-    ON UPDATE CASCADE
-    ON DELETE SET NULL
+    ON DELETE CASCADE
 );
 
--- 6. OrderContains table
-CREATE TABLE OrderContains (
+-- 6. OrderItem table (changed)
+CREATE TABLE OrderItem (
+  OrderItemID INT AUTO_INCREMENT,
   orderID     INT NOT NULL,
   productID   INT NOT NULL,
+  shippingID  INT, 
   price       DECIMAL(10,2) NOT NULL,
-  status      VARCHAR(50) DEFAULT 'Processing',
-  PRIMARY KEY (orderID, productID),
+  PRIMARY KEY (OrderItemID),
   CONSTRAINT fk_orderitem_order
     FOREIGN KEY (orderID) REFERENCES `Order`(orderID)
     ON UPDATE CASCADE
     ON DELETE CASCADE,
   CONSTRAINT fk_orderitem_product
     FOREIGN KEY (productID) REFERENCES Product(productID)
+    ON UPDATE CASCADE
+    ON DELETE CASCADE,
+  CONSTRAINT fk_orderitem_shipping
+    FOREIGN KEY (shippingID) REFERENCES Shipping(shippingID)
     ON UPDATE CASCADE
     ON DELETE CASCADE
 );
@@ -119,11 +120,10 @@ CREATE TABLE OrderContains (
 DROP TABLE IF EXISTS Shipping;
 CREATE TABLE Shipping (
   shippingID       INT AUTO_INCREMENT,
-  orderID          INT NOT NULL,
-  productID        INT NOT NULL,
-  trackingNumber   VARCHAR(100), -- randomly generated
+	orderItemID      INT NOT NULL,
+	trackingNumber   VARCHAR(100),
   shippingCost     DECIMAL(10,2) NOT NULL DEFAULT 0,
-  shippedDate      DATETIME,
+  shippedDate      DATETIME DEFAULT CURRENT_TIMESTAMP,
   -- Shipping details
   shippingStreet VARCHAR(100), -- added
   shippingCity VARCHAR(50), -- added
@@ -132,8 +132,8 @@ CREATE TABLE Shipping (
   estDeliveryDate  DATE,
   status           VARCHAR(50) DEFAULT 'Pending',
   PRIMARY KEY (shippingID),
-  CONSTRAINT fk_shipping_order
-    FOREIGN KEY (orderID, productID) REFERENCES `OrderContains`(orderID,productID)
+  CONSTRAINT fk_shipping_orderItem
+    FOREIGN KEY (orderItemID) REFERENCES `OrderItem`(orderItemID)
     ON UPDATE CASCADE
     ON DELETE CASCADE
 );
@@ -164,7 +164,7 @@ CREATE TABLE Payment (
     ON DELETE CASCADE
 );
 
--- 9. Review table
+-- 9. Review table (have not revised)
 DROP TABLE IF EXISTS Review;
 CREATE TABLE Review (
   reviewID    INT AUTO_INCREMENT,
