@@ -17,6 +17,23 @@ import Shop from './pages/Shop';
 import ShopAdd from './pages/ShopAdd';
 
 
+import VintageDenimJacket from "./pages/products/VintageDenimJacket";
+import FloralSummerDress from "./pages/products/FloralSummerDress";
+import SustainableCottonSweater from "./pages/products/SustainableCottonSweater";
+import DesignerLeatherBoots from "./pages/products/DesignerLeatherBoots";
+import EcoFriendlyYogaPants from "./pages/products/EcoFriendlyYogaPants";
+import VintageGraphicTShirt from "./pages/products/VintageGraphicTShirt";
+import DesignerHandbag from "./pages/products/DesignerHandbag";
+import WoolWinterScarf from "./pages/products/WoolWinterScarf";
+
+import LinaGeorge from './pages/sellers/LinaGeorge';
+import AlishaMorgan from './pages/sellers/AlishaMorgan';
+import AanyaPatel from './pages/sellers/AanyaPatel';
+import RachelLim from './pages/sellers/RachelLim';
+import JaneDoe from './pages/sellers/JaneDoe';
+import OliviaChen from './pages/sellers/OliviaChen';
+import KiaraThomas from './pages/sellers/KiaraThomas';
+import PriyaDesai from './pages/sellers/PriyaDesai';
 function App() {
   return (
     <CartProvider>
@@ -37,6 +54,24 @@ function App() {
             <Route path="/profile" element={<Profile />} />
             <Route path="/shop" element={<Shop />} />
             <Route path="/shop/add" element={<ShopAdd />} />
+
+            <Route path="/product/vintage-denim-jacket" element={<VintageDenimJacket />} />
+            <Route path="/product/floral-summer-dress" element={<FloralSummerDress />} />
+            <Route path="/product/sustainable-cotton-sweater" element={<SustainableCottonSweater />} />
+            <Route path="/product/designer-leather-boots" element={<DesignerLeatherBoots />} />
+            <Route path="/product/ecofriendly-yoga-pants" element={<EcoFriendlyYogaPants />} />
+            <Route path="/product/vintage-graphic-tshirt" element={<VintageGraphicTShirt />} />
+            <Route path="/product/designer-handbag" element={<DesignerHandbag />} />
+            <Route path="/product/wool-winter-scarf" element={<WoolWinterScarf />} />
+
+            <Route path="/seller/alisha-morgan" element={<AlishaMorgan />} />
+            <Route path="/seller/priya-desai" element={<PriyaDesai />} />
+            <Route path="/seller/aanya-patel" element={<AanyaPatel />} />
+            <Route path="/seller/rachel-lim" element={<RachelLim />} />
+            <Route path="/seller/jane-doe" element={<JaneDoe />} />
+            <Route path="/seller/olivia-chen" element={<OliviaChen />} />
+            <Route path="/seller/kiara-thomas" element={<KiaraThomas />} />
+            <Route path="/seller/lina-george" element={<LinaGeorge />} />
 
           </Routes>
             
