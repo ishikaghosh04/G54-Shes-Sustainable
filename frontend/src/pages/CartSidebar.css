@@ -70,4 +70,28 @@
   .cart-sidebar__order:hover {
     background-color: var(--color-hover); /* Olive Green */
   }
-  
+  /* CartSidebar.css */
+.cart-sidebar__item {
+  position: relative;
+  margin-bottom: 1rem;
+  color: var(--color-brand);
+  padding-right: 1.5rem; /* space for the remove button */
+}
+
+/* small remove “×” in the top‑right of each item */
+.cart-sidebar__remove {
+  position: absolute;
+  top: 0;
+  right: 0;
+  background: none;
+  border: none;
+  font-size: 0.9rem;
+  line-height: 1;
+  color: var(--color-text);
+  cursor: pointer;
+  padding: 0;
+}
+
+.cart-sidebar__remove:hover {
+  color: var(--color-accent);
+}

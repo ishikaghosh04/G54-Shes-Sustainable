@@ -56,4 +56,14 @@
     margin: 0 auto 1rem;
     transition: color 0.2s ease;
   }
+  .signup-redirect {
+    margin-top: 1rem;
+    font-size: 0.9rem;
+    text-align: center;
+  }
+  .signup-redirect__link {
+    color: var(--color-accent);
+    text-decoration: underline;
+    cursor: pointer;
+  }
   

@@ -1,13 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState,useContext } from 'react';
 import './Login.css';
 import { useNavigate } from 'react-router-dom';
 import { FiArrowLeft } from 'react-icons/fi';
 import API from '../api';
-// Pending what is the landing page after signup
+import { AuthContext }            from '../context/AuthContext';
+
+
 const Login = () => {
   const [credentials, setCredentials] = useState({ email: '', password: '' });
   const navigate = useNavigate();
   const [error, setError] = useState('');
+  const { setUser }                   = useContext(AuthContext);
 
   const handleChange = (e) => {
     setCredentials(prev => ({
@@ -18,19 +21,20 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Login attempt:', credentials);
     setError("");
 
     try {
-      const res = await API.post("/login", credentials);
+      const res = await API.post('/login', credentials);
       const { token } = res.data;
 
  
-      localStorage.setItem("jwt", token);
-      API.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+      localStorage.setItem('jwt', token);
+      API.defaults.headers.common['Authorization'] = `Bearer ${token}`;
 
+      const profileRes = await API.get('/profile');
+      setUser(profileRes.data);
 
-      navigate("/product");
+      navigate('/product');
     } catch (err) {
       // Show server‑side message or fallback to JS error
       const serverMsg = err.response?.data?.message
