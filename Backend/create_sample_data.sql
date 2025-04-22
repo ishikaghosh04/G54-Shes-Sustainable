@@ -1,4 +1,5 @@
 -- REVIEW PRIOR TO RUNNING
+-- Needs Changes
 
 -- Enable foreign key checks to ensure data integrity
 SET FOREIGN_KEY_CHECKS = 1;

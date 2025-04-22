@@ -11,7 +11,7 @@ const Home = () => {
   useEffect(() => {
     const fetchAllUsers = async () => {
       try {
-        const res = await axios.get("http://localhost:8800/home");
+        const res = await axios.get("http://localhost:8800/");
         console.log(res.data);
         setUsers(res.data);
       } catch (err) {

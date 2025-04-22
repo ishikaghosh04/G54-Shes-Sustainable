@@ -15,10 +15,16 @@ const Product = () => {
       }, []);
 
          // Handler when a category is selected
-  const handleSelectCategory = (category) => {
-    API.get(`/products/category/${category}`)
-      .then(res => setProducts(res.data))
-      .catch(err => console.error(`Failed to load ${category}:`, err));
+  const handleSelectCategory = (cat) => {
+    if (!cat) {
+      API.get('/products')
+        .then(res => setProducts(res.data))
+        .catch(err => console.error(err));
+    } else {
+      API.get(`/products/category/${cat}`)
+        .then(res => setProducts(res.data))
+        .catch(err => console.error(err));
+    }
          };
 
   return (

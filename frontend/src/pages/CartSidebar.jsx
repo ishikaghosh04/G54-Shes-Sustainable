@@ -41,7 +41,7 @@ const CartSidebar = () => {
           </div>
         ))
       )}
-
+           
       <button
         className="cart-sidebar__order"
         onClick={() => {

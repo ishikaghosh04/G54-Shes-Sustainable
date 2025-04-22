@@ -25,12 +25,13 @@ const CategoryBar = ({ onSelectCategory = () => {} }) => {
       [type]: !prev[type],
     }));
   };
+  const displayCats = ['All', ...categories];
 
   return (
     <div className="category-bar">
       <div className="category-options">
-        {categories.map((cat) => (
-          <button key={cat} className="category-button" onClick={() => onSelectCategory(cat)}>
+        {displayCats.map((cat) => (
+          <button key={cat} className="category-button" onClick={() => onSelectCategory(cat === 'All' ? null : cat)}>
             {cat}
           </button>
         ))}

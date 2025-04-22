@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import {  Routes, Route } from 'react-router-dom';
 import Home from "./pages/Home";
 import SignUp from "./pages/SignUp";
 import Login from "./pages/Login";
@@ -16,11 +16,12 @@ import Navbar from './components/Navbar';
 import Shop from './pages/Shop';
 import ShopAdd from './pages/ShopAdd';
 
+
 function App() {
   return (
     <CartProvider>
       <div className="App">
-        <BrowserRouter>
+      
           <CartSidebar /> {/* Always render sidebar at top level */}
           <Navbar />
           <Routes>
@@ -38,7 +39,7 @@ function App() {
             <Route path="/shop/add" element={<ShopAdd />} />
 
           </Routes>
-        </BrowserRouter>
+            
       </div>
     </CartProvider>
   );
