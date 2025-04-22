@@ -3,10 +3,10 @@ import verifyToken from "./middlewares/verifyToken.js";
 import { promisify } from "util";
 import { createShipment } from "./mock/mockShipment.js"; // Assuming you still use a mock service for creating shipment estimates
 
+const router = express.Router();
+
 export default (db) => {
   const query = promisify(db.query).bind(db);
-  const router = express.Router();
-
   const FLAT_RATE = 2.99; // constant shipping fee per seller
 
   // Estimate shipping cost & ETA grouped by seller (using orderID and checking items by seller)
@@ -54,6 +54,7 @@ export default (db) => {
     }
   });
 
+  // Input shipping details
   router.post("/order/:orderID", verifyToken, async (req, res) => {
     const buyerID = req.user.userID;
     const orderID = Number(req.params.orderID);

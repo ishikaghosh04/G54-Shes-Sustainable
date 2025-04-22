@@ -17,5 +17,3 @@ export function createShipment(userID, orderID, sellerID, orderItems) {
     message: `Shipment created for order ${orderID} belonging to user ${userID} with seller ${sellerID}.`
   };
 }
-  
-  
