@@ -54,7 +54,7 @@ export default (db) => {
     }
   });
 
-  // Input shipping details
+  // Input shipping details (occurs once button has been clicked after shipping address input)
   router.post("/order/:orderID", verifyToken, async (req, res) => {
     const buyerID = req.user.userID;
     const orderID = Number(req.params.orderID);
@@ -81,6 +81,15 @@ export default (db) => {
       if (!orderCheck.length || orderCheck[0].status !== "Pending") {
         return res.status(403).json({ message: "Order is already processed or invalid." });
       }
+
+      // Clean up previous shipping attempts (if user is restarting checkout flow)
+      await query(
+        `DELETE s
+          FROM Shipping s
+          JOIN OrderItem oi ON s.orderItemID = oi.orderItemID
+          WHERE oi.orderID = ?`,
+        [orderID]
+      );
   
       // If using profile address
       let finalStreet = shippingStreet;
@@ -176,7 +185,6 @@ export default (db) => {
     }
   });
   
-
   // Fetch shipping records for a specific order
   router.get("/order/:orderID", verifyToken, async (req, res) => {
     const buyerID = req.user.userID;
