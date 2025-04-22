@@ -50,39 +50,35 @@ export default (db) => {
       const totalShipping = shippingRows.reduce((sum, row) => sum + parseFloat(row.shippingCost), 0);
       const totalAmount = orderSubtotal + totalShipping;
 
-      if (!cardNumber || !expirationDate || !cvv ) {
-        return res.status(400).json({ message: "Missing payment method details." });
-      }
-
-      if (!billingStreet || !billingCity || !billingProvince || !billingPostalCode) {
-        return res.status(400).json({ message: "Missing billing address details." });
-      }
-
-      // Validate postal code (for Canada, e.g., A1A 1A1 or A1A1A1)
-      if (!/^[A-Za-z]\d[A-Za-z][ -]?\d[A-Za-z]\d$/.test(billingPostalCode)) {
-          return res.status(400).json({ message: "Invalid postal code format.1" });
-      }
-  
-      // Step 4: Use profile address if requested
-      let street = billingStreet;
-      let city = billingCity;
-      let province = billingProvince;
-      let postalCode = billingPostalCode;
-  
+      let street, city, province, postalCode;
       if (useProfileAddress) {
         const [profile] = await query(
           "SELECT street, city, province, postalCode FROM User WHERE userID = ?",
           [buyerID]
         );
-  
+
         if (!profile) {
           return res.status(400).json({ message: "Profile address not found." });
         }
-  
+
         street = profile.street;
         city = profile.city;
         province = profile.province;
         postalCode = profile.postalCode;
+      } else {
+        if (!billingStreet || !billingCity || !billingProvince || !billingPostalCode) {
+          return res.status(400).json({ message: "Missing billing address details." });
+        }
+
+        // Validate postal code (for Canada, e.g., A1A 1A1 or A1A1A1)
+        if (!/^[A-Za-z]\d[A-Za-z][ -]?\d[A-Za-z]\d$/.test(billingPostalCode)) {
+          return res.status(400).json({ message: "Invalid postal code format." });
+        }
+
+        street = billingStreet;
+        city = billingCity;
+        province = billingProvince;
+        postalCode = billingPostalCode;
       }
   
       // Step 5: Simulate payment

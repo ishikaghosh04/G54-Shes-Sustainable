@@ -66,11 +66,6 @@ export default (db) => {
       useProfileAddress,
     } = req.body;
   
-    // Validate postal code format (e.g., for Canada)
-    if (shippingPostalCode && !/^[A-Za-z]\d[A-Za-z][ -]?\d[A-Za-z]\d$/.test(shippingPostalCode)) {
-      return res.status(400).json({ message: "Invalid postal code format." });
-    }
-  
     try {
       const orderCheck = await query(
         "SELECT status FROM `Order` WHERE orderID = ? AND buyerID = ?",
@@ -92,10 +87,7 @@ export default (db) => {
       );
   
       // If using profile address
-      let finalStreet = shippingStreet;
-      let finalCity = shippingCity;
-      let finalProvince = shippingProvince;
-      let finalPostalCode = shippingPostalCode;
+      let finalStreet, finalCity, finalProvince, finalPostalCode;
   
       if (useProfileAddress) {
         const profile = await query(
@@ -114,7 +106,19 @@ export default (db) => {
         finalCity = city;
         finalProvince = province;
         finalPostalCode = postalCode;
-      }
+      }else {
+        if (!shippingStreet || !shippingCity || !shippingProvince || !shippingPostalCode) {
+          return res.status(400).json({ message: "Please fill out all shipping address fields." });
+        }
+          // Validate postal code format (e.g., for Canada)
+        if (!/^[A-Za-z]\d[A-Za-z][ -]?\d[A-Za-z]\d$/.test(shippingPostalCode)) {
+          return res.status(400).json({ message: "Invalid postal code format." });
+        }
+        finalStreet = shippingStreet;
+        finalCity = shippingCity;
+        finalProvince = shippingProvince;
+        finalPostalCode = shippingPostalCode;
+      }      
   
       // Group items by seller
       const groups = await query(
