@@ -73,14 +73,11 @@ const Shipping = () => {
 
       <div className="shipping-card">
         <form className="shipping-form" onSubmit={handleSubmit}>
-        <label className="use-profile-label">
-       <input
-         type="checkbox"
-        name="useProfileAddress"
-        checked={formData.useProfileAddress}
-        onChange={handleChange}
+
+     <span> <label className="use-profile-label">
+       <input type="checkbox" name="useProfileAddress" checked={formData.useProfileAddress} onChange={handleChange}
       /> Use my profile address
-   </label>
+      </label></span>
 
         {!formData.useProfileAddress && (
           <>
