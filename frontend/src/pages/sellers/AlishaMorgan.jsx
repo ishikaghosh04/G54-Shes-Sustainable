@@ -20,24 +20,35 @@ const AlishaMorgan = () => {
 
       <h3 className="items-title">Items Sold</h3>
       <div className="items-grid">
+
         <div className="item-card">
-          <div className="image-placeholder">Image</div>
-          <p>Designer Handbag</p>
+          <img
+            src="/images/MaternityJeans.jpg"
+            alt="Maternity Jeans"
+            className="sold-item-image"
+          />
+          <p>Maternity Jeans</p>
           <p className="sold-date">Sold on February 28, 2025</p>
           <div className="item-review">
-                <h4>Review</h4>
-                <p><strong>Fatima:</strong> i pair it up with all of my outfits and it literally can fir all o fmy necessities!</p>
-            </div>
+            <h4>Review</h4>
+            <p><strong>Fatima:</strong> I pair it up with all of my outfits and it literally fits all of my necessities!</p>
+          </div>
         </div>
+
         <div className="item-card">
-          <div className="image-placeholder">Image</div>
+          <img
+            src="/images/LeatherToteBag.jpg"
+            alt="Elegant Leather Tote"
+            className="sold-item-image"
+          />
           <p>Elegant Leather Tote</p>
           <p className="sold-date">Sold on January 14, 2025</p>
           <div className="item-review">
-                <h4>Review</h4>
-                <p><strong>maya:</strong> It is so spacious and i get compliment everywhere i go!!!</p>
-            </div>
+            <h4>Review</h4>
+            <p><strong>Maya:</strong> It is so spacious and I get compliments everywhere I go!!!</p>
+          </div>
         </div>
+
       </div>
     </div>
   );

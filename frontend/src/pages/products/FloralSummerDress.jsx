@@ -21,7 +21,7 @@ const FloralSummerDress = () => {
       <button onClick={() => navigate('/product')} className="back-button">← Back to Products</button>
       <h2>Floral Summer Dress</h2>
       <img
-        src="https://via.placeholder.com/300x300.png?text=Floral+Summer+Dress"
+        src="/images/FloralSummerDress.jpg"
         alt="Floral Summer Dress"
         className="product-image"
       />

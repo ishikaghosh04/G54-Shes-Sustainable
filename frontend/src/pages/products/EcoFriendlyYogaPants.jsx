@@ -21,7 +21,7 @@ const EcoFriendlyYogaPants = () => {
       <button onClick={() => navigate('/product')} className="back-button">← Back to Products</button>
       <h2>Eco-friendly Yoga Pants</h2>
       <img
-        src="https://via.placeholder.com/300x300.png?text=Eco+Yoga+Pants"
+        src="/images/EcoFriendlyYogaPants.jpg"
         alt="Eco-friendly Yoga Pants"
         className="product-image"
       />

@@ -3,14 +3,11 @@ import './CategoryBar.css';
 import { FaFilter } from 'react-icons/fa';
 import API from '../api';
 
-const CategoryBar = ({ onSelectCategory = () => {} }) => {
+const CategoryBar = ({ onFiltersChange = () => {} }) => {
   const [showFilters, setShowFilters] = useState(false);
   const [price, setPrice] = useState(50);
-  const [newnessOptions, setNewnessOptions] = useState({
-    new: false,
-    gentlyUsed: false,
-  });
-
+  const [newnessOptions, setNewnessOptions] = useState({ new: false, gentlyUsed: false });
+  const [selectedCategory, setSelectedCategory] = useState(null);
   const [categories, setCategories] = useState([]);
 
   useEffect(() => {
@@ -19,19 +16,44 @@ const CategoryBar = ({ onSelectCategory = () => {} }) => {
       .catch(err => console.error("Failed to load categories:", err));
   }, []);
 
+  useEffect(() => {
+    const condition =
+      newnessOptions.new && !newnessOptions.gentlyUsed ? 'new' :
+      !newnessOptions.new && newnessOptions.gentlyUsed ? 'gently used' :
+      null;
+
+    onFiltersChange({
+      category: selectedCategory,
+      price,
+      condition,
+    });
+  }, [price, newnessOptions, selectedCategory]);
+
   const handleNewnessChange = (type) => {
     setNewnessOptions((prev) => ({
       ...prev,
       [type]: !prev[type],
     }));
   };
+
+  const resetFilters = () => {
+    setPrice(50);
+    setNewnessOptions({ new: false, gentlyUsed: false });
+    setSelectedCategory(null);
+    onFiltersChange({});
+  };
+
   const displayCats = ['All', ...categories];
 
   return (
     <div className="category-bar">
       <div className="category-options">
         {displayCats.map((cat) => (
-          <button key={cat} className="category-button" onClick={() => onSelectCategory(cat === 'All' ? null : cat)}>
+          <button
+            key={cat}
+            className={`category-button ${selectedCategory === cat ? 'active' : ''}`}
+            onClick={() => setSelectedCategory(cat === 'All' ? null : cat)}
+          >
             {cat}
           </button>
         ))}
@@ -81,6 +103,10 @@ const CategoryBar = ({ onSelectCategory = () => {} }) => {
                 Gently Used
               </label>
             </div>
+
+            <button className="reset-button" onClick={resetFilters}>
+              Reset Filters
+            </button>
           </div>
         )}
       </div>

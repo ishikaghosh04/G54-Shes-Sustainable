@@ -1,11 +1,24 @@
 .product-page {
   padding: 3rem 2rem;
-  background-color: var(--color-bg);
+  background: linear-gradient(135deg, #f9d5db, #fdfbf7, #d8a7b1);
+  background-size: 400% 400%;
+  animation: dreamyFlow 20s ease infinite;
   font-family: 'Poppins', sans-serif;
-  color: var(--color-brand);
+  color: #2d3a35;
   text-align: center;
 }
 
+@keyframes dreamyFlow {
+  0% {
+    background-position: 100% 100%;
+  }
+  50% {
+    background-position: 0% 0%;
+  }
+  100% {
+    background-position: 100% 100%;
+  }
+}
 .product-page h2 {
   font-family: 'Playfair Display', serif;
   font-size: 2rem;
@@ -42,5 +55,12 @@
 
 .product-card p {
   color: var(--color-text);
+  margin-bottom: 1rem;
+}
+.product-thumbnail {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 8px;
   margin-bottom: 1rem;
 }

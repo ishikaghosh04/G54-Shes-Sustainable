@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { useNavigate, Link } from 'react-router-dom'; // ✅ Added Link
+import { useNavigate, Link } from 'react-router-dom';
 import '../Product.css';
 import './VintageDenimJacket.css';
 import { CartContext } from '../../context/CartContext';
@@ -21,7 +21,7 @@ const VintageDenimJacket = () => {
       <button onClick={() => navigate('/product')} className="back-button">← Back to Products</button>
       <h2>Vintage Denim Jacket</h2>
       <img
-        src="https://via.placeholder.com/300x300.png?text=Denim+Jacket"
+        src="/images/VintageDenimJacket.jpg"
         alt="Vintage Denim Jacket"
         className="product-image"
       />

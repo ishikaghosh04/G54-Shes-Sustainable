@@ -20,24 +20,37 @@ const OliviaChen = () => {
 
       <h3 className="items-title">Items Sold</h3>
       <div className="items-grid">
+
+        {/* First Item */}
         <div className="item-card">
-          <div className="image-placeholder">Image</div>
-          <p>Vintage Denim Jacket</p>
+          <img
+            src="/images/CottonMaternityTee.jpg"
+            alt="Cotton Maternity Tee"
+            className="sold-item-image"
+          />
+          <p>Cotton Maternity Tee</p>
           <p className="sold-date">Sold on April 5, 2025</p>
           <div className="item-review">
-                <h4>Review</h4>
-                <p><strong>Hannah:</strong> Great fit and quality, love the retro vibe! 🧥</p>
-            </div>
+            <h4>Review</h4>
+            <p><strong>Hannah:</strong> Great fit and quality, love the retro vibe! 🧥</p>
+          </div>
         </div>
+
+        {/* Second Item */}
         <div className="item-card">
-          <div className="image-placeholder">Image</div>
+          <img
+            src="/images/CottonBabyBlanket.jpg"
+            alt="Cotton Baby Blanket"
+            className="sold-item-image"
+          />
           <p>Cotton Baby Blanket</p>
           <p className="sold-date">Sold on February 20, 2025</p>
           <div className="item-review">
-                <h4>Review</h4>
-                <p><strong>Kylie:</strong> Best Purchas eever</p>
-            </div>
+            <h4>Review</h4>
+            <p><strong>Kylie:</strong> Best Purchase ever</p>
+          </div>
         </div>
+
       </div>
     </div>
   );

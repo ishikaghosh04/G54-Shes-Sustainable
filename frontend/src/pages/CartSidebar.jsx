@@ -2,9 +2,10 @@ import React, { useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { CartContext } from '../context/CartContext';
 import './CartSidebar.css';
+import { FiTrash2 } from 'react-icons/fi';
 
 const CartSidebar = () => {
-  const { cartItems, isCartOpen, setIsCartOpen, removeFromCart, processOrder, } = useContext(CartContext);
+  const { cartItems, isCartOpen, setIsCartOpen, removeFromCart, processOrder } = useContext(CartContext);
   const navigate = useNavigate();
 
   if (!isCartOpen) return null;
@@ -36,13 +37,20 @@ const CartSidebar = () => {
       ) : (
         cartItems.map((item, index) => (
           <div key={index} className="cart-sidebar__item">
-            <button className="cart-sidebar__remove" aria-label="Remove item" onClick={() => removeFromCart(item.productID)}>  × </button>
-            <p><strong>{item.name}</strong></p>
+            <div className="item-header">
+              <p className="item-name"><strong>{item.name}</strong></p>
+              <FiTrash2
+                size={18}
+                className="cart-sidebar__icon"
+                onClick={() => removeFromCart(item.productID)}
+                aria-label="Remove item"
+              />
+            </div>
             <p>${item.price}</p>
           </div>
         ))
       )}
-           
+
       <button
         className="cart-sidebar__order"
         onClick={processOrder}

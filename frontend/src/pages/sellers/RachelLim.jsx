@@ -6,7 +6,7 @@ const RachelLim = () => {
   const navigate = useNavigate();
 
   const handleBackClick = () => {
-    navigate('/product/sustainable-cotton-sweater');
+    navigate('/product/organic-cotton-sweater');
   };
 
   return (
@@ -21,22 +21,31 @@ const RachelLim = () => {
       <h3 className="items-title">Items Sold</h3>
       <div className="items-grid">
         <div className="item-card">
-          <div className="image-placeholder">Image</div>
-          <p>Sustainable Cotton Sweater</p>
+          <img
+            src="/images/AthleticTop.jpg"
+            alt="Eco-Friendly Athletic Top"
+            className="sold-item-image"
+          />
+          <p>Eco-Friendly Athletic Top</p>
           <p className="sold-date">Sold on April 20, 2025</p>
           <div className="item-review">
-                <h4>Review</h4>
-                <p><strong>Grace:</strong> how i love thrifting</p>
-            </div>
+            <h4>Review</h4>
+            <p><strong>Grace:</strong> how I love thrifting</p>
+          </div>
         </div>
+
         <div className="item-card">
-          <div className="image-placeholder">Image</div>
+          <img
+            src="/images/MaternityHoodie.jpg"
+            alt="Organic Maternity Hoodie"
+            className="sold-item-image"
+          />
           <p>Organic Maternity Hoodie</p>
           <p className="sold-date">Sold on March 28, 2025</p>
           <div className="item-review">
-                <h4>Review</h4>
-                <p><strong>Maleeha:</strong> feels good knowing its sustaibale</p>
-            </div>
+            <h4>Review</h4>
+            <p><strong>Maleeha:</strong> feels good knowing it's sustainable</p>
+          </div>
         </div>
       </div>
     </div>

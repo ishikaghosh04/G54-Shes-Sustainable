@@ -95,3 +95,25 @@
 .cart-sidebar__remove:hover {
   color: var(--color-accent);
 }
+
+.item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.2rem;
+}
+
+.item-name {
+  margin: 0;
+}
+.cart-sidebar__icon {
+  color: #d8a7b1;
+  cursor: pointer;
+  margin-bottom: 0.5rem;
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.cart-sidebar__icon:hover {
+  color: #a15f6e;
+  transform: scale(1.15);
+}

@@ -20,24 +20,35 @@ const LinaGeorge = () => {
 
       <h3 className="items-title">Items Sold</h3>
       <div className="items-grid">
+
         <div className="item-card">
-          <div className="image-placeholder">Image</div>
-          <p>Wool Winter Scarf</p>
+          <img
+            src="/images/Toque.jpg"
+            alt="Toque"
+            className="sold-item-image"
+          />
+          <p>Toque</p>
           <p className="sold-date">Sold on March 9, 2025</p>
           <div className="item-review">
-                <h4>Review</h4>
-                <p><strong>Fatima:</strong> Warm, soft, and stylish! A winter favorite ❄️</p>
-            </div>
+            <h4>Review</h4>
+            <p><strong>Fatima:</strong> Warm, soft, and stylish! A winter favorite ❄️</p>
+          </div>
         </div>
+
         <div className="item-card">
-          <div className="image-placeholder">Image</div>
+          <img
+            src="/images/KnittedBabyBlanket.jpg"
+            alt="Knitted Baby Blanket"
+            className="sold-item-image"
+          />
           <p>Knitted Baby Blanket</p>
           <p className="sold-date">Sold on January 21, 2025</p>
           <div className="item-review">
-                <h4>Review</h4>
-                <p><strong>Megan:</strong> Made with Love!</p>
-            </div>
+            <h4>Review</h4>
+            <p><strong>Megan:</strong> Made with Love!</p>
+          </div>
         </div>
+
       </div>
     </div>
   );
