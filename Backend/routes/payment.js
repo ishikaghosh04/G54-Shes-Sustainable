@@ -7,11 +7,11 @@ const router = express.Router();
 export default (db) => {
   const query = promisify(db.query).bind(db);
 
-  // Process payment
-  router.post("/order/:orderID", verifyToken, async (req, res) => {
-
+  // process a payment
+  router.post("/order/:orderNumber", verifyToken, async (req, res) => {
     const buyerID = req.user.userID;
-    const orderID = Number(req.params.orderID);
+    const orderNumber = Number(req.params.orderNumber); // Use orderNumber instead of orderID
+  
     const {
       paymentMethod,
       cardNumber,
@@ -27,8 +27,8 @@ export default (db) => {
     try {
       // Step 1: Validate order
       const orderCheck = await query(
-        "SELECT status FROM `Order` WHERE orderID = ? AND buyerID = ?",
-        [orderID, buyerID]
+        "SELECT status FROM `Order` WHERE buyerID = ? AND orderNumber = ?",
+        [buyerID, orderNumber] // Query using buyerID and orderNumber
       );
   
       if (!orderCheck.length || orderCheck[0].status !== "Pending") {
@@ -37,38 +37,20 @@ export default (db) => {
   
       // Step 2: Get order total
       const [orderAmountRow] = await query(
-        "SELECT totalAmount FROM `Order` WHERE orderID = ?",
-        [orderID]
+        "SELECT totalAmount FROM `Order` WHERE buyerID = ? AND orderNumber = ?",
+        [buyerID, orderNumber] // Query using buyerID and orderNumber
       );
       const orderSubtotal = parseFloat(orderAmountRow.totalAmount);
   
       // Step 3: Get total shipping cost
       const shippingRows = await query(
-        "SELECT shippingCost FROM Shipping s JOIN OrderItem oi ON s.orderItemID = oi.orderItemID WHERE oi.orderID = ?",
-        [orderID]
+        "SELECT shippingCost FROM Shipping s JOIN OrderItem oi ON s.buyerID = oi.buyerID AND s.orderNumber = oi.orderNumber WHERE oi.orderNumber = ?",
+        [orderNumber] // Query using orderNumber
       );
       const totalShipping = shippingRows.reduce((sum, row) => sum + parseFloat(row.shippingCost), 0);
       const totalAmount = orderSubtotal + totalShipping;
-
-      if (!cardNumber || !expirationDate || !cvv ) {
-        return res.status(400).json({ message: "Missing payment method details." });
-      }
-
-      if (!billingStreet || !billingCity || !billingProvince || !billingPostalCode) {
-        return res.status(400).json({ message: "Missing billing address details." });
-      }
-
-      // Validate postal code (for Canada, e.g., A1A 1A1 or A1A1A1)
-      if (!/^[A-Za-z]\d[A-Za-z][ -]?\d[A-Za-z]\d$/.test(billingPostalCode)) {
-          return res.status(400).json({ message: "Invalid postal code format.1" });
-      }
   
-      // Step 4: Use profile address if requested
-      let street = billingStreet;
-      let city = billingCity;
-      let province = billingProvince;
-      let postalCode = billingPostalCode;
-  
+      let street, city, province, postalCode;
       if (useProfileAddress) {
         const [profile] = await query(
           "SELECT street, city, province, postalCode FROM User WHERE userID = ?",
@@ -83,6 +65,20 @@ export default (db) => {
         city = profile.city;
         province = profile.province;
         postalCode = profile.postalCode;
+      } else {
+        if (!billingStreet || !billingCity || !billingProvince || !billingPostalCode) {
+          return res.status(400).json({ message: "Missing billing address details." });
+        }
+  
+        // Validate postal code (for Canada, e.g., A1A 1A1 or A1A1A1)
+        if (!/^[A-Za-z]\d[A-Za-z][ -]?\d[A-Za-z]\d$/.test(billingPostalCode)) {
+          return res.status(400).json({ message: "Invalid postal code format." });
+        }
+  
+        street = billingStreet;
+        city = billingCity;
+        province = billingProvince;
+        postalCode = billingPostalCode;
       }
   
       // Step 5: Simulate payment
@@ -95,12 +91,13 @@ export default (db) => {
       // Step 6: Insert payment
       await query(
         `INSERT INTO Payment (
-          orderID, amount, paymentMethod, cardNumber, expirationDate, cvv,
+          buyerID, orderNumber, amount, paymentMethod, cardNumber, expirationDate, cvv,
           billingStreet, billingCity, billingProvince, billingPostalCode,
           transactionRef, status
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         [
-          orderID,
+          buyerID,
+          orderNumber,
           totalAmount,
           paymentMethod,
           cardNumber,
@@ -115,16 +112,18 @@ export default (db) => {
         ]
       );
   
-      // Step 7: Mark order as processed (consider changing to 'Processed' to 'Paid')
-      await query("UPDATE `Order` SET status = 'Processed' WHERE orderID = ?", [orderID]);
+      // Step 7: Mark order as processed
+      await query("UPDATE `Order` SET status = 'Processed' WHERE buyerID = ? AND orderNumber = ?", [buyerID, orderNumber]);
   
-
-      // NEED TO DEACTIVATE THE PRODUCTS(check if code runs smoothly w this new query)
-      await query(`UPDATE Product
-        JOIN OrderItem ON Product.productID = OrderItem.productID
-        SET Product.isActive = FALSE
-        WHERE OrderItem.orderID = ?`,[orderID]);
-
+      // Deactivate products
+      await query(
+        `UPDATE Product
+          JOIN OrderItem ON Product.productID = OrderItem.productID
+          SET Product.isActive = FALSE
+          WHERE OrderItem.buyerID = ? AND OrderItem.orderNumber = ?`,
+        [buyerID, orderNumber] // Deactivate products in the specified order
+      );
+  
       res.status(201).json({
         message: paymentResult.message,
         transactionRef: paymentResult.transactionID,
@@ -137,21 +136,23 @@ export default (db) => {
     }
   });  
 
+  // RENAMED FROM :/paymentID
+
   // GET: Fetch single payment by paymentID
-  router.get("/:paymentID", verifyToken, async (req, res) => {
+  router.get("/:orderNumber", verifyToken, async (req, res) => {
     const buyerID = req.user.userID;
-    const paymentID = Number(req.params.paymentID);
+    const orderNumber = Number(req.params.orderNumber); // Use orderNumber from URL parameter
 
     try {
       // Step 1: Join Payment -> Order to ensure the user owns the payment
       const [payment] = await query(
-        `SELECT p.paymentID, p.orderID, p.amount, p.paymentMethod, 
+        `SELECT p.orderNumber, p.amount, p.paymentMethod, 
                 p.billingStreet, p.billingCity, p.billingProvince, p.billingPostalCode,
                 p.paymentDate, p.status, p.transactionRef
           FROM Payment p
-          JOIN \`Order\` o ON p.orderID = o.orderID
-          WHERE p.paymentID = ? AND o.buyerID = ?`,
-        [paymentID, buyerID]
+          JOIN \`Order\` o ON p.orderNumber = o.orderNumber AND p.buyerID = o.buyerID
+          WHERE o.buyerID = ? AND p.orderNumber = ?`,
+        [buyerID, orderNumber] // Use buyerID and orderNumber to find the payment
       );
 
       if (!payment) {
@@ -164,7 +165,7 @@ export default (db) => {
       res.status(500).json({ error: "Server error fetching payment." });
     }
   });
-
+  
   // return routes to index.js
   return router;
 };

@@ -4,78 +4,85 @@ import verifyToken from "./middlewares/verifyToken.js";
 const router = express.Router();
 
 export default (db) => {
+    // EXPECT CHANGES
+
     /**
      * POST /api/reviews
      */
     router.post("/", verifyToken, (req, res) => {
       const buyerID = req.user.userID;
-      const { productID, orderID, rating, comment } = req.body;
+      const { productID, orderNumber, rating, comment } = req.body;
     
-      // SQL query to check if the product is deactivated, part of an order, and valid shipping details
+      // Optional: Validate required fields
+      if (!productID || !orderNumber || !rating) {
+        return res.status(400).json({ message: "Missing required fields: productID, orderID, or rating." });
+      }
+    
       const checkSql = `
         SELECT 1
         FROM Product p
         JOIN OrderItem oi ON oi.productID = p.productID
-        JOIN \`Order\` o ON o.orderID = oi.orderID
-        JOIN Shipping s ON s.orderItemID = oi.OrderItemID
+        JOIN \`Order\` o ON o.orderNumber = oi.orderNumber AND o.buyerID = oi.buyerID
+        JOIN Shipping s ON s.buyerID = oi.buyerID AND s.orderNumber = oi.orderNumber AND s.productID = oi.productID
         WHERE p.productID = ?
-          AND o.orderID = ?
+          AND o.orderNumber = ?
           AND o.buyerID = ?
           AND o.status = 'Processed'
           AND p.isActive = FALSE
-          AND s.estDeliveryDate < CURRENT_DATE
+          AND s.estDeliveryDate < '2025-05-15'
       `;
     
-      db.query(checkSql, [productID, orderID, buyerID], (err, rows) => {
+      db.query(checkSql, [productID, orderNumber, buyerID], (err, rows) => {
         if (err) return res.status(500).json({ error: err.message });
     
         if (!rows.length) {
           return res.status(403).json({
-            message: "Review not allowed: product not eligible, order is not processed, or delivery date is has not passed.",
+            message: "Review not allowed: product is not eligible, order is not processed, or delivery hasn't occurred yet.",
           });
         }
     
-        // Insert the review
         const insertSql = `
           INSERT INTO Review (buyerID, productID, rating, comment)
           VALUES (?, ?, ?, ?)
         `;
     
-        db.query(insertSql, [buyerID, productID, rating, comment], (err, result) => {
+        db.query(insertSql, [buyerID, productID, rating, comment], (err) => {
           if (err) {
             if (err.code === "ER_DUP_ENTRY") {
               return res.status(400).json({
-                message: "You’ve already reviewed this product.",
+                message: "You've already reviewed this product.",
               });
             }
             return res.status(500).json({ error: err.message });
           }
     
           res.status(201).json({
-            reviewID: result.insertId,
+            message: "Review submitted successfully.",
             buyerID,
             productID,
-            orderID,
+            orderNumber,
             rating,
             comment,
           });
         });
       });
-    });
+    });    
 
     // GET /api/reviews?sellerID=…&productID=…&orderID=…
     // if sellerID - will retrieve reviews for all seller's listed products
     // if productID - retreives the reviews of one product
     // if orderID - retrieves the reviews of all items in an order
+    
     router.get("/", (req, res) => {
       console.log("GET /reviews hit with query:", req.query);
-      const { sellerID, productID, orderID } = req.query;
     
-      let query = "";
+      const { sellerID, productID, orderNumber } = req.query;
+    
+      let sql = "";
       let params = [];
     
       if (sellerID) {
-        query = `
+        sql = `
           SELECT r.*, p.name AS productName
           FROM Review r
           JOIN Product p ON r.productID = p.productID
@@ -84,7 +91,7 @@ export default (db) => {
         `;
         params = [sellerID];
       } else if (productID) {
-        query = `
+        sql = `
           SELECT r.*, u.firstName AS buyerName
           FROM Review r
           JOIN User u ON r.buyerID = u.userID
@@ -92,21 +99,23 @@ export default (db) => {
           ORDER BY r.reviewDate DESC
         `;
         params = [productID];
-      } else if (orderID) {
-        query = `
+      } else if (orderNumber) {
+        sql = `
           SELECT r.*, p.name AS productName
           FROM Review r
           JOIN OrderItem oi ON r.productID = oi.productID
           JOIN Product p ON p.productID = r.productID
-          WHERE oi.orderID = ?
+          WHERE oi.orderNumber = ?
           ORDER BY r.reviewDate DESC
         `;
-        params = [orderID];
+        params = [orderNumber];
       } else {
-        return res.status(400).json({ error: "Missing sellerID, productID, or orderID in query" });
+        return res.status(400).json({
+          error: "Please provide a sellerID, productID, or orderNumber as a query parameter.",
+        });
       }
     
-      db.query(query, params, (err, results) => {
+      db.query(sql, params, (err, results) => {
         if (err) {
           console.error("Error fetching reviews:", err);
           return res.status(500).json({ error: "Server error while fetching reviews" });
@@ -115,22 +124,22 @@ export default (db) => {
         res.json(results);
       });
     });    
-    
-  // PATCH /review/:reviewID - Update part of a review
-  router.patch("/:reviewID", verifyToken, (req, res) => {
+
+  // PATCH /review/:productID - Update part of a review
+  router.patch("/:productID", verifyToken, (req, res) => {
     const buyerID = req.user.userID;
-    const reviewID = parseInt(req.params.reviewID, 10);
+    const productID = parseInt(req.params.productID, 10);
     const { rating, comment } = req.body;
 
-    // Ensure this review belongs to the logged-in user
-    const checkSql = `SELECT buyerID FROM Review WHERE reviewID = ?`;
-    db.query(checkSql, [reviewID], (err, rows) => {
+    // Step 1: Confirm the review exists and belongs to the user
+    const checkSql = `SELECT 1 FROM Review WHERE buyerID = ? AND productID = ?`;
+    db.query(checkSql, [buyerID, productID], (err, rows) => {
       if (err) return res.status(500).json({ error: err.message });
-      if (!rows.length || rows[0].buyerID !== buyerID) {
-        return res.status(403).json({ message: "Not authorized to edit this review." });
+      if (!rows.length) {
+        return res.status(403).json({ message: "Review not found or not authorized." });
       }
 
-      // Build dynamic update based on provided fields
+      // Step 2: Build dynamic update
       const fields = [];
       const values = [];
 
@@ -148,12 +157,12 @@ export default (db) => {
         return res.status(400).json({ message: "No fields provided for update." });
       }
 
-      values.push(reviewID); // for WHERE clause
+      values.push(buyerID, productID); // for WHERE clause
 
       const updateSql = `
         UPDATE Review
-          SET ${fields.join(", ")}
-        WHERE reviewID = ?
+        SET ${fields.join(", ")}
+        WHERE buyerID = ? AND productID = ?
       `;
 
       db.query(updateSql, values, (err) => {
@@ -162,23 +171,28 @@ export default (db) => {
       });
     });
   });
+  
+  // DELETE /review/:productID - Delete your own review
+  router.delete("/:productID", verifyToken, (req, res) => {
+    const buyerID = req.user.userID;
+    const productID = parseInt(req.params.productID, 10);
 
-  // Delete your own review
-  router.delete("/:reviewID", verifyToken, (req, res) => {
-    const buyerID  = req.user.userID;
-    const reviewID = parseInt(req.params.reviewID, 10);
-
-    const checkSql = `SELECT buyerID FROM Review WHERE reviewID = ?`;
-    db.query(checkSql, [reviewID], (err, rows) => {
+    const checkSql = `SELECT 1 FROM Review WHERE buyerID = ? AND productID = ?`;
+    db.query(checkSql, [buyerID, productID], (err, rows) => {
       if (err) return res.status(500).json({ error: err.message });
-      if (!rows.length || rows[0].buyerID !== buyerID) {
-        return res.status(403).json({ message: "Not authorized to delete this review." });
+
+      if (!rows.length) {
+        return res.status(403).json({ message: "Review not found or not authorized to delete." });
       }
 
-      db.query(`DELETE FROM Review WHERE reviewID = ?`, [reviewID], (err) => {
-        if (err) return res.status(500).json({ error: err.message });
-        res.json({ message: "Review deleted." });
-      });
+      db.query(
+        `DELETE FROM Review WHERE buyerID = ? AND productID = ?`,
+        [buyerID, productID],
+        (err) => {
+          if (err) return res.status(500).json({ error: err.message });
+          res.json({ message: "Review deleted." });
+        }
+      );
     });
   });
 

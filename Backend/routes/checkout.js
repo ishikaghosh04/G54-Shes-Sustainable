@@ -6,115 +6,125 @@ const router = express.Router();
 
 export default (db) => {
     const query = promisify(db.query).bind(db);
-    /*
-    Note to front end: PENDING CHANGES (Jane's code will be integrated)
-    As of now, the following occurs when the buyer clicks Order Now.
-    (Made updates (Jane) This mainly handles Transferring items from Cart to Order
-    Now we have the option of clearing or deactivating the cart we need to pick one )
-    */
+ 
     router.post("/process-order", verifyToken, async (req, res) => {
       const userID = req.user.userID;
     
       try {
-        // 1. Get active cart
-        const cartResult = await query("SELECT * FROM Cart WHERE userID = ? AND isActive = TRUE", [userID]);
+        // 1. Get active cart for user
+        const cartResult = await query("SELECT cartNumber FROM Cart WHERE userID = ? AND isActive = TRUE LIMIT 1", [userID]);
         if (cartResult.length === 0) return res.status(400).json({ message: "No active cart found." });
-        const cart = cartResult[0];
+        const cartNumber = cartResult[0].cartNumber;
     
-        // 2. Get cart items
+        // 2. Get items in the cart
         const items = await query(
-          "SELECT * FROM CartStores INNER JOIN Product ON CartStores.productID = Product.productID WHERE CartStores.cartNumber = ?",
-          [cart.cartID]
+          `SELECT p.productID, p.price 
+           FROM CartStores cs
+           INNER JOIN Product p ON cs.productID = p.productID
+           WHERE cs.userID = ? AND cs.cartNumber = ?`,
+          [userID, cartNumber]
         );
         if (items.length === 0) return res.status(400).json({ message: "Cart is empty." });
     
-        const totalAmount = parseFloat(items.reduce((sum, item) => sum + parseFloat(item.price), 0).toFixed(2));
+        const totalAmount = parseFloat(
+          items.reduce((sum, item) => sum + parseFloat(item.price), 0).toFixed(2)
+        );
     
-        // 3. Check if a pending order already exists 
+        // 3. Check if a pending order already exists for this user
         const existingOrder = await query(
-          "SELECT orderNumber FROM `Order` WHERE buyerID = ? AND status = 'Pending'",
+          "SELECT orderNumber FROM `Order` WHERE buyerID = ? AND status = 'Pending' LIMIT 1",
           [userID]
         );
     
-        let orderID;
+        let orderNumber;
     
         if (existingOrder.length > 0) {
-          // Reuse the existing order
-          orderID = existingOrder[0].orderNumber;
+          // Reuse the existing pending order
+          orderNumber = existingOrder[0].orderNumber;
     
-          // Clear old order items before re-adding
-          await query("DELETE FROM OrderItem WHERE orderNumber = ?", [orderID]);
+          // Remove old items in case they're stale
+          await query("DELETE FROM OrderItem WHERE buyerID = ? AND orderNumber = ?", [userID, orderNumber]);
     
-          // Optional: update totalAmount in case it's changed
-          await query("UPDATE `Order` SET totalAmount = ? WHERE orderNumber = ?", [totalAmount, orderID]);
-        } else {
-          // No existing order → create new one
-          const orderResult = await query(
-            "INSERT INTO `Order` (buyerID, totalAmount) VALUES (?, ?)",
-            [userID, totalAmount]
+          // Update the total in the existing order
+          await query(
+            "UPDATE `Order` SET totalAmount = ?, orderDate = CURRENT_TIMESTAMP WHERE buyerID = ? AND orderNumber = ?",
+            [totalAmount, userID, orderNumber]
           );
-          orderID = orderResult.insertId;
+        } else {
+          // Create new order with next orderNumber
+          const nextOrder = await query(
+            "SELECT IFNULL(MAX(orderNumber), 0) + 1 AS nextOrderNumber FROM `Order` WHERE buyerID = ?",
+            [userID]
+          );
+          orderNumber = nextOrder[0].nextOrderNumber;
+    
+          await query(
+            "INSERT INTO `Order` (buyerID, orderNumber, totalAmount) VALUES (?, ?, ?)",
+            [userID, orderNumber, totalAmount]
+          );
         }
     
-        // 4. Insert updated cart items into OrderItem
-        const orderItems = items.map(item => [orderID, item.productID, item.price]);
-        await query("INSERT INTO OrderItem (orderID, productID, price) VALUES ?", [orderItems]);
+        // 4. Insert items into OrderItem table
+        const orderItems = items.map(item => [userID, orderNumber, item.productID, item.price]);
+        await query(
+          "INSERT INTO OrderItem (buyerID, orderNumber, productID, price) VALUES ?",
+          [orderItems]
+        );
     
-        // 5. Deactivate cart again
-        await query("UPDATE Cart SET isActive = FALSE WHERE cartID = ?", [cart.cartID]);
+        // 5. Deactivate cart
+        await query("UPDATE Cart SET isActive = FALSE WHERE userID = ? AND cartNumber = ?", [userID, cartNumber]);
     
-        res.status(201).json({ orderID, totalAmount, itemsCount: items.length });
+        res.status(201).json({ orderNumber, totalAmount, itemsCount: items.length });
     
       } catch (err) {
         console.error(err);
         res.status(500).json({ error: "Something went wrong.", details: err.message });
       }
-    });
+    });    
     
 
     /* Note to front end: have a button on the order summary page to return to 
     browsing page (prior to providing any payment or shipment details!)
     */
-    // Reactivate cart (do not use as of now. logic needs to be revised)
     router.post("/return-to-browsing", verifyToken, (req, res) => {
       const userID = req.user.userID;
-
-      // Step 1: Find an inactive cart with a matching unpaid order
+    
+      // Step 1: Find the most recent inactive cart with a pending order
       const findSql = `
-        SELECT c.cartID, o.orderID
-          FROM Cart c
-          JOIN \`Order\` o ON o.buyerID = c.userID
+        SELECT c.cartNumber, o.orderNumber
+        FROM Cart c
+        JOIN \`Order\` o ON o.buyerID = c.userID
         WHERE c.userID = ?
           AND c.isActive = FALSE
           AND o.status = 'Pending'
         ORDER BY o.orderDate DESC
         LIMIT 1
       `;
-
+    
       db.query(findSql, [userID], (err, rows) => {
         if (err) return res.status(500).json({ error: err.message });
-
+    
         if (!rows.length) {
-          return res.status(404).json({ message: "No inactive cart or unpaid order found." });
+          return res.status(404).json({ message: "No inactive cart or pending order found." });
         }
-
-        const { cartID, orderID } = rows[0];
-      
+    
+        const { cartNumber, orderNumber } = rows[0];
+    
         const reactivateSql = `
-          UPDATE Cart SET isActive = TRUE WHERE cartID = ?;
+          UPDATE Cart SET isActive = TRUE WHERE userID = ? AND cartNumber = ?;
         `;
-
-        db.query(reactivateSql, [cartID, orderID], (err) => {
-          if (err) return res.status(500).json({ error: err.message });
-
+    
+        db.query(reactivateSql, [userID, cartNumber], (err2) => {
+          if (err2) return res.status(500).json({ error: err2.message });
+    
           res.json({
             message: "Cart reactivated.",
-            cartID,
-            orderID,
+            cartNumber,
+            orderNumber,
           });
         });
       });
-    });
+    });    
 
     // return route to index.js
     return router;

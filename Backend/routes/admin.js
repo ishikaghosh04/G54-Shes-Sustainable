@@ -17,13 +17,17 @@ export default (db) => {
   // User activity summary: #listings, #reviews per user
   router.get("/user-activity", verifyToken, verifyAdmin, (req, res) => {
     const sql = `
-      SELECT u.userID, CONCAT(u.firstName, ' ', u.lastName) AS fullName,
-      COUNT(DISTINCT p.productID) AS listings, COUNT(DISTINCT r.reviewID) AS reviews
+      SELECT 
+        u.userID, 
+        CONCAT(u.firstName, ' ', u.lastName) AS fullName,
+        COUNT(DISTINCT p.productID) AS listings,
+        COUNT(DISTINCT r.productID) AS reviews
       FROM User u
-      LEFT JOIN Product p ON u.userID = p.userID
-      LEFT JOIN Review r ON u.userID = r.userID
+      LEFT JOIN Product p ON u.userID = p.sellerID
+      LEFT JOIN Review r ON u.userID = r.buyerID
       GROUP BY u.userID
     `;
+    
     db.query(sql, (err, results) => {
       if (err) return res.status(500).json({ error: err.message });
       res.json(results);
@@ -43,7 +47,7 @@ export default (db) => {
   router.get("/abusive-reviews", verifyToken, verifyAdmin, (req, res) => {
     const sql = `
       SELECT * FROM Review
-      WHERE reviewText LIKE '%stupid%' OR reviewText LIKE '%shit%' OR reviewText LIKE '%bitch%'
+      WHERE comment LIKE '%stupid%' OR comment LIKE '%shit%' OR comment LIKE '%bitch%'
     `;
     db.query(sql, (err, results) => {
       if (err) return res.status(500).json({ error: err.message });
@@ -64,8 +68,6 @@ export default (db) => {
   router.get("/metrics", verifyToken, verifyAdmin, (req, res) => {
     const sql = `
       SELECT
-        (SELECT COUNT(*) FROM User WHERE isActive = TRUE) AS activeUsers,
-        (SELECT COUNT(*) FROM User WHERE createdAt >= CURDATE()) AS newSignupsToday,
         (SELECT COUNT(*) FROM \`Order\` WHERE DATE(orderDate) = CURDATE()) AS salesToday
     `;
     db.query(sql, (err, result) => {

@@ -5,59 +5,66 @@ import { createShipment } from "./mock/mockShipment.js"; // Assuming you still u
 
 const router = express.Router();
 
+// NOTE: calculating dynamically shippedDate
+
 export default (db) => {
   const query = promisify(db.query).bind(db);
   const FLAT_RATE = 2.99; // constant shipping fee per seller
 
-  // Estimate shipping cost & ETA grouped by seller (using orderID and checking items by seller)
-  router.get("/order/:orderID/estimate", verifyToken, async (req, res) => {
-    const buyerID = req.user.userID;
-    const orderID = Number(req.params.orderID);
+  // RENAMED FROM /order/:orderID/estimate
 
-    try {
-      const orderCheck = await query(
-        "SELECT 1 FROM `Order` WHERE orderID = ? AND buyerID = ?",
-        [orderID, buyerID]
-      );
-
-      if (!orderCheck.length) {
-        return res.status(403).json({ message: "Forbidden or invalid order." });
-      }
-
-      // Group order items by seller and fetch product IDs
-      const groups = await query(
-        `SELECT p.sellerID, GROUP_CONCAT(oi.productID) AS productIDs
+  // Estimate shipping cost & ETA grouped by seller
+  router.get("/order/:orderNumber/estimate", verifyToken, async (req, res) => {
+      const buyerID = req.user.userID;
+      const orderNumber = Number(req.params.orderNumber);
+  
+      try {
+        // 1. Check if the order exists and belongs to the user
+        const orderCheck = await query(
+          "SELECT 1 FROM `Order` WHERE buyerID = ? AND orderNumber = ?",
+          [buyerID, orderNumber]
+        );
+  
+        if (!orderCheck.length) {
+          return res.status(403).json({ message: "Forbidden or invalid order." });
+        }
+  
+        // 2. Group order items by sellerID
+        const groups = await query(
+          `SELECT p.sellerID, GROUP_CONCAT(oi.productID) AS productIDs
            FROM OrderItem oi
            JOIN Product p ON oi.productID = p.productID
-          WHERE oi.orderID = ?
-          GROUP BY p.sellerID`,
-        [orderID]
-      );
-
-      if (!groups.length) return res.status(400).json({ message: "No items in order." });
-
-      const estimates = groups.map(row => {
-        const productIDs = String(row.productIDs).split(",").map(Number);
-        const mock = createShipment(buyerID, orderID); // Mock shipment details
-        return {
-          sellerID: row.sellerID,
-          productIDs,
-          shippingCost: FLAT_RATE,
-          estimatedDelivery: mock.estimatedDelivery,
-        };
-      });
-
-      res.json({ orderID, estimates });
-    } catch (err) {
-      console.error(err);
-      res.status(500).json({ error: "Estimate failed" });
-    }
+           WHERE oi.buyerID = ? AND oi.orderNumber = ?
+           GROUP BY p.sellerID`,
+          [buyerID, orderNumber]
+        );
+  
+        if (!groups.length) return res.status(400).json({ message: "No items in order." });
+  
+        // 3. Mock estimates per seller
+        const estimates = groups.map(row => {
+          const productIDs = String(row.productIDs).split(",").map(Number);
+          const mock = createShipment(buyerID, orderNumber); // Generate mock ETA
+          return {
+            sellerID: row.sellerID,
+            productIDs,
+            shippingCost: FLAT_RATE,
+            estimatedDelivery: mock.estimatedDelivery,
+          };
+        });
+  
+        res.json({ buyerID, orderNumber, estimates });
+      } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: "Estimate failed", details: err.message });
+      }
   });
+  
+  // RENAMED FROM /order/:orderID
 
-  // Input shipping details (occurs once button has been clicked after shipping address input)
-  router.post("/order/:orderID", verifyToken, async (req, res) => {
+  router.post("/order/:orderNumber", verifyToken, async (req, res) => {
     const buyerID = req.user.userID;
-    const orderID = Number(req.params.orderID);
+    const orderNumber = Number(req.params.orderNumber);
     const {
       shippingStreet,
       shippingCity,
@@ -66,36 +73,23 @@ export default (db) => {
       useProfileAddress,
     } = req.body;
   
-    // Validate postal code format (e.g., for Canada)
-    if (shippingPostalCode && !/^[A-Za-z]\d[A-Za-z][ -]?\d[A-Za-z]\d$/.test(shippingPostalCode)) {
-      return res.status(400).json({ message: "Invalid postal code format." });
-    }
-  
     try {
       const orderCheck = await query(
-        "SELECT status FROM `Order` WHERE orderID = ? AND buyerID = ?",
-        [orderID, buyerID]
+        "SELECT status FROM `Order` WHERE orderNumber = ? AND buyerID = ?",
+        [orderNumber, buyerID]
       );
   
-      // Check if the order exists and hasn't been processed yet
       if (!orderCheck.length || orderCheck[0].status !== "Pending") {
         return res.status(403).json({ message: "Order is already processed or invalid." });
       }
-
-      // Clean up previous shipping attempts (if user is restarting checkout flow)
+  
+      // Clean up previous shipping records
       await query(
-        `DELETE s
-          FROM Shipping s
-          JOIN OrderItem oi ON s.orderItemID = oi.orderItemID
-          WHERE oi.orderID = ?`,
-        [orderID]
+        `DELETE FROM Shipping WHERE buyerID = ? AND orderNumber = ?`,
+        [buyerID, orderNumber]
       );
   
-      // If using profile address
-      let finalStreet = shippingStreet;
-      let finalCity = shippingCity;
-      let finalProvince = shippingProvince;
-      let finalPostalCode = shippingPostalCode;
+      let finalStreet, finalCity, finalProvince, finalPostalCode;
   
       if (useProfileAddress) {
         const profile = await query(
@@ -114,40 +108,53 @@ export default (db) => {
         finalCity = city;
         finalProvince = province;
         finalPostalCode = postalCode;
+      } else {
+        if (!shippingStreet || !shippingCity || !shippingProvince || !shippingPostalCode) {
+          return res.status(400).json({ message: "Please fill out all shipping address fields." });
+        }
+  
+        if (!/^[A-Za-z]\d[A-Za-z][ -]?\d[A-Za-z]\d$/.test(shippingPostalCode)) {
+          return res.status(400).json({ message: "Invalid postal code format." });
+        }
+  
+        finalStreet = shippingStreet;
+        finalCity = shippingCity;
+        finalProvince = shippingProvince;
+        finalPostalCode = shippingPostalCode;
       }
   
-      // Group items by seller
+      // Group products by seller for this order
       const groups = await query(
-        `SELECT oi.orderItemID, p.sellerID, oi.productID
+        `SELECT p.sellerID, oi.productID
            FROM OrderItem oi
            JOIN Product p ON oi.productID = p.productID
-          WHERE oi.orderID = ?`,
-        [orderID]
+          WHERE oi.orderNumber = ? AND oi.buyerID = ?`,
+        [orderNumber, buyerID]
       );
   
       if (!groups.length) return res.status(400).json({ message: "No items in the order." });
   
+      const sellerGroups = {};
+      for (const item of groups) {
+        if (!sellerGroups[item.sellerID]) {
+          sellerGroups[item.sellerID] = [];
+        }
+        sellerGroups[item.sellerID].push(item.productID);
+      }
+  
       const inserts = [];
       const shipments = [];
   
-      // Process each seller's group of items
-      const sellerGroups = {}; // A dictionary to store items grouped by seller
-      groups.forEach(grp => {
-        if (!sellerGroups[grp.sellerID]) {
-          sellerGroups[grp.sellerID] = [];
-        }
-        sellerGroups[grp.sellerID].push(grp);
-      });
-  
-      // Create shipment for each seller
       for (const sellerID in sellerGroups) {
-        const orderItems = sellerGroups[sellerID];
-        const shipment = createShipment(buyerID, orderID, sellerID, orderItems);
+        const productIDs = sellerGroups[sellerID];
+        const shipment = createShipment(buyerID, orderNumber, sellerID, productIDs);
   
-        // Prepare data for inserting shipping info into the database
-        orderItems.forEach(item => {
+        // Prepare insert values: one row per product
+        productIDs.forEach(productID => {
           inserts.push([
-            item.orderItemID,
+            buyerID,
+            orderNumber,
+            productID,
             shipment.trackingNumber,
             FLAT_RATE,
             finalStreet,
@@ -163,21 +170,21 @@ export default (db) => {
           trackingNumber: shipment.trackingNumber,
           shippingCost: FLAT_RATE,
           estDeliveryDate: shipment.estimatedDelivery,
-          orderItems: shipment.orderItems
+          productIDs
         });
       }
   
-      // Insert shipping details into Shipping table
+      // Insert shipping details
       await query(
         `INSERT INTO Shipping (
-           orderItemID, trackingNumber, shippingCost,
+           buyerID, orderNumber, productID, trackingNumber, shippingCost,
            shippingStreet, shippingCity, shippingProvince, 
            shippingPostalCode, estDeliveryDate
          ) VALUES ?`,
         [inserts]
       );
   
-      res.status(201).json({ orderID, shipments });
+      res.status(201).json({ orderNumber, shipments });
   
     } catch (err) {
       console.error("Commit shipping error:", err);
@@ -185,41 +192,52 @@ export default (db) => {
     }
   });
   
-  // Fetch shipping records for a specific order
-  router.get("/order/:orderID", verifyToken, async (req, res) => {
+  
+  // Fetch shipping + order info for a specific order
+  router.get("/order/:orderNumber", verifyToken, async (req, res) => {
     const buyerID = req.user.userID;
-    const orderID = Number(req.params.orderID);
-
+    const orderNumber = Number(req.params.orderNumber);
+  
     try {
-        // Check if the order belongs to the buyer
-        const orderCheck = await query(
-            "SELECT 1 FROM `Order` WHERE orderID = ? AND buyerID = ?",
-            [orderID, buyerID]
-        );
-
-        if (!orderCheck.length) {
-            return res.status(403).json({ message: "Forbidden or invalid order." });
-        }
-
-        // Fetch shipping records for the order
-        const rows = await query(
-            `SELECT s.shippingID, oi.productID, s.trackingNumber,
-                    s.shippingCost, s.shippingStreet, s.shippingCity,
-                    s.shippingProvince, s.shippingPostalCode,
-                    s.estDeliveryDate, s.status, s.shippedDate
-              FROM Shipping s
-              JOIN OrderItem oi ON oi.OrderItemID = s.orderItemID
-              WHERE oi.orderID = ?`,
-            [orderID]
-        );
-
-        // Return the shipping records
-        res.json(rows);
+      // Check if the order belongs to the buyer
+      const orderCheck = await query(
+        "SELECT 1 FROM `Order` WHERE orderNumber = ? AND buyerID = ?",
+        [orderNumber, buyerID]
+      );
+  
+      if (!orderCheck.length) {
+        return res.status(403).json({ message: "Forbidden or invalid order." });
+      }
+  
+      // Fetch shipping + order info using new schema
+      const rows = await query(
+        `SELECT 
+            s.trackingNumber,
+            s.shippingCost,
+            s.estDeliveryDate,
+            s.status,
+            s.shippedDate,
+            p.name AS productName,
+            u.firstName AS sellerFirstName,
+            u.lastName AS sellerLastName,
+            u.email AS sellerEmail
+         FROM Shipping s
+         JOIN OrderItem oi 
+           ON s.buyerID = oi.buyerID 
+          AND s.orderNumber = oi.orderNumber 
+          AND s.productID = oi.productID
+         JOIN Product p ON p.productID = oi.productID
+         JOIN User u ON u.userID = p.sellerID
+         WHERE s.buyerID = ? AND s.orderNumber = ?`,
+        [buyerID, orderNumber]
+      );
+  
+      res.json(rows);
     } catch (err) {
-        console.error("Fetch shipping error:", err);
-        res.status(500).json({ error: "Server error fetching shipping." });
+      console.error("Fetch shipping error:", err);
+      res.status(500).json({ error: "Server error fetching shipping." });
     }
-  });
+  });  
 
   return router;
 };
