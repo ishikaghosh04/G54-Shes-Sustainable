@@ -6,7 +6,7 @@ const RachelLim = () => {
   const navigate = useNavigate();
 
   const handleBackClick = () => {
-    navigate('/product/sustainable-cotton-sweater');
+    navigate('/product/organic-cotton-sweater');
   };
 
   return (
@@ -22,7 +22,7 @@ const RachelLim = () => {
       <div className="items-grid">
         <div className="item-card">
           <div className="image-placeholder">Image</div>
-          <p>Sustainable Cotton Sweater</p>
+          <p>Eco-Friendly Athletic Top</p>
           <p className="sold-date">Sold on April 20, 2025</p>
           <div className="item-review">
                 <h4>Review</h4>

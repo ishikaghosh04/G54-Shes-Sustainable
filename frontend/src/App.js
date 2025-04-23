@@ -21,7 +21,7 @@ import ConfirmationPage from './pages/Confirmation';
 
 import VintageDenimJacket from "./pages/products/VintageDenimJacket";
 import FloralSummerDress from "./pages/products/FloralSummerDress";
-import SustainableCottonSweater from "./pages/products/SustainableCottonSweater";
+import OrganicCottonSweater from "./pages/products/OrganicCottonSweater";
 import DesignerLeatherBoots from "./pages/products/DesignerLeatherBoots";
 import EcoFriendlyYogaPants from "./pages/products/EcoFriendlyYogaPants";
 import VintageGraphicTShirt from "./pages/products/VintageGraphicTShirt";
@@ -60,7 +60,7 @@ function App() {
 
             <Route path="/product/vintage-denim-jacket" element={<VintageDenimJacket />} />
             <Route path="/product/floral-summer-dress" element={<FloralSummerDress />} />
-            <Route path="/product/sustainable-cotton-sweater" element={<SustainableCottonSweater />} />
+            <Route path="/product/organic-cotton-sweater" element={<OrganicCottonSweater />} />
             <Route path="/product/designer-leather-boots" element={<DesignerLeatherBoots />} />
             <Route path="/product/ecofriendly-yoga-pants" element={<EcoFriendlyYogaPants />} />
             <Route path="/product/vintage-graphic-tshirt" element={<VintageGraphicTShirt />} />

@@ -21,7 +21,7 @@ const VintageGraphicTShirt = () => {
       <button onClick={() => navigate('/product')} className="back-button">← Back to Products</button>
       <h2>Vintage Graphic T-shirt</h2>
       <img
-        src="https://via.placeholder.com/300x300.png?text=Vintage+Graphic+Tee"
+        src="/images/VintageGraphicT.jpg"
         alt="Vintage Graphic T-shirt"
         className="product-image"
       />

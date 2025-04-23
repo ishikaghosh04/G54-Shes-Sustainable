@@ -22,7 +22,7 @@ const OliviaChen = () => {
       <div className="items-grid">
         <div className="item-card">
           <div className="image-placeholder">Image</div>
-          <p>Vintage Denim Jacket</p>
+          <p>Cotton Maternity Tee</p>
           <p className="sold-date">Sold on April 5, 2025</p>
           <div className="item-review">
                 <h4>Review</h4>

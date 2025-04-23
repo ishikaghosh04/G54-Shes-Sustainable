@@ -5,6 +5,16 @@ import CategoryBar from '../components/CategoryBar';
 import './Product.css';
 import API from '../api';
 
+const imageMap = {
+  'Vintage Denim Jacket': '/images/VintageDenimJacket.jpg',
+  'Floral Summer Dress': '/images/FloralSummerDress.jpg',
+  'Organic Cotton Sweater': '/images/OrganicCottonSweater.jpg',
+  'Eco-friendly Yoga Pants': '/images/EcoFriendlyYogaPants.jpg',
+  'Vintage Graphic T-shirt': '/images/VintageGraphicT.jpg',
+  'Designer Handbag': '/images/designerhandbag.jpg',
+  'Wool Winter Scarf': '/images/woolwinterscarf.jpg',
+};
+
 const Product = () => {
   const { addToCart } = useContext(CartContext);
   const [products, setProducts] = useState([]);
@@ -50,7 +60,7 @@ const Product = () => {
               style={{ cursor: 'pointer' }}
             >
               <img
-                src="https://via.placeholder.com/220x220.png?text=Product+Image"
+                src= {imageMap[product.name] ||"https://via.placeholder.com/220x220.png?text=Product+Image"}
                 alt={product.name}
                 className="product-thumbnail"
               />

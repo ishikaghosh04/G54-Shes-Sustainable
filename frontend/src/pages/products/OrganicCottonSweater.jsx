@@ -1,17 +1,17 @@
 import React, { useContext } from 'react';
 import { useNavigate, Link } from 'react-router-dom'; // ✅ Added Link
 import '../Product.css';
-import './SustainableCottonSweater.css';
+import './OrganicCottonSweater.css';
 import { CartContext } from '../../context/CartContext';
 
-const SustainableCottonSweater = () => {
+const OrganicCottonSweater = () => {
   const navigate = useNavigate();
   const { addToCart } = useContext(CartContext);
 
   const handleAddToCart = () => {
     addToCart({
-      productID: 'sustainablecottonsweater',
-      name: 'Sustainable Cotton Sweater',
+      productID: 'Organiccottonsweater',
+      name: 'Organic Cotton Sweater',
       price: 30.00,
     });
   };
@@ -19,10 +19,10 @@ const SustainableCottonSweater = () => {
   return (
     <div className="product-page">
       <button onClick={() => navigate('/product')} className="back-button">← Back to Products</button>
-      <h2>Sustainable Cotton Sweater</h2>
+      <h2>Organic Cotton Sweater</h2>
       <img
-        src="https://via.placeholder.com/300x300.png?text=Cotton+Sweater"
-        alt="Sustainable Cotton Sweater"
+        src="/images/OrganicCottonSweater.jpg"
+        alt="Organic Cotton Sweater"
         className="product-image"
       />
       <p><strong>Price:</strong> $30.00</p>
@@ -44,4 +44,4 @@ const SustainableCottonSweater = () => {
   );
 };
 
-export default SustainableCottonSweater;
+export default OrganicCottonSweater;

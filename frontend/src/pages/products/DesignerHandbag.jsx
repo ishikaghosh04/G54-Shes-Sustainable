@@ -21,7 +21,7 @@ const DesignerHandbag = () => {
       <button onClick={() => navigate('/product')} className="back-button">← Back to Products</button>
       <h2>Designer Handbag</h2>
       <img
-        src="https://via.placeholder.com/300x300.png?text=Designer+Handbag"
+        src="/images/designerhandbag.jpg"
         alt="Designer Handbag"
         className="product-image"
       />

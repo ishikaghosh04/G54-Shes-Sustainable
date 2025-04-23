@@ -21,7 +21,7 @@ const WoolWinterScarf = () => {
       <button onClick={() => navigate('/product')} className="back-button">← Back to Products</button>
       <h2>Wool Winter Scarf</h2>
       <img
-        src="https://via.placeholder.com/300x300.png?text=Wool+Winter+Scarf"
+        src="/images/woolwinterscarf.jpg"
         alt="Wool Winter Scarf"
         className="product-image"
       />

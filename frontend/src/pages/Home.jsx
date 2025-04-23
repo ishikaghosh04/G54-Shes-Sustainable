@@ -50,21 +50,21 @@ const Home = () => {
           <div className="home-about-grid">
             {/* Mission */}
             <div className="home-about-card" data-aos="fade-up">
-              <img src="https://via.placeholder.com/150" alt="Mission" />
+              <img src="/images/mission.png" alt="Mission" className="about-image" />
               <h3>Our Mission</h3>
               <p>To redefine maternity fashion by making it sustainable, stylish, and accessible.</p>
             </div>
 
             {/* Vision */}
             <div className="home-about-card" data-aos="fade-up">
-              <img src="https://via.placeholder.com/150" alt="Vision" />
+              <img src="/images/vision.png" alt="Vision" className="about-image" />
               <h3>Our Vision</h3>
               <p>To become the leading platform where motherhood meets mindful living.</p>
             </div>
 
             {/* Values */}
             <div className="home-about-card" data-aos="fade-up">
-              <img src="https://via.placeholder.com/150" alt="Values" />
+              <img src="/images/values.jpg" alt="Values" className="about-image" />
               <h3>Our Values</h3>
               <p>Inclusivity, sustainability, comfort, and community.</p>
             </div>
