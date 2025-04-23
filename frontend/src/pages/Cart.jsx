@@ -1,10 +1,19 @@
-import React, { useContext } from 'react';
+import React, { useEffect,useContext } from 'react';
+import { useLocation } from 'react-router-dom';
 import { CartContext } from '../context/CartContext';
 import './Cart.css';
 
 const Cart = () => {
-  const { cartItems } = useContext(CartContext);
+  const { cartItems, loadCart } = useContext(CartContext);
+ 
+  const { pathname } = useLocation();
 
+  useEffect(() => {
+    if (pathname === '/cart') {
+      loadCart();
+    }
+  }, [pathname, loadCart]);
+ 
   return (
     <div className="cart-page">
       <h2>Your Cart</h2>

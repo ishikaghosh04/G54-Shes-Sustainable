@@ -1,12 +1,16 @@
-import React, { useContext } from 'react';
+import React, { useEffect,useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { CartContext } from '../context/CartContext';
 import './CartSidebar.css';
 import { FiTrash2 } from 'react-icons/fi';
 
 const CartSidebar = () => {
-  const { cartItems, isCartOpen, setIsCartOpen, removeFromCart, processOrder } = useContext(CartContext);
+  const { cartItems, isCartOpen, setIsCartOpen, removeFromCart, processOrder,loadCart } = useContext(CartContext);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (isCartOpen) loadCart();
+  }, [isCartOpen, loadCart]);
 
   if (!isCartOpen) return null;
 
