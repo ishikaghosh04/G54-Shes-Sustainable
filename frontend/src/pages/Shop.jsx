@@ -68,7 +68,8 @@ const Shop = () => {
                     onError={(e) => { e.target.src = "https://via.placeholder.com/120x120.png?text=No+Image" }}
                   />
                   <div className="listing-info">
-                    <strong>{item.name}</strong> – ${item.price}
+                    <strong>{item.name}</strong> 
+                    <p>${item.price}</p>
                   </div>
                 </div>
                 <button
