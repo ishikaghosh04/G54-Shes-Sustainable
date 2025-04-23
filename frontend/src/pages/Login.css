@@ -64,3 +64,14 @@
     margin-bottom: 1rem;
     text-align: center;
   }
+  .login-redirect {
+    margin-top: 1rem;
+    font-size: 0.9rem;
+    text-align: center;
+  }
+  .login-redirect__link {
+    color: var(--color-accent);
+    text-decoration: underline;
+    cursor: pointer;
+  }
+  

@@ -19,6 +19,7 @@ import ConfirmationPage from './pages/Confirmation';
 
 
 
+
 import VintageDenimJacket from "./pages/products/VintageDenimJacket";
 import FloralSummerDress from "./pages/products/FloralSummerDress";
 import SustainableCottonSweater from "./pages/products/SustainableCottonSweater";

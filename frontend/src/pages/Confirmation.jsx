@@ -56,7 +56,7 @@ export default function ConfirmationPage() {
           <h3>Shipment {i+1}</h3>
           <p><strong>Tracking #:</strong> {ship.tracking}</p>
           <p><strong>Estimated Arrival:</strong> {new Date(ship.eta).toLocaleDateString()}</p>
-          <p><strong>Shipping Cost:</strong> ${ship.shippingCost.toFixed(2)}</p>
+          <p><strong>Shipping Cost:</strong> ${ship.shippingCost.toFixed(2)} per Item </p>
           <p><strong>Items:</strong> {ship.items.map(it => it.productName).join(', ')}</p>
           {/* If you want seller contact you’ll need to include sellerName/email in the rows,
               or fetch it via `/users/:sellerID` per group */}

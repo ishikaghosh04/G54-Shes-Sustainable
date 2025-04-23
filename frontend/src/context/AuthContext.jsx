@@ -12,10 +12,19 @@ export const AuthProvider = ({ children }) => {
 
       API.get('/profile')             
          .then(res => setUser(res.data))  
-         .catch(() => localStorage.removeItem('jwt'));
+         .catch(() => {
+          localStorage.removeItem('jwt');
+          delete API.defaults.headers.common['Authorization'];
+          setUser(null);
+        });
     }
   }, []);
 
+  const login = (token, profile) => {
+    localStorage.setItem('jwt', token);
+    API.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+    setUser(profile);
+  };
   const logout = () => {
     localStorage.removeItem('jwt');
     delete API.defaults.headers.common['Authorization'];
@@ -23,8 +32,8 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, setUser, logout }}>
+    <AuthContext.Provider value={{ user, setUser, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
-};
+}

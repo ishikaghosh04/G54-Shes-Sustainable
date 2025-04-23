@@ -133,6 +133,8 @@ export default (db) => {
     }
   });  
 
+
+
   // GET: Fetch single payment by paymentID
   router.get("/:paymentID", verifyToken, async (req, res) => {
     const buyerID = req.user.userID;

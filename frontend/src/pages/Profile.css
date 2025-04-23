@@ -91,3 +91,61 @@
     box-shadow: 0 0 4px rgba(123, 170, 165, 0.4);
   }
   
+/* in Profile.css */
+.order-history-item {
+  padding: 1rem 0;
+  /* every order except the very last gets a bottom border */
+  border-bottom: 1px solid var(--color-text);
+}
+
+.order-history-item:last-of-type {
+  border-bottom: none;
+}
+
+/* remove any <hr/> you added inside the shipment-records */
+.shipment-record hr {
+  display: none;
+}
+/* in Profile.css */
+.seller-email {
+  color: var(--color-brand);
+  text-decoration: none;
+  font-weight: 500;
+}
+.seller-email:hover {
+  text-decoration: underline;
+}
+
+.btn-danger {
+  background-color: var(--color-alert, #E57373);
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-top: 1rem;
+}
+
+.btn-danger:hover {
+  background-color: var(--color-alert-dark, #EF5350);
+}
+/* make your read-only stars a bit smaller/muted */
+.existing-review .star-rating.read-only .star {
+  font-size: 1.2rem;
+  color: var(--color-text);
+}
+.existing-review .star-rating.read-only .star.active {
+  color: var(--color-accent);
+}
+.existing-review .review-text {
+  margin: .5rem 0 1rem;
+  font-style: italic;
+  color: var(--color-text);
+}
+/* disabled review button */
+.shipment-record .btn[disabled] {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

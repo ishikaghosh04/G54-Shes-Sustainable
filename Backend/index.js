@@ -79,7 +79,7 @@ app.use("/payment", verifyToken, paymentRoutes(db))
 app.use("/shipping", verifyToken, shippingRoutes(db))
 
 // Use review routes
-app.use("/review", verifyToken, reviewRoutes(db))
+app.use("/reviews", verifyToken, reviewRoutes(db))
 
 // Use admin routes
 app.use("/admin", adminRoutes(db))

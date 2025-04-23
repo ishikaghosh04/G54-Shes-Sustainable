@@ -189,7 +189,7 @@ export default (db) => {
     }
   });
   
-  // Fetch shipping records for a specific order
+  // Fetch shipping + order info for a specific order
   router.get("/order/:orderID", verifyToken, async (req, res) => {
     const buyerID = req.user.userID;
     const orderID = Number(req.params.orderID);
@@ -205,27 +205,25 @@ export default (db) => {
             return res.status(403).json({ message: "Forbidden or invalid order." });
         }
 
-        // Fetch shipping records for the order
+        // Fetch shipping + order info for the order
         const rows = await query(
-            `SELECT
-                s.shippingID,
-                oi.orderItemID,
-                p.productID,
-                p.name       AS productName,
-                u.userID     AS sellerID,
-                CONCAT(u.firstName,' ',u.lastName) AS sellerName,
-                u.email      AS sellerEmail,
-                s.trackingNumber,
-                s.shippingCost,
-                s.estDeliveryDate
-              FROM Shipping s
-              JOIN OrderItem oi  ON s.orderItemID = oi.orderItemID
-              JOIN Product   p   ON oi.productID   = p.productID
-              JOIN User      u   ON p.sellerID     = u.userID
-              WHERE oi.orderID = ?
-              `,
-            [orderID]
-        );
+          `SELECT 
+              s.trackingNumber,
+              s.shippingCost,
+              s.estDeliveryDate,
+              s.status,
+              s.shippedDate,
+              p.name AS productName,
+              u.firstName AS sellerFirstName,
+              u.lastName AS sellerLastName,
+              u.email AS sellerEmail
+           FROM Shipping s
+           JOIN OrderItem oi ON oi.orderItemID = s.orderItemID
+           JOIN Product p ON p.productID = oi.productID
+           JOIN User u ON u.userID = p.sellerID
+           WHERE oi.orderID = ?`,
+          [orderID]
+        );        
 
         // Return the shipping records
         res.json(rows);

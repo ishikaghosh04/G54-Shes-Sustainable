@@ -1,6 +1,6 @@
 import React, { useState,useContext } from 'react';
 import './Login.css';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { FiArrowLeft } from 'react-icons/fi';
 import API from '../api';
 import { AuthContext }            from '../context/AuthContext';
@@ -69,6 +69,9 @@ const Login = () => {
         />
         {error && <p className="login-error">{error}</p>}
         <button type="submit" className="btn btn-primary">Login</button>
+         <p className="login-redirect"> New User?{' '}
+                <Link to="/signup" className="login-redirect__link"> Sign Up</Link>  
+          </p>
       </form>
     </div>
   );
