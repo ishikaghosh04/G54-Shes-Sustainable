@@ -16,6 +16,7 @@ CREATE TABLE User (
   firstName     VARCHAR(50) NOT NULL,
   lastName      VARCHAR(50) NOT NULL,
   password      VARCHAR(255) NOT NULL, 
+  createdAt     DATETIME DEFAULT CURRENT_TIMESTAMP,
   isBuyer       BOOLEAN DEFAULT TRUE,
   isSeller      BOOLEAN DEFAULT FALSE,
   isAdmin       BOOLEAN DEFAULT FALSE,
