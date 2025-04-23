@@ -28,7 +28,7 @@ const Shop = () => {
     fetchActiveListings();
 
     // Fetch sold items
-    API.get(`/products/seller/${user.userID}/sold`)
+    API.get('/profile/sold-products')
       .then(res => setSoldItems(res.data))
       .catch(err => console.error('Failed to fetch sold items:', err));
   }, [user, location.state?.refresh]);
@@ -59,6 +59,7 @@ const Shop = () => {
           <ul className="shop-listings">
             {activeListings.map(item => (
               <li key={item.productID} className="listing-item">
+                
                 <div className="listing-card">
                   <img
                     src={`/images/${item.picture}`}

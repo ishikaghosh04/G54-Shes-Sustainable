@@ -216,7 +216,8 @@ export default (db) => {
               p.name AS productName,
               u.firstName AS sellerFirstName,
               u.lastName AS sellerLastName,
-              u.email AS sellerEmail
+              u.email AS sellerEmail,
+              oi.productID
            FROM Shipping s
            JOIN OrderItem oi ON oi.orderItemID = s.orderItemID
            JOIN Product p ON p.productID = oi.productID
