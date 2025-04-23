@@ -65,4 +65,36 @@
     border-radius: 8px;
     object-fit: cover;
   }
+  .listing-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: 1px solid var(--color-text);
+    border-radius: 12px;
+    padding: 1rem 1.2rem;
+    margin-bottom: 1rem;
+    background-color: white;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.03);
+  }
+  
+  .delete-btn {
+    background-color: #d8a7b1; /* Dusty Pink */
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    transition: background-color 0.2s ease-in-out;
+  }
+  
+  .delete-btn:hover {
+    background-color: #c68c9c; /* Darker Dusty Pink */
+  }
+  
+  .delete-btn svg {
+    margin-right: 0.4rem;
+  }
   
