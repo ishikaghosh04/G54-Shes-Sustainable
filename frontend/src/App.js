@@ -59,6 +59,7 @@ function App() {
             <Route path="/shop/add" element={<ShopAdd />} />
             <Route path="/confirmation" element={<ConfirmationPage />} />
 
+
             <Route path="/product/vintage-denim-jacket" element={<VintageDenimJacket />} />
             <Route path="/product/floral-summer-dress" element={<FloralSummerDress />} />
             <Route path="/product/sustainable-cotton-sweater" element={<SustainableCottonSweater />} />
