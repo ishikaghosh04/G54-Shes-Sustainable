@@ -19,6 +19,7 @@ import ConfirmationPage from './pages/Confirmation';
 
 
 
+
 import VintageDenimJacket from "./pages/products/VintageDenimJacket";
 import FloralSummerDress from "./pages/products/FloralSummerDress";
 import OrganicCottonSweater from "./pages/products/OrganicCottonSweater";
@@ -57,6 +58,7 @@ function App() {
             <Route path="/shop" element={<Shop />} />
             <Route path="/shop/add" element={<ShopAdd />} />
             <Route path="/confirmation" element={<ConfirmationPage />} />
+
 
             <Route path="/product/vintage-denim-jacket" element={<VintageDenimJacket />} />
             <Route path="/product/floral-summer-dress" element={<FloralSummerDress />} />

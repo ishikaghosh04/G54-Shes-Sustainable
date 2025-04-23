@@ -8,6 +8,7 @@ import { CartProvider } from './context/CartContext';
 import { BrowserRouter } from 'react-router-dom';
 import { CheckoutProvider } from './context/CheckoutContext';
 
+window.process = window.process || { env: {} };
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(

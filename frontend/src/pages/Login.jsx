@@ -1,6 +1,6 @@
-import React, { useState,useContext } from 'react';
+import React, { useState,useContext,useEffect } from 'react';
 import './Login.css';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate,useLocation } from 'react-router-dom';
 import { FiArrowLeft } from 'react-icons/fi';
 import API from '../api';
 import { AuthContext }            from '../context/AuthContext';
@@ -9,8 +9,17 @@ import { AuthContext }            from '../context/AuthContext';
 const Login = () => {
   const [credentials, setCredentials] = useState({ email: '', password: '' });
   const navigate = useNavigate();
+  const location = useLocation();    // ← grab incoming location state
   const [error, setError] = useState('');
   const { setUser }                   = useContext(AuthContext);
+
+  useEffect(() => {
+    if (location.state?.message) {
+      setError(location.state.message);
+     // optional: clear it so it doesn’t persist if they click back
+      navigate(location.pathname, { replace: true, state: {} });
+      }
+    }, [location, navigate]);
 
   const handleChange = (e) => {
     setCredentials(prev => ({
@@ -69,6 +78,9 @@ const Login = () => {
         />
         {error && <p className="login-error">{error}</p>}
         <button type="submit" className="btn btn-primary">Login</button>
+         <p className="login-redirect"> New User?{' '}
+                <Link to="/signup" className="login-redirect__link"> Sign Up</Link>  
+          </p>
       </form>
     </div>
   );

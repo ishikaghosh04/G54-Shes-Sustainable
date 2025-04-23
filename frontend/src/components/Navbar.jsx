@@ -72,7 +72,7 @@ const Navbar = () => {
               <div onClick={() => { navigate('/shop'); setShowDropdown(false); }}>
                 Your Shop
               </div>
-              <div>Settings</div>
+  
               <div onClick={() => { logout(); setShowDropdown(false); navigate('/');  }}
               >Log out</div>
             </div>

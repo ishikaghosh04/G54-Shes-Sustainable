@@ -65,3 +65,32 @@
     color: var(--color-text);
   }
   
+  .back-button {
+    background: none;
+    border: none;
+    color: var(--color-brand);
+    cursor: pointer;
+    margin-bottom: 1rem;
+  }
+  
+  .star-rating .star {
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: var(--color-text);
+  }
+  
+  .star-rating .star.active {
+    color: var(--color-accent);
+  }
+  
+
+  
+  .btn-primary {
+    background-color: var(--color-accent);
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+  
