@@ -21,18 +21,27 @@ const AanyaPatel = () => {
       <h3 className="items-title">Items Sold</h3>
       <div className="items-grid">
         <div className="item-card">
-          <div className="image-placeholder">Image</div>
+          <img
+            src="/images/MaternityPants.jpg"
+            alt="Maternity Pants"
+            className="sold-item-image"
+          />
           <p>Maternity Pants</p>
           <p className="sold-date">Sold on April 18, 2025</p>
         </div>
+
         <div className="item-card">
-          <div className="image-placeholder">Image</div>
+          <img
+            src="/images/MaternityTee.jpg"
+            alt="Soft Maternity T-Shirt"
+            className="sold-item-image"
+          />
           <p>Soft Maternity T-Shirt</p>
           <p className="sold-date">Sold on March 10, 2025</p>
           <div className="item-review">
-                <h4>Review</h4>
-                <p><strong>Maria:</strong> love teh fact that it is sustainable!</p>
-            </div>
+            <h4>Review</h4>
+            <p><strong>Maria:</strong> love the fact that it is sustainable!</p>
+          </div>
         </div>
       </div>
     </div>

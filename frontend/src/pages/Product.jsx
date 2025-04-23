@@ -20,10 +20,49 @@ const Product = () => {
   const [products, setProducts] = useState([]);
   const navigate = useNavigate();
 
+  const fetchProducts = (filters = {}) => {
+    const { category, price, condition } = filters;
+
+    // If both price and condition are provided, use the filter endpoint
+    if (condition) {
+      API.get(`/products/price-range-and-product-condition/${price}/${condition}`)
+        .then(res => {
+          let filtered = res.data;
+
+          if (category) {
+            filtered = filtered.filter(item => item.category === category);
+          }
+
+          setProducts(filtered);
+        })
+        .catch(err => console.error("Failed to load filtered products:", err));
+    } else if (price) {
+      // Only category
+      API.get('/products')
+        .then(res => {
+          let filtered = res.data.filter(item => item.price <= price);
+          if (category) {
+            filtered = filtered.filter(item => item.category === category);
+          }
+          setProducts(filtered);
+        })
+        .catch(err => console.error("Failed filter by price:", err));
+    } else if(category){
+      // Only category
+      API.get('/products/category/${category}')
+        .then(res => setProducts(res.data))
+        .catch(err => console.error("Failed to load products by category:", err));
+    } else {
+      // No filters provided, load all products
+      // Default: load all
+      API.get('/products')
+        .then(res => setProducts(res.data))
+        .catch(err => console.error('Failed to load products:', err));
+    }
+  };
+
   useEffect(() => {
-    API.get('/products')
-      .then(res => setProducts(res.data))
-      .catch(err => console.error('Failed to load products:', err));
+    fetchProducts(); // Load all products initially
   }, []);
 
   const getProductPath = (name) => {
@@ -34,21 +73,9 @@ const Product = () => {
       .replace(/\s+/g, '-')}`;
   };
 
-  const handleSelectCategory = (cat) => {
-    if (!cat) {
-      API.get('/products')
-        .then(res => setProducts(res.data))
-        .catch(err => console.error(err));
-    } else {
-      API.get(`/products/category/${cat}`)
-        .then(res => setProducts(res.data))
-        .catch(err => console.error(err));
-    }
-  };
-
   return (
     <>
-      <CategoryBar onSelectCategory={handleSelectCategory} />
+      <CategoryBar onFiltersChange={fetchProducts} />
       <div className="product-page">
         <h2>Our Products</h2>
         <div className="product-grid">
@@ -60,7 +87,7 @@ const Product = () => {
               style={{ cursor: 'pointer' }}
             >
               <img
-                src= {imageMap[product.name] ||"https://via.placeholder.com/220x220.png?text=Product+Image"}
+                src={imageMap[product.name] || "https://via.placeholder.com/220x220.png?text=Product+Image"}
                 alt={product.name}
                 className="product-thumbnail"
               />
