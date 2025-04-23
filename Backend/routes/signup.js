@@ -42,6 +42,11 @@ export default (db) => {
             if (password.length < 8) {
                 return res.status(400).json({ message: "Password must be at least 8 characters long" }); // Fixed typo
             }
+
+            // Check that firstname and lastname are strings
+            if (typeof firstName !== 'string' || typeof lastName !== 'string') {
+                return res.status(400).json({ message: "Names must be strings" });
+            }            
         
             // Check for existing user
             db.query("SELECT * FROM User WHERE email = ?", [emailLower], async (err, result) => {
