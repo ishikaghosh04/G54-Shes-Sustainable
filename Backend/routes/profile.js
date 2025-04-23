@@ -125,7 +125,7 @@ export default (db) => {
                 p.name AS productName,
                 p.price AS productPrice
             FROM \`Order\` o
-            JOIN OrderContains oc ON o.orderID = oc.orderID
+            JOIN OrderItem oi ON o.orderID = oi.orderID
             JOIN Product p ON oc.productID = p.productID
             WHERE o.buyerID = ? AND o.status = 'Processed'
             ORDER BY o.orderDate DESC;
