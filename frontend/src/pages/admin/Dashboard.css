@@ -1,0 +1,58 @@
+.dashboard-page {
+    padding: 2rem;
+    font-family: 'Poppins', sans-serif;
+    background-color: var(--color-bg);
+    color: var(--color-text);
+    text-align: center;
+  }
+  
+  .dashboard-page h2 {
+    font-size: 2rem;
+    font-family: 'Playfair Display', serif;
+    margin-bottom: 2rem;
+  }
+  
+  .metrics-grid {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    flex-wrap: wrap;
+  }
+  
+  .metric-card {
+    background-color: white;
+    border-radius: 16px;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+    padding: 2rem;
+    width: 250px;
+    transition: transform 0.3s ease;
+  }
+  
+  .metric-card:hover {
+    transform: translateY(-5px);
+  }
+  
+  .metric-card h3 {
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+    color: var(--color-brand);
+  }
+  
+  .metric-value {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: var(--color-accent);
+  }
+  .dashboard-loading,
+  .dashboard-error {
+    text-align: center;
+    font-style: italic;
+    color: var(--color-text);
+    margin-top: 1rem;
+  }
+  
+  .metric-card h3 {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }

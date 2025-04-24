@@ -1,0 +1,44 @@
+.order-history-page {
+    padding: 2rem;
+    font-family: 'Poppins', sans-serif;
+    background-color: var(--color-bg);
+    color: var(--color-text);
+    text-align: center;
+  }
+  
+  .order-history-page h2 {
+    font-size: 2rem;
+    font-family: 'Playfair Display', serif;
+    margin-bottom: 1.5rem;
+  }
+  
+  .order-table {
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+    border-collapse: collapse;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    background: white;
+  }
+  
+  .order-table th, .order-table td {
+    border: 1px solid #ddd;
+    padding: 0.75rem;
+    text-align: center;
+  }
+  
+  .order-table th {
+    background-color: var(--color-accent);
+    color: white;
+  }
+  
+  .order-table tr:nth-child(even) {
+    background-color: #f9f9f9;
+  }
+.order-loading,
+.order-error {
+  text-align: center;
+  font-style: italic;
+  margin: 1rem 0;
+  color: var(--color-text);
+}
