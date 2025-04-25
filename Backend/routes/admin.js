@@ -43,7 +43,7 @@ export default (db) => {
   router.get("/abusive-reviews", verifyToken, verifyAdmin, (req, res) => {
     const sql = `
       SELECT * FROM Review
-      WHERE comment LIKE '%stupid%' OR comment LIKE '%shit%' OR comment LIKE '%bitch%'
+      WHERE comment REGEXP 'stupid|shit|bitch|fuck|nasty';
     `;
     db.query(sql, (err, results) => {
       if (err) return res.status(500).json({ error: err.message });
