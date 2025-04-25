@@ -118,7 +118,7 @@ export default (db) => {
         const query = `
             SELECT 
                 o.orderID,
-                o.orderDate,
+                o.orderDate as soldDate,
                 o.totalAmount,
                 o.status AS orderStatus,
                 p.productID,
