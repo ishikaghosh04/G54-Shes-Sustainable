@@ -91,23 +91,32 @@ export default (db) => {
     /*
     Note to frontend: displays the products that have been sold by the user
     */
+    // profile.js
     router.get("/sold-products", verifyToken, (req, res) => {
         const sellerID = req.user.userID;
-
-        const q = `
-            SELECT price, name, size, description, category, productCondition FROM Product
-            WHERE sellerID = ? AND isActive = FALSE
+        const sql = `
+        SELECT
+            p.productID,
+            p.name,
+            oi.orderID,
+            o.orderDate AS soldDate,
+            oi.price  AS soldPrice
+        FROM Product p
+        JOIN OrderItem oi ON p.productID = oi.productID
+        JOIN \`Order\` o ON oi.orderID = o.orderID
+        WHERE p.sellerID = ? 
+            AND p.isActive = FALSE
+        ORDER BY o.orderDate DESC
         `;
-
-        db.query(q, [sellerID], (err, results) => {
-            if (err) {
-                console.error("Error fetching sold products:", err);
-                return res.status(500).json({ message: "Failed to fetch sold products", error: err });
-            }
-
-            return res.status(200).json(results);
+        db.query(sql, [sellerID], (err, results) => {
+        if (err) {
+            console.error("Error fetching sold products:", err);
+            return res.status(500).json({ message: "Failed to fetch sold products", error: err });
+        }
+        res.json(results);
         });
     });
+  
 
     /*
     Note to front end: this allows the user to view their order history
@@ -118,6 +127,7 @@ export default (db) => {
         const query = `
             SELECT 
                 o.orderID,
+                 o.orderDate,
                 o.orderDate as soldDate,
                 o.totalAmount,
                 o.status AS orderStatus,

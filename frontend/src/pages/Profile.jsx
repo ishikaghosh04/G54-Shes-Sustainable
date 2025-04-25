@@ -136,7 +136,7 @@ const Profile = () => {
 
       {/* Shipping Address */}
       <div className="profile-card">
-        <h3>Shipping Address</h3>
+        <h3>Address</h3>
         {editingField === 'address' ? (
           <>
             <label>Street</label>
@@ -196,8 +196,7 @@ const Profile = () => {
             <h4>
               Order #{order.orderID} — ${Number(order.totalAmount).toFixed(2)}
             </h4>
-            <p><em>{new Date(order.orderDate).toLocaleString()}</em></p>
-
+        
             {order.shipments?.map(sh => {
               const delivered = new Date(sh.estDeliveryDate) <= new Date();
               return (
