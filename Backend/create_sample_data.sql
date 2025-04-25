@@ -42,42 +42,90 @@ INSERT INTO CartStores (cartID, productID, dateAdded) VALUES
 (4, 5, '2025-03-05 16:35:00'),
 (4, 7, '2025-03-05 16:40:00');
 
--- 5. Insert Order data
-INSERT INTO `Order` (buyerID, cartID, orderDate, totalAmount, status) VALUES
-(2, 3, '2025-03-10 12:00:00', 91.25, 'Completed'),
-(4, 4, '2025-03-05 17:00:00', 107.99, 'Completed'),
-(2, NULL, '2025-04-01 09:30:00', 35.25, 'Processing'), -- One-off order not from cart
-(4, NULL, '2025-04-05 14:15:00', 15.50, 'Shipped'); -- One-off order not from cart
+-- --------------------------------------------------
+-- 4) ORDERS
+-- --------------------------------------------------
+INSERT INTO `Order` (buyerID, orderDate, totalAmount, status)
+VALUES
+  (2, '2025-03-10 12:00:00', 71.49, 'Completed'),
+  (4, '2025-03-05 17:00:00', 38.49, 'Completed'),
+  (2, '2025-04-01 09:30:00', 22.99, 'Processing');
 
--- 6. Insert OrderContains data
-INSERT INTO OrderContains (orderID, productID, price, status) VALUES
-(1, 2, 25.50, 'Delivered'),
-(1, 4, 65.75, 'Delivered'),
-(2, 5, 22.99, 'Delivered'),
-(2, 7, 85.00, 'Delivered'),
-(3, 8, 35.25, 'Processing'),
-(4, 6, 15.50, 'Shipped');
+-- --------------------------------------------------
+-- 5) ORDERITEMS
+-- --------------------------------------------------
+INSERT INTO OrderItem (orderID, productID, price)
+VALUES
+  (1,  2,  25.50),
+  (1,  4, 45.99),   -- denim jacket sold too
+  (2,  3,  30.00),
+  (2,  5, 15.50),
+  (3,  6, 85.00);   -- one‑off handbag order
 
--- 7. Insert Shipping data
-INSERT INTO Shipping (orderID, productID, trackingNumber, shippingCost, shippedDate, shippingStreet, shippingCity, shippingProvince, shippingPostalCode, estDeliveryDate, status) VALUES
-(1, 2, 'TRACK123456789', 5.99, '2025-03-11 09:30:00', '456 King St', 'Toronto', 'Ontario', 'M5V 1B2', '2025-03-15', 'Delivered'),
-(1, 4, 'TRACK123456790', 5.99, '2025-03-11 09:30:00', '456 King St', 'Toronto', 'Ontario', 'M5V 1B2', '2025-03-15', 'Delivered'),
-(2, 5, 'TRACK987654321', 7.50, '2025-03-06 10:15:00', '101 Richmond St', 'London', 'Ontario', 'N6A 3C5', '2025-03-10', 'Delivered'),
-(2, 7, 'TRACK987654322', 7.50, '2025-03-06 10:15:00', '101 Richmond St', 'London', 'Ontario', 'N6A 3C5', '2025-03-10', 'Delivered'),
-(3, 8, 'TRACK567891234', 6.75, '2025-04-02 11:00:00', '456 King St', 'Toronto', 'Ontario', 'M5V 1B2', '2025-04-06', 'In Transit'),
-(4, 6, 'TRACK456789123', 5.99, '2025-04-06 09:45:00', '101 Richmond St', 'London', 'Ontario', 'N6A 3C5', '2025-04-10', 'Shipped');
+-- --------------------------------------------------
+-- 6) SHIPPING
+-- --------------------------------------------------
+INSERT INTO Shipping
+  (orderItemID, trackingNumber, shippingCost,
+   shippedDate, shippingStreet, shippingCity,
+   shippingProvince, shippingPostalCode,
+   estDeliveryDate, status)
+VALUES
+  (1,  'TRACK123456789', 5.99, '2025-03-11 09:30:00',
+       '456 King St', 'Toronto', 'Ontario', 'M5V1B2',
+       '2025-03-15', 'Delivered'),
+  (2,  'TRACK123456790', 5.99, '2025-03-11 09:30:00',
+       '456 King St', 'Toronto', 'Ontario', 'M5V1B2',
+       '2025-03-15', 'Delivered'),
+  (3,  'TRACK987654321', 7.50, '2025-03-06 10:15:00',
+       '101 Richmond St', 'London', 'Ontario', 'N6A3C5',
+       '2025-03-10', 'Delivered');
 
--- 8. Insert Payment data
-INSERT INTO Payment (orderID, amount, paymentMethod, cardNumber, expirationDate, cvv, billingStreet, billingCity, billingProvince, billingPostalCode, paymentDate, status, transactionRef) VALUES
-(1, 91.25, 'Credit Card', '************4321', '12/26', '***', '456 King St', 'Toronto', 'Ontario', 'M5V 1B2', '2025-03-10 12:00:00', 'Completed', 'TXN-12345-ABCDE'),
-(2, 107.99, 'Credit Card', '************8765', '09/25', '***', '101 Richmond St', 'London', 'Ontario', 'N6A 3C5', '2025-03-05 17:00:00', 'Completed', 'TXN-67890-FGHIJ'),
-(3, 35.25, 'PayPal', NULL, NULL, NULL, '456 King St', 'Toronto', 'Ontario', 'M5V 1B2', '2025-04-01 09:30:00', 'Completed', 'TXN-24680-KLMNO'),
-(4, 15.50, 'Credit Card', '************1357', '05/27', '***', '101 Richmond St', 'London', 'Ontario', 'N6A 3C5', '2025-04-05 14:15:00', 'Completed', 'TXN-13579-PQRST');
+-- --------------------------------------------------
+-- 7) PAYMENTS
+-- --------------------------------------------------
+INSERT INTO Payment
+  (orderID, amount, paymentMethod, cardNumber,
+   expirationDate, cvv, billingStreet, billingCity,
+   billingProvince, billingPostalCode,
+   paymentDate, status, transactionRef)
+VALUES
+  (1,  71.49, 'Credit Card', '************4321', '12/26', '***',
+       '456 King St', 'Toronto', 'Ontario', 'M5V1B2',
+       '2025-03-10 12:00:00', 'Completed', 'TXN-12345-ABCDE'),
+  (2,  38.49, 'Credit Card', '************8765', '09/25', '***',
+       '101 Richmond St', 'London', 'Ontario', 'N6A3C5',
+       '2025-03-05 17:00:00', 'Completed', 'TXN-67890-FGHIJ'),
+  (3,  22.99, 'PayPal',      NULL,           NULL,   NULL,
+       '789 Lakeshore Rd', 'Mississauga', 'Ontario', 'L5H1J1',
+       '2025-04-01 09:30:00', 'Completed', 'TXN-24680-KLMNO');
 
--- 9. Insert Review data
-INSERT INTO Review (buyerID, productID, orderID, rating, comment, reviewDate, isVerified) VALUES
-(2, 2, 1, 5, 'Beautiful dress, exactly as described! Arrived in perfect condition.', '2025-03-18 14:30:00', TRUE),
-(2, 4, 1, 4, 'Great boots, very comfortable. Just a bit more worn than I expected but still great value.', '2025-03-18 14:35:00', TRUE),
-(4, 5, 2, 5, 'These yoga pants are amazing! So comfortable and sustainable. Will definitely buy from this seller again.', '2025-03-15 16:20:00', TRUE),
-(4, 7, 2, 4, 'Beautiful bag, just as described. Prompt shipping and great communication.', '2025-03-15 16:25:00', TRUE),
-(4, 6, 4, 5, 'Love this vintage t-shirt! Great quality and exactly as pictured.', '2025-04-12 11:15:00', TRUE);
+-- --------------------------------------------------
+-- 8) REVIEWS
+-- --------------------------------------------------
+INSERT INTO Review
+  (buyerID, productID, rating, comment, reviewDate)
+VALUES
+  (2, 2, 5, 
+    'Beautiful floral dress! Perfect for my daughter''s first photoshoot. Fabric is soft and high quality.',
+    '2025-03-18 14:30:00'),
+  
+  (2, 4, 4, 
+    'These yoga pants fit my baby well and are made from great material. Took off one star only because they run slightly small.',
+    '2025-03-19 09:15:00'),
+  
+  (4, 3, 5, 
+    'This organic cotton sweater is amazing! So soft and cozy for my little one. Will definitely buy from this seller again.',
+    '2025-03-12 16:20:00'),
+  
+  (4, 5, 4, 
+    'Love this vintage t-shirt! The "well loved" description was accurate - it has that perfect worn-in feel but still in great condition.',
+    '2025-03-14 11:25:00'),
+  
+  (2, 6, 5, 
+    'The designer handbag is exactly as described. Great quality and perfect for carrying baby essentials in style!',
+    '2025-04-10 13:45:00'),
+  
+  (4, 7, 5, 
+    'Beautiful wool scarf, perfect for wrapping my baby during our winter walks. Very soft material that doesn''t irritate sensitive skin.',
+    '2025-04-08 10:30:00');
