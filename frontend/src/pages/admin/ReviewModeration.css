@@ -1,0 +1,62 @@
+.review-moderation-page {
+    padding: 2rem;
+    font-family: 'Poppins', sans-serif;
+    background-color: var(--color-bg);
+    color: var(--color-text);
+    max-width: 800px;
+    margin: 0 auto;
+  }
+  
+  .review-moderation-page h2 {
+    font-size: 2rem;
+    font-family: 'Playfair Display', serif;
+    color: var(--color-brand);
+    margin-bottom: 1.5rem;
+    text-align: center;
+  }
+  
+  .review-list {
+    list-style: none;
+    padding: 0;
+  }
+  
+  .review-card {
+    background-color: white;
+    border: 1px solid var(--color-text);
+    padding: 1.2rem;
+    margin-bottom: 1rem;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+  
+  .review-content {
+    text-align: left;
+    max-width: 80%;
+  }
+  
+  .review-content p {
+    margin: 0.3rem 0;
+    line-height: 1.4;
+  }
+  
+  .delete-button {
+    background-color: var(--color-accent);
+    color: white;
+    border: none;
+    padding: 0.5rem 0.8rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    transition: background-color 0.2s ease-in-out;
+  }
+  
+  .delete-button:hover {
+    background-color: var(--color-accent-hover);
+  }
+  
